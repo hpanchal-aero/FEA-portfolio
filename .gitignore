@@ -17,3 +17,6 @@ venv/
 *.sta
 *.cvg
 *.12d
+
+# Gmsh native mesh - regenerable from .geo, .inp is the consumed artifact
+*.msh
