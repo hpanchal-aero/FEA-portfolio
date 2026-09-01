@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editor / OS
+*.swp
+*~
+.DS_Store
+
+# OpenSCAD backups
+*.scad.bak
+
+# Solver scratch / temp (not final results)
+*.log
+*.sta
+*.cvg
+*.12d
