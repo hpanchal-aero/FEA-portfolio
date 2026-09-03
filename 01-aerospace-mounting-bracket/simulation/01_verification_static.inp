@@ -1,0 +1,61 @@
+** Project 01 - Aerospace Mounting Bracket
+** Stage: Baseline verification - linear static analysis
+** Geometry: plain cantilever plate, 60x40x4 mm (no holes/fillet/gusset)
+** Units: mm, N, s, tonne -> stress in MPa, E in MPa
+**
+** Boundary conditions:
+**   root (x=0): fully fixed (encastre), all translational DOF
+**   tip (x=60): 235.44 N applied at free-edge centroid via a
+**               reference node, transmitted to the tip FACIAL surface
+**               (element faces, cross-checked against Gmsh's own skin
+**               tagging - see chat) through a DISTRIBUTING coupling
+**               (area-weighted, not rigid) to avoid artificially
+**               stiffening the tip cross-section.
+**
+** NOTE: mesh include uses verification_plate_clean.inp, which strips
+** Gmsh's CPS6 skin-tagging elements (invalid as real plane-stress
+** elements off the z=0 plane) while preserving identical node/element
+** numbering to the original export - see chat log.
+**
+** Material: Al 7075-T6 (source to be formally cited in project README;
+**           representative published values used here)
+**   E  = 71700 MPa
+**   nu = 0.33
+
+*INCLUDE, INPUT=../mesh/verification_plate_clean.inp
+*INCLUDE, INPUT=../mesh/verification_plate_nsets.inp
+*INCLUDE, INPUT=../mesh/tip_facial_surface.inp
+
+** Reference node for distributing coupling, placed at the free-edge
+** centroid: x=60 (tip plane), y=20 (mid-width), z=2 (mid-thickness)
+*NODE
+50000, 60.0, 20.0, 2.0
+*NSET, NSET=REF_TIP
+50000
+
+*MATERIAL, NAME=AL7075T6
+*ELASTIC
+71700., 0.33
+
+*SOLID SECTION, ELSET=plate, MATERIAL=AL7075T6
+
+*COUPLING, REF NODE=50000, SURFACE=TIP_FACE, CONSTRAINT NAME=TIP_COUPLING
+*DISTRIBUTING
+1,3
+
+*BOUNDARY
+root, 1, 3
+
+*STEP
+*STATIC
+
+*CLOAD
+50000, 3, -235.44
+
+*NODE FILE
+U
+*EL FILE
+S
+*NODE PRINT, NSET=REF_TIP
+U
+*END STEP

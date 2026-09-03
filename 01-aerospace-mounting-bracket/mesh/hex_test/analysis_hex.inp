@@ -1,0 +1,51 @@
+** Project 01 - Aerospace Mounting Bracket
+** STANDALONE TEST: linear static analysis on structured hex mesh
+** Scope: verification plate only (see chat log) - NOT the general
+** bracket meshing strategy.
+**
+** All physics identical to the tet-mesh verified case:
+**   Geometry: 60x40x4 mm plate, x=cantilever length, y=width, z=thickness
+**   Material: Al 7075-T6, E=71700 MPa, nu=0.33
+**   BC: root (x=0) fully fixed (encastre)
+**   Load: 235.44 N transverse force at tip free-edge centroid via
+**         reference node + DISTRIBUTING coupling to tip facial surface
+**   Targets: sigma_max=132.4 MPa, delta_tip=1.108 mm (Euler-Bernoulli)
+**
+** NOTE: reference node ID must exceed the mesh's real max node ID
+** (confirmed 88386 for this mesh) to avoid silently overwriting a
+** real mesh node - see chat log, this was the actual cause of the
+** first hex-mesh solve failure, not a mesh-quality problem.
+
+*INCLUDE, INPUT=mesh_hex_clean.inp
+*INCLUDE, INPUT=nsets_hex.inp
+*INCLUDE, INPUT=tip_facial_surface_hex.inp
+
+*NODE
+200000, 60.0, 20.0, 2.0
+*NSET, NSET=REF_TIP
+200000
+
+*MATERIAL, NAME=AL7075T6
+*ELASTIC
+71700., 0.33
+
+*SOLID SECTION, ELSET=plate, MATERIAL=AL7075T6
+
+*BOUNDARY
+root, 1, 3
+
+*COUPLING, REF NODE=200000, SURFACE=TIP_FACE, CONSTRAINT NAME=TIP_COUPLING
+*DISTRIBUTING
+1,3
+
+*STEP
+*STATIC
+
+*CLOAD
+200000, 3, -235.44
+
+*NODE FILE
+U
+*EL FILE
+S
+*END STEP

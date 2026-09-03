@@ -17,6 +17,23 @@ venv/
 *.sta
 *.cvg
 *.12d
+spooles.out
+nohup.out
 
 # Gmsh native mesh - regenerable from .geo, .inp is the consumed artifact
 *.msh
+
+# Large regenerable FEA intermediates/results - regenerate via:
+#   gmsh <case>.geo -3 -o mesh_raw.inp -format inp   (mesh)
+#   ccx analysis                                      (solve, produces .frd/.dat)
+# Reproducibility comes from the tracked .geo/.inp files + scripts,
+# not from committing multi-hundred-MB binary results.
+mesh_raw.inp
+mesh_hex.inp
+*_clean.inp
+mesh_clean.inp
+*.frd
+*.dat
+
+# Debugging/environment-troubleshooting artifacts (not part of the pipeline)
+resource_log.txt

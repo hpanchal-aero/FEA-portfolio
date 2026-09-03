@@ -1,0 +1,35 @@
+** Project 01 - structured hex convergence case
+** Scoped to verification plate ONLY - see chat log.
+*INCLUDE, INPUT=mesh_clean.inp
+*INCLUDE, INPUT=nsets.inp
+*INCLUDE, INPUT=tip_facial_surface.inp
+
+*NODE
+16455, 60.0, 20.0, 2.0
+*NSET, NSET=REF_TIP
+16455
+
+*MATERIAL, NAME=AL7075T6
+*ELASTIC
+71700., 0.33
+
+*SOLID SECTION, ELSET=plate, MATERIAL=AL7075T6
+
+*BOUNDARY
+root, 1, 3
+
+*COUPLING, REF NODE=16455, SURFACE=TIP_FACE, CONSTRAINT NAME=TIP_COUPLING
+*DISTRIBUTING
+1,3
+
+*STEP
+*STATIC
+
+*CLOAD
+16455, 3, -235.44
+
+*NODE FILE
+U
+*EL FILE
+S
+*END STEP
