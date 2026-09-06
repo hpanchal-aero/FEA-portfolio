@@ -1,7 +1,9 @@
 # Project 01 — Ribbed L-Bracket: Mass-Minimized Aerospace Mounting Bracket
 
-**Status:** Verification plate stage complete. L-bracket geometry (holes,
-fillet, gusset) not yet started.
+**Status:** Verification plate stage complete. Progressive geometry —
+holes stage complete (verified, literature-investigated, unresolved
+magnitude gap documented). Fillet, gusset, full L-bracket not yet
+started.
 
 ## Research Question
 
@@ -21,12 +23,13 @@ vehicle mass budget.
 The full ribbed L-bracket has no closed-form analytical solution, so
 this project follows a staged verification approach:
 
-1. **Verification plate** (this stage) — plain flat cantilever plate,
+1. **Verification plate** (complete) — plain flat cantilever plate,
    analytically verifiable via Euler-Bernoulli beam theory. Purpose:
    prove the OpenSCAD → Gmsh → CalculiX → Python pipeline is
    implemented correctly before trusting it on a geometry with no
    independent check.
-2. Progressive geometry introduction — holes → fillet → gusset
+2. Progressive geometry introduction — **holes (complete)** → fillet
+   → gusset
 3. Full L-bracket baseline model and mesh convergence
 4. Parametric mass-minimization study (the actual research question)
 
@@ -185,7 +188,7 @@ both meshes solve the same 3D continuum model, so their mutual
 agreement is expected regardless of that model's relationship to the
 1D idealization.
 
-## Figures
+## Figures (Verification Plate)
 
 1. `mesh_visualization.png` — structured hex mesh (1.3mm shown for
    visual clarity; 0.3mm mesh used for all reported results)
@@ -202,7 +205,7 @@ agreement is expected regardless of that model's relationship to the
 7. `convergence_displacement.png`, `convergence_stress.png` — mesh
    convergence trends
 
-## Engineering Interpretation
+## Engineering Interpretation (Verification Plate)
 
 The 3D solid FEA model reproduces Euler-Bernoulli beam theory to
 within ~1.4% across the mid-span, and the root-region deviation is
@@ -212,7 +215,7 @@ modeling error. Two independent mesh discretizations agree closely.
 The implementation is considered verified and the pipeline trustworthy
 for the next stage.
 
-## Limitations
+## Limitations (Verification Plate)
 
 - No physical validation performed (no test data available for this
   specific geometry)
@@ -222,6 +225,169 @@ for the next stage.
   will not extend to the filleted/holed L-bracket geometry
 - L/h = 15 slenderness ratio is "reasonable but approximate" for
   strict Euler-Bernoulli applicability
+
+---
+
+# Progressive Geometry Stage 2 — Circular Hole
+
+## Geometry
+
+Same 60 × 40 × 4 mm plate as the verification stage, with a single
+circular through-hole added:
+
+- Hole diameter: d = 5 mm (matches the eventual bolt-hole spec)
+- Hole location: x = 30 mm, y = 20 mm (mid-span, mid-width) — chosen
+  to sit well clear of the root Saint-Venant region characterized in
+  Stage 1, in a zone already confirmed to match beam theory closely
+- d/B = 5/40 = 0.125, d/t = 5/4 = 1.25
+
+**Why this stage matters:** unlike the fillet and gusset stages ahead,
+a hole has an established analytical/numerical reference point (a
+stress concentration factor), giving one more opportunity to check the
+pipeline against something external before that check disappears at
+the full-bracket stage.
+
+Geometry built via Gmsh OpenCASCADE (`Box()` cut by `Cylinder()` via
+`BooleanDifference`) — an exact circular boundary, no STL faceting.
+Meshed with unstructured tetrahedra (C3D10), since structured hex
+cannot wrap a circular cutout. Local refinement at the hole via a
+Gmsh `Distance`+`Threshold` field pair, sized so `DistMax` is always
+guaranteed greater than the hole radius (an earlier field-definition
+bug that used an absolute-distance parameter incorrectly caused one
+non-physical 2.57M-element mesh — caught and fixed before any solve).
+
+## Mesh Convergence Study
+
+Two refinement levels, both solved with the direct (spooles) solver
+— the iterative solver was confirmed to stall on this mesh's local
+size-gradient before either level below was attempted:
+
+| Level | Hole element size | Elements | Peak σₓₓ (top surface) | Kt | % change |
+|---|---|---|---|---|---|
+| 1 | 0.25 mm | 62,306 | 134.966 MPa | 2.038 | — |
+| 2 | 0.20 mm | 117,205 | 135.350 MPa | 2.044 | 0.28% |
+
+Convergence criterion (<2%): **met**, decisively — 0.28% change in
+peak stress between levels, with the peak location unchanged (same
+z=4.00mm top-surface point, x≈29.8–29.95mm, y≈17.5/22.5mm — the
+classical Kirsch-type location at 90° from the load axis). No third
+level was needed.
+
+**Converged result: Kt ≈ 2.044, peak σₓₓ ≈ 135.35 MPa**, against a
+gross-section nominal bending stress (unperforated beam theory at
+x=30mm) of ≈ 66.2 MPa. This is treated as a trustworthy,
+mesh-independent FEA result, established independently of any
+literature comparison.
+
+## Literature Investigation
+
+The naive first-pass estimate for this geometry — applying the
+classical finite-width Kirsch/Howland uniaxial-tension chart
+layer-by-layer through the thickness, using the local beam-bending
+stress at each depth as that layer's "remote tension" — predicted
+Kt ≈ 2.68 (peak ≈ 176 MPa), a −23.8% overprediction relative to the
+converged FEA result. A literature investigation was carried out to
+determine whether this gap is physically explainable, in three rounds:
+
+**Round 1 — uniform-tension 3D-thickness literature** (Vaz et al. 2013;
+Sternberg & Sadowsky; Folias & Wang). These are the standard citable
+sources for "3D thickness effects on hole SCF," but all study a hole
+under **uniform remote tension through the thickness** — a
+fundamentally different loading case from ours, where the nominal
+stress is a **linear bending gradient** (zero at mid-plane, maximum at
+the surfaces). Applying Vaz et al.'s own surface-vs-midplane transition
+criterion to our B/r=1.6 predicted the wrong peak location (mid-plane)
+for the wrong reason — not because our result violates their finding,
+but because their finding answers a different question than ours asks.
+**Conclusion: not applicable, ruled out correctly rather than forced.**
+
+**Round 2 — through-thickness bending literature** (Yang, Kim, Beom &
+Cho, 2010, *Int. J. Mechanical Sciences* 52, 836–846; Peterson's
+"Simple Transverse Bending" hole-in-plate chart). This is the correct
+loading type — a linear stress gradient through the thickness, matching
+our case exactly:
+
+- Yang et al. (2010) study exactly this configuration (pure bending,
+  m=−1) and report a transition thickness of t′≈3r, below which the
+  peak SCF remains **on the free surface** and above which it migrates
+  into the interior. Our t/r = 1.6 < 3 places us in the "peak-stays-
+  on-surface" regime — **which matches our FEA observation** (peak at
+  z=0/z=4, not z=2). This is a genuine, correctly-transferred
+  qualitative confirmation. No tabulated Kt-vs-thickness data for pure
+  bending could be extracted from the available text/figures, however
+  — the underlying curve (their Fig. 16a) is described only in words.
+- Peterson's "Simple Transverse Bending" chart, evaluated with zero
+  extrapolation at our exact d/D=0.125 and d/t=1.25, gives Kt≈2.39 and
+  a predicted peak of ≈181 MPa when matched to its own net-section
+  moment-based nominal stress definition — a **larger** discrepancy
+  from our converged 135.35 MPa than the original naive estimate.
+
+**Round 3 — hole in a finite cantilever with a longitudinal moment
+gradient.** Searched specifically for this combination (through-
+thickness bending gradient + circular hole + finite beam length near a
+free end). Nothing found addresses it. The one directly relevant hit
+(an ASEE cantilever-beam-with-hole study) turned out to be the
+classical **in-plane** bending case (hole diameter referenced against
+beam height, not thickness) — a different configuration already
+correctly ruled out earlier in this investigation. No source was found
+studying a through-thickness bending gradient superimposed on a
+longitudinal moment gradient near a beam's free end.
+
+### Established vs. Not Established
+
+**Established:**
+- Kt ≈ 2.044 is mesh-converged (independently, via two refinement
+  levels, 0.28% change).
+- The stress peak occurs at the free surface, not the mid-plane.
+- Yang et al. (2010) qualitatively supports surface-peak behavior for
+  a plate this thin relative to the hole under pure through-thickness
+  bending (t/r=1.6 < their transition thickness of ~3r).
+- Every classical idealized correlation found for the correct loading
+  type — evaluated at our exact geometry, no extrapolation —
+  *overpredicts* our converged result (Kt=2.39–2.68 predicted vs.
+  Kt=2.044 observed).
+
+**Not established:**
+- No universal quantitative correction exists in the literature found
+  that converts any classical Kt to our observed 2.044 for this exact
+  geometry.
+- The hypothesis that the cantilever's local along-beam moment
+  gradient (rather than pure 3D surface/thickness effects) accounts
+  for some or all of the residual gap is a **plausible engineering
+  interpretation, not a demonstrated cause**. No source addressing
+  this specific combination was found in three rounds of targeted
+  search.
+
+This is documented as the final Stage 2 literature conclusion: the
+FEA result is trusted on its own mesh-convergence merits; the
+mechanism is qualitatively, but not quantitatively, supported by
+published work; the residual gap to any classical prediction is real
+and, as far as this search found, unresolved in the literature.
+
+## Verification vs. Validation (Stage 2)
+
+As with Stage 1, this stage is **verification only**. The FEA result
+is confirmed mesh-independent and physically sensible (correct peak
+location per the one directly-relevant reference found), but is not
+validated against a physical test article, and is not fully
+reconciled against any closed-form or tabulated literature prediction.
+
+## Limitations (Stage 2)
+
+- No closed-form or tabulated literature source was found that
+  quantitatively reproduces the converged Kt ≈ 2.044 for this exact
+  geometry (d/t=1.25, hole under a through-thickness bending gradient
+  near a cantilever free end).
+- The moment-gradient explanation for the residual gap is speculative
+  engineering reasoning, not a demonstrated or literature-supported
+  cause, and should not be cited as settled in any downstream summary
+  (e.g. LinkedIn post, portfolio writeup) without that caveat.
+- Only two mesh levels were run for convergence (justified by the
+  decisively small 0.28% change, but a third level was not generated).
+- The 2D iterative solver limitation (stalling on locally-refined
+  meshes) means all hole-stage results used the direct solver only;
+  no cross-solver corroboration exists for this stage, unlike Stage 1's
+  cross-discretization check.
 
 ## Status Log
 
@@ -233,7 +399,13 @@ for the next stage.
 - [x] Mesh convergence study (5 levels, hex, converged)
 - [x] Analytical verification (σₓₓ primary comparison, root-cause
       investigation of boundary effects complete)
-- [ ] Progressive geometry: holes
+- [x] Progressive geometry: holes
+  - [x] Geometry and mesh methodology (Gmsh OCC boolean, unstructured
+        tet, local refinement)
+  - [x] Mesh convergence study (2 levels, 0.28% change, converged)
+  - [x] Literature investigation (3 rounds; qualitative mechanism
+        confirmed, quantitative gap unresolved and documented as such)
+  - [x] Stage conclusion documented (established vs. not established)
 - [ ] Progressive geometry: fillet
 - [ ] Progressive geometry: gusset
 - [ ] Full L-bracket baseline

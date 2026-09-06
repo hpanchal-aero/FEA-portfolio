@@ -28,10 +28,11 @@ nohup.out
 #   ccx analysis                                      (solve, produces .frd/.dat)
 # Reproducibility comes from the tracked .geo/.inp files + scripts,
 # not from committing multi-hundred-MB binary results.
-mesh_raw.inp
+*_raw.inp
 mesh_hex.inp
 *_clean.inp
 mesh_clean.inp
+gmsh_log.txt
 *.frd
 *.dat
 

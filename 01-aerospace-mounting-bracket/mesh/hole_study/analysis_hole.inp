@@ -1,0 +1,45 @@
+** Project 01 - Aerospace Mounting Bracket
+** Stage 2: Plate with hole - stress concentration verification
+** Geometry: 60x40x4mm plate, 5mm dia hole centered at (x=30, y=20)
+** Material: Al 7075-T6, E=71700 MPa, nu=0.33 (unchanged)
+** Load: 235.44 N transverse tip force via DISTRIBUTING coupling
+**        (unchanged from verification-plate stage)
+** BC: root (x=0) fully fixed (unchanged)
+** Mesh: 62306 C3D10 elements, local refinement at hole
+**        (hole_size=0.25mm, transition_width=1.5mm, far_size=3.0mm)
+** Solver: direct (mesh small enough after refinement-parameter fix;
+**          see chat log for the earlier OOM/field-bug investigation)
+
+*INCLUDE, INPUT=mesh_hole_clean.inp
+*INCLUDE, INPUT=nsets_hole.inp
+*INCLUDE, INPUT=tip_facial_surface_hole.inp
+
+*NODE
+92281, 60.0, 20.0, 2.0
+*NSET, NSET=REF_TIP
+92281
+
+*MATERIAL, NAME=AL7075T6
+*ELASTIC
+71700., 0.33
+
+*SOLID SECTION, ELSET=plate, MATERIAL=AL7075T6
+
+*BOUNDARY
+root, 1, 3
+
+*COUPLING, REF NODE=92281, SURFACE=TIP_FACE, CONSTRAINT NAME=TIP_COUPLING
+*DISTRIBUTING
+1,3
+
+*STEP
+*STATIC
+
+*CLOAD
+92281, 3, -235.44
+
+*NODE FILE
+U
+*EL FILE
+S
+*END STEP
