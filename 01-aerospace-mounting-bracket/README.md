@@ -1,9 +1,8 @@
 # Project 01 — Ribbed L-Bracket: Mass-Minimized Aerospace Mounting Bracket
 
 **Status:** Verification plate stage complete. Progressive geometry —
-holes stage complete (verified, literature-investigated, unresolved
-magnitude gap documented). Fillet, gusset, full L-bracket not yet
-started.
+holes and shoulder fillet stages complete (both verified, with
+documented open items). Gusset, full L-bracket not yet started.
 
 ## Research Question
 
@@ -28,8 +27,8 @@ this project follows a staged verification approach:
    prove the OpenSCAD → Gmsh → CalculiX → Python pipeline is
    implemented correctly before trusting it on a geometry with no
    independent check.
-2. Progressive geometry introduction — **holes (complete)** → fillet
-   → gusset
+2. Progressive geometry introduction — **holes (complete)** →
+   **shoulder fillet (complete)** → gusset
 3. Full L-bracket baseline model and mesh convergence
 4. Parametric mass-minimization study (the actual research question)
 
@@ -389,6 +388,209 @@ reconciled against any closed-form or tabulated literature prediction.
   no cross-solver corroboration exists for this stage, unlike Stage 1's
   cross-discretization check.
 
+---
+
+# Progressive Geometry Stage 3 — Shoulder Fillet
+
+## Geometry
+
+A distinct interpretation from the eventual full-bracket flange-
+junction fillet, chosen deliberately: a **shoulder fillet** — a
+step change in cross-section thickness on an otherwise straight
+cantilever, blended by a fillet radius. This isolates the fillet
+stress-concentration mechanism against one of the most thoroughly
+documented SCF problems in mechanical engineering (Peterson's
+stepped-flat-bar-in-bending chart), before the flange-junction fillet
+is introduced later as part of the full angled-bracket geometry
+(Stage 5), where it cannot be isolated from the gusset/bend geometry.
+
+- 60 mm overall length, 40 mm constant out-of-plane width
+- Root section (x=0–30mm): depth D = 6 mm
+- Tip section (x=30–60mm): depth d = 4 mm
+- Symmetric opposite shoulder fillets (both top and bottom faces,
+  centroid preserved through the transition — required by the
+  Peterson reference chart, which assumes this symmetry)
+- Fillet radius: **r = 0.95 mm** (see construction history below for
+  why this differs from the originally locked r = 1.0 mm target)
+- Same material, load (F = 235.44 N transverse at tip), coordinate
+  system, and encastre-root BC philosophy as Stage 1
+
+**Non-dimensional parameters, as-built:** D/d = 1.5, r/d = 0.2375
+(target 0.25), h/r = 1.0526 (target 1.0), where h = (D−d)/2 = 1.0mm —
+all within the Peterson/ESDU chart's demonstrated small-r/d
+calibration range, confirmed via a dedicated specification gate
+before any geometry was built (checking the chart's actual parameter
+definitions and range against secondary literature, not assumed).
+
+### Verification reference
+
+Peterson's "Opposite Shoulder Fillets in a Flat Bar" bending chart.
+σnom = 6M/(t·d²), evaluated at the same beam-theory moment already
+verified in Stage 1/2 (M(x=30) = 7063.2 N·mm, giving σnom = 66.22 MPa
+— identical to the Stage 1/2 gross-section reference at this
+location, confirming self-consistency of the mapping).
+
+**Locked prediction (computed before any FEA, at h/r=1.0 target):**
+Kt = 1.429, predicted peak σₓₓ ≈ 94.6 MPa.
+
+### Construction history — why r = 0.95mm, not the locked r = 1.0mm
+
+1. **r = 1.0mm exactly equals the riser height** h = (D−d)/2 = 1.0mm.
+   The fillet's tangent point coincides exactly with the adjacent
+   sharp-corner vertex — a genuine BRep degeneracy. Gmsh's OCC fillet
+   solver fails outright ("Could not compute fillet"). This is a
+   numerical-tolerance issue, not an engineering change — flagged and
+   confirmed as such before adjusting.
+2. **r = 0.99mm** succeeds numerically but leaves a 0.01mm residual
+   sliver face (h−r) smaller than the finest intended mesh size
+   (0.15mm), forcing pathological element aspect ratios (up to
+   AR=62.77) in its immediate neighborhood.
+3. `gmsh.model.occ.healShapes()` was attempted to remove the sliver.
+   It did not repair the geometry in place — it duplicated the
+   surface set (12→22 surfaces, orphaning the original topology
+   alongside a new one) and shifted the bounding box by ~0.015mm.
+   Reverted entirely rather than used.
+4. **r = 0.95mm** (final): sliver grows to 0.05mm — large enough to
+   mesh cleanly without healing. This is the geometry used for all
+   subsequent work in this stage.
+
+### Mesh methodology and a second defect, also fixed
+
+Unstructured tetrahedra (C3D10), Gmsh OCC box-union + fillet, same
+family of approach as Stage 2. Local refinement originally attempted
+via a `Box` field covering the full cross-section over the transition
+length — this produced a 1.44M-element mesh (far larger than anything
+previously solved in this project) because it refined the *entire*
+6×40×7mm slab around the transition, not just the fillet surfaces
+themselves. Replaced with a `Distance`+`Threshold` field pair anchored
+specifically on the two fillet (Cylinder-type) surfaces, identified
+robustly by OCC surface type + z-sign — reducing the baseline mesh to
+~11,000 elements.
+
+This Distance+Threshold field's default **linear** interpolation was
+then found to introduce a second, smaller defect: a hard slope
+discontinuity at `DistMax` caused elements near that boundary to
+stretch (AR up to 28.5). Switching to the field's built-in **Sigmoid**
+interpolation (a smooth, continuous-slope transition) resolved this
+decisively — mean aspect ratio dropped from 5.93 to 2.22, elements
+with AR>20 dropped from 76 to a single isolated outlier, at every
+subsequent mesh level.
+
+## Mesh Convergence Study
+
+| Level | FILLET_SIZE | Elements | Equations | Top σₓₓ (MPa) | Top Kt | Bottom σₓₓ (MPa) | Bottom Kt |
+|---|---|---|---|---|---|---|---|
+| Coarse | 0.30 mm | 10,819 | — (not solved to equilibrium check) | 86.54 | 1.307 | −91.49 | 1.382 |
+| Medium (baseline) | 0.15 mm | 37,684 | 207,738 | 93.82 | 1.417 | −94.97 | 1.434 |
+| **Fine (accepted)** | **0.075 mm** | **156,219** | **784,701** | **95.99** | **1.450** | **−94.98** | **1.434** |
+
+**% change, medium → fine:**
+- Bottom surface: +0.01% — converged, decisively.
+- Top surface: +2.31% — marginally above the project's 2% criterion,
+  and still trending in the same direction as the coarse→medium step
+  (not yet clearly plateaued).
+
+**Two further refinement attempts (FILLET_SIZE = 0.06mm and 0.05mm)
+were mesh-quality-verified (both clean: zero inverted elements, max
+AR < 15, consistent with the sigmoid-field fix) but rejected as
+solver candidates on resource grounds** — extrapolated at ~1.22M and
+~1.7M equations respectively, at or above the ~1.18M-equation point
+that OOM-killed CalculiX's direct solver during Stage 2's hole study.
+A quantitative mesh-growth diagnostic (comparing the fine and 0.06mm
+meshes, bucketed by distance to the fillet surface) attributed ~70–73%
+of the excess node/element growth to the immediate fillet-surface
+refinement band itself (expected — halving element size on a
+fixed-area curved surface roughly quadruples the elements needed to
+resolve it) and ~27–29% to the fixed 1.5mm transition width, with
+far-field mesh density essentially unaffected. This is recorded for
+reference should further refinement be attempted in a future session,
+but was not acted on in this one.
+
+**Decision: the fine level (0.075mm, 156,219 elements) is accepted as
+the baseline result for this stage**, with the top-surface 2.3%
+residual documented explicitly as an open, unresolved limitation —
+not silently treated as converged, and not treated as a failed
+verification (the result itself is physically and numerically sound
+by every other check performed).
+
+## Baseline Solve — Full Sanity Check
+
+All results below are from the accepted fine-level mesh (261,724
+nodes / 156,219 elements / 784,701 equations, direct spooles solver,
+44.1–44.5s across two identical-deck runs).
+
+**Equilibrium check** (added via a minimal `*NODE FILE U,RF` deck
+change, rerun on the identical mesh/BC/load — reproduced the same
+784,701-equation solve, confirming no unintended model change):
+- Applied load: Fz = −235.44 N
+- Root ΣFz = +235.4397 N (opposite sign, equal magnitude, as required)
+- **Relative equilibrium error: ≈0.0001%**
+- Root ΣFx = +0.0002 N, ΣFy = −0.0002 N (both ≈0.0001% of applied
+  load — no spurious lateral/axial reaction from the `*DISTRIBUTING`
+  coupling)
+
+**Displacement:**
+- Peak |U| = 0.4120 mm (tip edge, x=60/y=20/z=2)
+- Dominant Uz = −0.4112 mm; small Ux=0.0253mm (Poisson/bending
+  coupling); Uy≈0
+- Physically sane: smaller than Stage 1's ~1.05mm tip deflection
+  under the same load/span — expected, since this geometry averages
+  thicker (6mm root vs. Stage 1's uniform 4mm) over half its length
+
+**Stress vs. Peterson reference (94.63 MPa predicted):**
+
+| | σₓₓ | Observed Kt | vs. Peterson |
+|---|---|---|---|
+| Top fillet | +95.99 MPa | 1.450 | +1.44% |
+| Bottom fillet | −94.98 MPa | 1.434 | +0.37% |
+
+Both surfaces agree with the classical closed-form reference to
+within ~1.5% — a substantially cleaner result than Stage 2's hole
+study achieved against any available literature source.
+
+**Sanity check status: 8/8 closed** — element type/count, node count,
+material properties, root BC, load magnitude/direction/location,
+reaction-force equilibrium, displacement/stress scale, and
+rigid-body-motion (no singular-pivot solver error, and now also
+confirmed explicitly via exact equilibrium) all verified.
+
+## Verification vs. Validation (Stage 3)
+
+As with Stages 1–2, this stage is **verification only**. Unlike
+Stage 2, this stage's classical reference (Peterson's shoulder-fillet
+chart) is a strong, closely-matching quantitative check (<1.5% on
+both surfaces) — but this remains a check against another idealized
+model, not against physical test data, and no physical validation is
+claimed.
+
+## Limitations (Stage 3)
+
+- The fillet radius used (r=0.95mm) differs from both the originally
+  locked verification target (r=1.0mm, infeasible due to a genuine
+  BRep degeneracy) and the eventual full-bracket fillet spec
+  (r=3.0mm) — this stage verifies the pipeline and the general
+  shoulder-fillet SCF mechanism at a chart-validated radius, not the
+  bracket's final geometry.
+- The top-surface stress result has **not** been demonstrated
+  mesh-converged: medium→fine changed by +2.31%, marginally above
+  the project's 2% criterion, and still trending upward. The
+  bottom-surface result (+0.01% change) is converged. This asymmetry
+  between two nominally-symmetric surfaces is itself unexplained —
+  documented as an open item, not resolved.
+- Two further refinement levels were mesh-quality-verified but never
+  solved, due to resource constraints relative to this project's
+  documented direct-solver memory ceiling. A path to a safer further
+  refinement (reducing `TRANSITION_WIDTH` proportionally, per the
+  mesh-growth diagnostic) was identified but not attempted.
+- The Peterson chart's underlying calibration is presumed to assume a
+  spatially uniform remote bending moment; this stage's cantilever
+  geometry has a real (if small, ~3.3% over the fillet's immediate
+  neighborhood) moment gradient along x that the classical chart does
+  not account for. Unlike Stage 2, this was not found to produce a
+  large discrepancy — the <1.5% agreement suggests this effect is
+  genuinely small here, but it was not independently isolated or
+  quantified.
+
 ## Status Log
 
 - [x] Specification defined and approved
@@ -406,7 +608,17 @@ reconciled against any closed-form or tabulated literature prediction.
   - [x] Literature investigation (3 rounds; qualitative mechanism
         confirmed, quantitative gap unresolved and documented as such)
   - [x] Stage conclusion documented (established vs. not established)
-- [ ] Progressive geometry: fillet
+- [x] Progressive geometry: shoulder fillet
+  - [x] Specification gate (Peterson chart applicability and range
+        verified before geometry construction)
+  - [x] Geometry and mesh methodology (Gmsh OCC fillet, sigmoid
+        Distance+Threshold refinement, two defects diagnosed and fixed)
+  - [x] Mesh convergence study (3 solved levels; bottom surface
+        converged, top surface accepted with documented 2.3% residual)
+  - [x] Baseline sanity check (8/8 closed, including equilibrium
+        verification to ≈0.0001% error)
+  - [x] Stage conclusion documented (established vs. not established,
+        open convergence item preserved)
 - [ ] Progressive geometry: gusset
 - [ ] Full L-bracket baseline
 - [ ] Parametric mass-minimization study

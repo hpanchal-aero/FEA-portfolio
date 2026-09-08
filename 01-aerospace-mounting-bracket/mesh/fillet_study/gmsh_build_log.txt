@@ -1,0 +1,238 @@
+Info    : [  0%] Union                                                                                  Info    : [ 10%] Union - Performing Vertex-Face intersection                                                                                Info    : [ 20%] Union                                                                                  Info    : [ 30%] Union                                                                                  Info    : [ 40%] Union                                                                                  Info    : [ 50%] Union                                                                                  Info    : [ 60%] Union                                                                                  Info    : [ 70%] Union                                                                                  Info    : [ 80%] Union                                                                                  Info    : [ 90%] Union - Splitting solids                                                                                                                                                                Info    : Meshing 1D...
+Info    : [  0%] Meshing curve 1 (Line)
+Info    : [ 10%] Meshing curve 2 (TrimmedCurve)
+Info    : [ 10%] Meshing curve 3 (Line)
+Info    : [ 20%] Meshing curve 4 (Line)
+Info    : [ 20%] Meshing curve 5 (Line)
+Info    : [ 20%] Meshing curve 6 (Line)
+Info    : [ 30%] Meshing curve 7 (Line)
+Info    : [ 30%] Meshing curve 8 (Line)
+Info    : [ 30%] Meshing curve 9 (Line)
+Info    : [ 40%] Meshing curve 10 (TrimmedCurve)
+Info    : [ 40%] Meshing curve 11 (Line)
+Info    : [ 40%] Meshing curve 12 (Line)
+Info    : [ 50%] Meshing curve 13 (Line)
+Info    : [ 50%] Meshing curve 14 (Line)
+Info    : [ 50%] Meshing curve 15 (TrimmedCurve)
+Info    : [ 60%] Meshing curve 16 (Line)
+Info    : [ 60%] Meshing curve 17 (Line)
+Info    : [ 60%] Meshing curve 18 (Line)
+Info    : [ 70%] Meshing curve 19 (Line)
+Info    : [ 70%] Meshing curve 20 (Line)
+Info    : [ 70%] Meshing curve 21 (Line)
+Info    : [ 80%] Meshing curve 22 (Line)
+Info    : [ 80%] Meshing curve 23 (Line)
+Info    : [ 80%] Meshing curve 24 (Line)
+Info    : [ 90%] Meshing curve 25 (Line)
+Info    : [ 90%] Meshing curve 26 (Line)
+Info    : [ 90%] Meshing curve 27 (Line)
+Info    : [100%] Meshing curve 28 (Line)
+Info    : [100%] Meshing curve 29 (Line)
+Info    : [100%] Meshing curve 30 (TrimmedCurve)
+Info    : Done meshing 1D (Wall 0.357983s, CPU 0.379805s)
+Info    : Meshing 2D...
+Info    : [  0%] Meshing surface 1 (Plane, Frontal-Delaunay)
+Info    : [ 10%] Meshing surface 2 (Plane, Frontal-Delaunay)
+Info    : [ 20%] Meshing surface 3 (Cylinder, Frontal-Delaunay)
+Info    : [ 30%] Meshing surface 4 (Plane, Frontal-Delaunay)
+Info    : [ 40%] Meshing surface 5 (Plane, Frontal-Delaunay)
+Info    : [ 50%] Meshing surface 6 (Plane, Frontal-Delaunay)
+Info    : [ 60%] Meshing surface 7 (Plane, Frontal-Delaunay)
+Info    : [ 60%] Meshing surface 8 (Plane, Frontal-Delaunay)
+Info    : [ 70%] Meshing surface 9 (Plane, Frontal-Delaunay)
+Info    : [ 80%] Meshing surface 10 (Plane, Frontal-Delaunay)
+Info    : [ 90%] Meshing surface 11 (Cylinder, Frontal-Delaunay)
+Info    : [100%] Meshing surface 12 (Plane, Frontal-Delaunay)
+Info    : Done meshing 2D (Wall 0.222769s, CPU 0.241863s)
+Info    : Meshing 3D...
+Info    : 3D Meshing 1 volume with 1 connected component
+Info    : Input mesh hash a93e51e0e568a991
+Info    : Creating an empty mesh with 9090 vertices
+Info    : Initialization of tet. mesh
+Info    : Delaunay of       9086 points on   1 threads - mesh.nvert: 4         
+Info    : Recovering 184 missing facet(s)
+Info    : Recover Delaunay
+Info    : All volumes of the BRep were found and colorized accordingly
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of      12720 points on   1 threads - mesh.nvert: 9090      
+Info    :           -      12299 points filtered
+Info    :           =        421 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of       5678 points on   1 threads - mesh.nvert: 9511      
+Info    :           -       5069 points filtered
+Info    :           =        609 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of       3353 points on   1 threads - mesh.nvert: 10120     
+Info    :           -       2615 points filtered
+Info    :           =        738 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of       1243 points on   1 threads - mesh.nvert: 10858     
+Info    :           -        894 points filtered
+Info    :           =        349 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of        313 points on   1 threads - mesh.nvert: 11207     
+Info    :           -        224 points filtered
+Info    :           =         89 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of        105 points on   1 threads - mesh.nvert: 11296     
+Info    :           -         89 points filtered
+Info    :           =         16 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of         28 points on   1 threads - mesh.nvert: 11312     
+Info    :           -         24 points filtered
+Info    :           =          4 points added
+Info    : Computing mesh sizes...
+Info    : Done computing mesh sizes
+Info    : Delaunay of          2 points on   1 threads - mesh.nvert: 11316     
+Info    :           -          2 points filtered
+Info    :           =          0 points added
+Info    : Improving       6081 tet. on   1 thrd (S & ER)
+Info    : Improving       4330 tet. on   1 thrd (S & ER)
+Info    : Improving       3830 tet. on   1 thrd (S & ER)
+Info    : Improving       3641 tet. on   1 thrd (S & ER)
+Info    : Improving       3506 tet. on   1 thrd (S & ER)
+Info    : Improving       3445 tet. on   1 thrd (S & ER)
+Info    : Improving       3408 tet. on   1 thrd (S & ER)
+Info    : Improving       3396 tet. on   1 thrd (S & ER)
+Info    : Improving       3382 tet. on   1 thrd (S & ER)
+Info    : Improving       3380 tet. on   1 thrd (GSC)
+Info    : Improving       2981 tet. on   1 thrd (S & ER)
+Info    : Improving       2782 tet. on   1 thrd (S & ER)
+Info    : Improving       2693 tet. on   1 thrd (S & ER)
+Info    : Improving       2624 tet. on   1 thrd (S & ER)
+Info    : Improving       2577 tet. on   1 thrd (S & ER)
+Info    : Improving       2544 tet. on   1 thrd (S & ER)
+Info    : Improving       2527 tet. on   1 thrd (S & ER)
+Info    : Improving       2523 tet. on   1 thrd (S & ER)
+Info    : Improving       2523 tet. on   1 thrd (S & ER)
+Info    : Improving       2519 tet. on   1 thrd (S & ER)
+Info    : Improving       2521 tet. on   1 thrd (GSC)
+Info    : Improving       2402 tet. on   1 thrd (S & ER)
+Info    : Improving       2316 tet. on   1 thrd (S & ER)
+Info    : Improving       2293 tet. on   1 thrd (S & ER)
+Info    : Improving       2245 tet. on   1 thrd (S & ER)
+Info    : Improving       2236 tet. on   1 thrd (S & ER)
+Info    : Improving       2231 tet. on   1 thrd (S & ER)
+Info    : Improving       2228 tet. on   1 thrd (S & ER)
+Info    : Improving       2227 tet. on   1 thrd (GSC)
+Info    : Improving       2225 tet. on   1 thrd (S & ER)
+Info    : Improving       2204 tet. on   1 thrd (S & ER)
+Info    : Improving       2192 tet. on   1 thrd (S & ER)
+Info    : Improving       2183 tet. on   1 thrd (S & ER)
+Info    : Improving       2179 tet. on   1 thrd (S & ER)
+Info    : Improving       2179 tet. on   1 thrd (GSC)
+Info    : Improving       2177 tet. on   1 thrd (S & ER)
+Info    : Improving       2171 tet. on   1 thrd (S & ER)
+Info    : Improving       2170 tet. on   1 thrd (S & ER)
+Info    : Improving       2170 tet. on   1 thrd (GSC)
+Info    : Improving       2159 tet. on   1 thrd (S & ER)
+Info    : Improving       2159 tet. on   1 thrd (S & ER)
+Info    : Improving       2157 tet. on   1 thrd (GSC)
+Info    :  	Final tet. mesh contains 79601 tetrahedra
+Info    :  	Final tet. mesh contains 11316 vertices
+Info    : tEmptyMesh  	 = 	    0.028
+Info    : tVerifyBnd  	 = 	    0.006
+Info    : tBndRecovery	 = 	    0.056
+Info    : tConvertMesh	 = 	    0.008
+Info    : tRefine     	 = 	    0.184
+Info    : tOptimize   	 = 	    5.541
+Info    : Done meshing 3D (Wall 5.83729s, CPU 6.35423s)
+Info    : Meshing order 2 (curvilinear off)...
+Info    : [  0%] Meshing curve 1 order 2
+Info    : [ 10%] Meshing curve 2 order 2
+Info    : [ 10%] Meshing curve 3 order 2
+Info    : [ 10%] Meshing curve 4 order 2
+Info    : [ 10%] Meshing curve 5 order 2
+Info    : [ 20%] Meshing curve 6 order 2
+Info    : [ 20%] Meshing curve 7 order 2
+Info    : [ 20%] Meshing curve 8 order 2
+Info    : [ 20%] Meshing curve 9 order 2
+Info    : [ 30%] Meshing curve 10 order 2
+Info    : [ 30%] Meshing curve 11 order 2
+Info    : [ 30%] Meshing curve 12 order 2
+Info    : [ 30%] Meshing curve 13 order 2
+Info    : [ 40%] Meshing curve 14 order 2
+Info    : [ 40%] Meshing curve 15 order 2
+Info    : [ 40%] Meshing curve 16 order 2
+Info    : [ 40%] Meshing curve 17 order 2
+Info    : [ 40%] Meshing curve 18 order 2
+Info    : [ 50%] Meshing curve 19 order 2
+Info    : [ 50%] Meshing curve 20 order 2
+Info    : [ 50%] Meshing curve 21 order 2
+Info    : [ 50%] Meshing curve 22 order 2
+Info    : [ 60%] Meshing curve 23 order 2
+Info    : [ 60%] Meshing curve 24 order 2
+Info    : [ 60%] Meshing curve 25 order 2
+Info    : [ 60%] Meshing curve 26 order 2
+Info    : [ 70%] Meshing curve 27 order 2
+Info    : [ 70%] Meshing curve 28 order 2
+Info    : [ 70%] Meshing curve 29 order 2
+Info    : [ 70%] Meshing curve 30 order 2
+Info    : [ 70%] Meshing surface 1 order 2
+Info    : [ 80%] Meshing surface 2 order 2
+Info    : [ 80%] Meshing surface 3 order 2
+Info    : [ 80%] Meshing surface 4 order 2
+Info    : [ 80%] Meshing surface 5 order 2
+Info    : [ 90%] Meshing surface 6 order 2
+Info    : [ 90%] Meshing surface 7 order 2
+Info    : [ 90%] Meshing surface 8 order 2
+Info    : [ 90%] Meshing surface 9 order 2
+Info    : [100%] Meshing surface 10 order 2
+Info    : [100%] Meshing surface 11 order 2
+Info    : [100%] Meshing surface 12 order 2
+Info    : [100%] Meshing volume 1 order 2
+Info    : Done meshing order 2 (Wall 0.156077s, CPU 0.161538s)
+Info    : 69403 nodes 57542 elements
+Info    : Writing '01-aerospace-mounting-bracket/mesh/fillet_study/mesh_fillet_raw.inp'...
+Info    : Done writing '01-aerospace-mounting-bracket/mesh/fillet_study/mesh_fillet_raw.inp'
+=== PRE-FUSE SANITY CHECK ===
+Root box bbox: (-1e-07, -1e-07, -3.0000001, 30.0000001, 40.0000001, 3.0000001)  (expect x:0-30, y:0-40, z:-3-3)
+Tip  box bbox: (29.9999999, -1e-07, -2.0000001, 60.0000001, 40.0000001, 2.0000001)  (expect x:30-60, y:0-40, z:-2-2)
+
+=== POST-FUSE SANITY CHECK ===
+Fused volume bbox: (-1e-07, -1e-07, -3.0000001, 60.0000001, 40.0000001, 3.0000001)  (expect x:0-60, y:0-40, z:-3-3)
+
+=== FILLET EDGE IDENTIFICATION ===
+Top notch edges (to be filleted):    [22]
+Bottom notch edges (to be filleted): [21]
+Excluded outer-corner edges (NOT filleted): [13, 20]
+
+=== POST-FILLET SANITY CHECK ===
+Filleted volume bbox: (-1e-07, -1e-07, -3.0000001, 60.0000001, 40.0000001, 3.0000001)  (expect x:0-60, y:0-40, z:-3-3, unchanged)
+Surface count: 12 (expect 12; includes a 0.05mm sliver face at r=0.95mm - see docstring history)
+
+=== FULL SURFACE LIST (type + bbox, for verification) ===
+Surface 1: type=Plane  bbox=(-1e-07, -1e-07, -3.0000001, 60.0000001, 1e-07, 3.0000001)
+Surface 2: type=Plane  bbox=(29.9999999, -1e-07, 2.9499998999999995, 30.0000001, 40.0000001, 3.0000001)
+Surface 3: type=Cylinder  bbox=(29.9999999, -1e-07, 1.9999998999999997, 30.9500001, 40.0000001, 2.9500000999999996)
+Surface 4: type=Plane  bbox=(-1e-07, -1e-07, 2.9999999, 30.0000001, 40.0000001, 3.0000001)
+Surface 5: type=Plane  bbox=(30.949999899999998, -1e-07, 1.9999998999999997, 60.0000001, 40.0000001, 2.0000001)
+Surface 6: type=Plane  bbox=(-1e-07, -1e-07, -3.0000001, 1e-07, 40.0000001, 3.0000001)
+Surface 7: type=Plane  bbox=(59.9999999, -1e-07, -2.0000001, 60.0000001, 40.0000001, 2.0000001)
+Surface 8: type=Plane  bbox=(-1e-07, -1e-07, -3.0000001, 30.0000001, 40.0000001, -2.9999999)
+Surface 9: type=Plane  bbox=(30.949999899999998, -1e-07, -2.0000001, 60.0000001, 40.0000001, -1.9999998999999997)
+Surface 10: type=Plane  bbox=(29.9999999, -1e-07, -3.0000001, 30.0000001, 40.0000001, -2.9499999)
+Surface 11: type=Cylinder  bbox=(29.9999999, -1e-07, -2.9500000999999996, 30.9500001, 40.0000001, -1.9999998999999997)
+Surface 12: type=Plane  bbox=(-1e-07, 39.9999999, -3.0000001, 60.0000001, 40.0000001, 3.0000001)
+
+=== FILLET SURFACE IDENTIFICATION (for mesh sizing) ===
+Top fillet surface:    3
+Bottom fillet surface: 11
+Root face (x=0):       6
+
+=== GENERATING MESH ===
+
+Mesh written to: 01-aerospace-mounting-bracket/mesh/fillet_study/mesh_fillet_raw.inp
+Nodes: 69403
+Volume elements: 37684
+NSET 'root': 157 nodes
+NSET 'fillet_top': 10813 nodes
+NSET 'fillet_bottom': 10809 nodes
+Wrote: 01-aerospace-mounting-bracket/mesh/fillet_study/nsets_fillet.inp
