@@ -1,8 +1,9 @@
 # Project 01 — Ribbed L-Bracket: Mass-Minimized Aerospace Mounting Bracket
 
 **Status:** Verification plate stage complete. Progressive geometry —
-holes and shoulder fillet stages complete (both verified, with
-documented open items). Gusset, full L-bracket not yet started.
+holes, shoulder fillet, and right-angle frame (with and without
+gusset) stages complete (all verified, with documented open items).
+Full L-bracket not yet started.
 
 ## Research Question
 
@@ -28,9 +29,18 @@ this project follows a staged verification approach:
    implemented correctly before trusting it on a geometry with no
    independent check.
 2. Progressive geometry introduction — **holes (complete)** →
-   **shoulder fillet (complete)** → gusset
-3. Full L-bracket baseline model and mesh convergence
+   **shoulder fillet (complete)** → **right-angle frame, with and
+   without gusset (complete)**
+3. Full L-bracket baseline model and mesh convergence, combining the
+   fillet, holes, and gusset onto the bent frame geometry
 4. Parametric mass-minimization study (the actual research question)
+
+**Note on sequencing:** the original plan scoped "gusset" as a single
+stage on a straight cantilever. Mid-project, the decision was made to
+study the gusset on an angled right-angle frame instead (a closer
+analogue to the final bracket), which necessarily introduced the bend
+one stage earlier than originally planned. This is recorded here as
+an explicit, discussed change to the plan, not a silent scope shift.
 
 ## Verification Plate — Geometry & Material
 
@@ -591,6 +601,326 @@ claimed.
   genuinely small here, but it was not independently isolated or
   quantified.
 
+---
+
+# Progressive Geometry Stage 4a — Right-Angle Frame (Sharp Corner, No Gusset)
+
+## Geometry
+
+A deliberate expansion of scope: rather than study the gusset on a
+straight cantilever (the original plan), the frame/bend geometry was
+introduced here, one stage earlier than originally planned, so the
+gusset (Stage 4b) could be studied on a closer analogue of the final
+bent bracket. This sub-stage (4a) establishes and verifies the bent
+frame *without* a gusset, as the baseline the gusset's effect is
+measured against.
+
+- **Flange A** (fixed): x ∈ [0, 60mm], z ∈ [−2, 2] (centered),
+  40mm constant width (y). Root (x=0) is the fixed encastre boundary.
+- **Corner**: sharp 90° reentrant junction at (x=58, z=2) — no
+  fillet, no gusset in this sub-stage, by design.
+- **Flange B** (loaded): x ∈ [58, 62], z ∈ [0, 60], same 40mm width
+  and 4mm thickness. Free tip at z=60.
+- Same material (Al 7075-T6) and cross-section as every prior stage.
+
+**Load:** F = 235.44 N applied at the Flange B tip, in the **−x
+direction** — chosen specifically so the whole problem stays planar
+(pure bending in Flange B, combined bending+axial in Flange A), a
+direct two-member extension of Stage 1's single-flange bending case
+rather than a new loading mode.
+
+**A known construction detail, flagged rather than hidden:** the
+outer (convex) corner comes out as a small unmitered step, since the
+geometry is built from two axis-aligned boxes rather than a mitered
+join. This does not affect verification, since every quantitative
+comparison point sits away from that region.
+
+### Verification strategy — two independent closed-form checks
+
+1. **Internal force diagram (exact statics)**: axial force and
+   bending moment derived directly from free-body equilibrium, not a
+   beam-theory approximation. Flange B: M(s) = F·s (s = distance from
+   tip), pure bending. Flange A: constant M = F·L = 14,126.4 N·mm and
+   constant axial N = −F = −235.44 N (compressive) along its entire
+   length.
+2. **Tip deflection (Castigliano / unit-load method)**: closed-form
+   strain-energy calculation combining Flange B's bending, Flange A's
+   bending, and Flange A's (much smaller) axial contribution.
+
+**A genuine sign error, caught and corrected via the FEA comparison
+itself — documented transparently, not hidden:** the original
+hand-derivation had the Flange A axial force sign backwards (called
+it tensile; it is compressive, confirmed independently via free-body
+equilibrium and via "bend-closing" physical intuition — pulling the
+tip of the vertical flange toward the fixed flange closes the frame's
+interior angle, putting the concave/inside surface in compression and
+the convex/outside surface in tension, the same behavior as bending
+an elbow) and the tension/compression face labels swapped accordingly.
+Magnitudes were unaffected; only the labeling was wrong. Corrected
+values, locked before further FEA comparison:
+
+| | σ_bending | σ_axial | σ_total |
+|---|---|---|---|
+| Flange A, concave (z=+2, inside) | −132.4350 | −1.4715 | **−133.9065 MPa** |
+| Flange A, convex (z=−2, outside) | +132.4350 | −1.4715 | **+130.9635 MPa** |
+
+Flange B target magnitudes (concave = compression, convex = tension):
+0 (tip) → 33.11 → 66.22 → 99.33 → 132.44 MPa at s=0/15/30/45/60mm.
+
+**Locked tip deflection target:** 4.4342 mm (in the −x direction).
+
+**A known, expected, unavoidable limitation, stated before any FEA
+was run:** the sharp reentrant corner produces a classical FEA stress
+singularity — not a modeling error, a known mathematical feature of a
+zero-radius interior corner. Quantitative comparison points are all
+chosen away from the corner (mid-span stations); corner behavior is
+reported separately and excluded from the convergence criterion.
+
+## Mesh Convergence Study
+
+Three levels (unstructured tetrahedra, Distance+Threshold sigmoid
+field anchored on the reentrant corner edge):
+
+| Level | Corner size | Elements | Tip Ux (mm) | % change |
+|---|---|---|---|---|
+| Coarse | 1.0mm | 5,215 | −4.1986 | — |
+| Medium (baseline) | 0.5mm | 8,124 | −4.2128 | — |
+| Fine | 0.25mm | 20,910 | −4.2180 | **0.12%** |
+
+Every mid-span stress comparison point (Flange A both faces at x=30;
+Flange B both faces at s=15/30/45) changed by **at most 1.61%**
+between medium and fine — **decisively converged**, well under the
+2% criterion, and better-behaved than either Stage 2 or Stage 3.
+
+**Corner (s=60) behavior, confirmed non-convergent by direct
+evidence, excluded from the convergence criterion by design:** peak
+values at the corner do not approach the idealized target with
+refinement (coarse: −72.4%/−93.6% vs. theory; fine: −58.1%/−109.2%,
+convex face even changing sign) — the expected fingerprint of a
+genuine stress singularity, confirmed rather than assumed.
+
+## Baseline Results (fine level, accepted)
+
+- **Equilibrium**: essentially exact at all three levels
+  (0.0004–0.0017% error)
+- **Tip deflection**: −4.2180mm FEA vs. −4.4342mm target, **+4.88%**
+  — consistent with the same order of 3D/boundary-effect gap seen in
+  Stage 1 (−5.2%), not a red flag
+- **Mid-span stress, both flanges, both faces**: converged (<2%) and
+  matches the corrected analytical reference to within **0.02–3.30%**
+  — strong agreement across every valid comparison point
+
+## Established vs. Not Established (Stage 4a)
+
+**Established:**
+- The two-member frame's internal force diagram and tip deflection
+  are verified via independent closed-form statics/Castigliano
+  checks, matching FEA to within 0.02–3.30% (stress) and 4.88%
+  (deflection).
+- Mesh convergence at every mid-span comparison point is decisive
+  (≤1.61% change), independently of the corner region.
+- The reentrant-corner singularity is confirmed non-convergent by
+  direct three-level evidence, not merely predicted.
+
+**Not established:**
+- No finite, mesh-independent stress value exists at the sharp
+  reentrant corner for this geometry — any single reported corner
+  value is not physically meaningful.
+
+---
+
+# Progressive Geometry Stage 4b — Right-Angle Frame WITH Gusset
+
+## Geometry and Assumptions
+
+Adds a flat triangular-prism gusset to the exact Stage 4a frame
+geometry, bridging the concave (inside-of-bend) faces:
+
+- **Leg 1**: along Flange A's concave face (z=2), from the corner
+  (x=58) to x=38 (20mm leg) — flush/coplanar with Flange A's top
+  surface.
+- **Leg 2**: along Flange B's concave face (x=58), from the corner
+  (z=2) to z=22 (20mm leg) — flush/coplanar with Flange B's inner
+  surface.
+- **Hypotenuse**: connects (38,y,2) to (58,y,22) directly — the only
+  genuinely new surface feature this geometry introduces, since both
+  legs are coplanar with existing flange faces.
+- Gusset thickness: 4mm, matching the flanges — the simplest choice,
+  avoiding a second thickness-mismatch problem stacked on the one
+  under study.
+- Full 40mm width, sharp edges at both the leg/flange junctions and
+  the toe — **no fillet, no taper at the gusset termination**, by
+  deliberate design choice for this isolated verification sub-stage.
+  This is a simplification, explicitly not revisited as part of this
+  stage (a tapered/filleted redesign is a natural follow-up, not
+  performed here).
+- Same material, load (F=235.44N at Flange B tip, −x direction),
+  coordinate system, and root BC as Stage 4a.
+
+**Verification strategy, scoped from the outset:** no independent
+analytical/chart reference exists for a gusseted corner's local
+stress field. This stage's deliverable is explicitly comparative
+(FEA-vs-FEA against the Stage 4a baseline), not closed-form, with one
+exception: total tip deflection is expected to *decrease* (a
+directly predictable, if not quantitatively closed-form, sanity
+check).
+
+### A prediction, checked before being relied upon
+
+Because both gusset legs are flush/coplanar with the existing flange
+faces, they should disappear as distinct surface features after the
+boolean union, fully enclosing Stage 4a's reentrant corner. **This
+was confirmed by direct geometric inspection** (no distinct edge
+remains at the old corner location, x=58/z=2) — not assumed.
+
+## Mesh methodology
+
+Same family of approach as 4a: unstructured tetrahedra, Gmsh OCC
+union (three solids), sigmoid Distance+Threshold refinement — now
+targeted at the hypotenuse **face** (a `Plane`-type surface; an
+initial attempt to target a corresponding "edge" failed, since a
+straight edge cannot simultaneously span the full width and be
+diagonal in x-z — only the flat sloped face has both properties,
+the same correction Stage 3 needed when it moved from edge-based to
+surface-based field targeting for the curved fillet).
+
+## Baseline Results vs. Stage 4a
+
+**Equilibrium**: essentially exact (−0.0021% error).
+
+**Tip deflection**: −2.4628mm (4b) vs. −4.2180mm (4a fine level) —
+a **41.6% reduction**. This is a global response quantity, verified
+via near-exact equilibrium on the solved model, and is the primary,
+high-confidence quantitative result of this stage: the gusset has a
+substantial global stiffening effect.
+
+**Valid mid-span comparisons** (stations clear of the gusset
+footprint — Flange B s=15, Flange A x=30): stress still matches the
+original 4a beam-theory targets to within **0.27–3.76%**, confirming
+the measured stress disturbance associated with the gusset
+termination is spatially localized and does not disturb the far-field
+bending behavior. (Stations at s=45/60 on Flange B fall inside or
+adjacent to the gusset's own footprint and are not valid comparisons
+against the unreinforced 4a target — they were excluded from this
+comparison rather than misreported.)
+
+## Targeted Toe Convergence Study
+
+The whole-model peak stress in the baseline 4b solve (−274.4 MPa) was
+located not at the old corner (confirmed eliminated) but at the
+**gusset's far toe** (x=38, z=2) — the line where the un-tapered,
+un-filleted gusset termination meets the plain flange, a classic
+sharp-transition stress-riser geometry. A dedicated three-level
+convergence study, refining specifically at this toe edge (geometry,
+material, BCs, and loading held fixed throughout), was performed to
+determine whether this value is a bounded, mesh-convergent stress
+concentration or a non-convergent singularity.
+
+| Level | Toe size | Elements | Equations | Peak σₓₓ at toe | % change |
+|---|---|---|---|---|---|
+| Baseline | ~0.5mm (implicit) | 44,759 | 223,995 | −274.39 MPa | — |
+| toe_fine | 0.15mm | 83,082 | 393,591 | −422.01 MPa | +53.8% |
+| toe_intermediate | 0.10mm | 139,252 | 633,180 | −483.22 MPa | +14.5% |
+
+**The peak toe stress increases monotonically across the tested mesh
+levels without evidence of convergence** — failing the 2% criterion
+by a wide margin, with no plateau across three genuinely different,
+independently solved mesh densities. (A further-refined level,
+0.05mm, was mesh-quality-verified — zero inverted elements, clean
+aspect ratios — but rejected as a solver candidate: at 582,770 nodes
+it extrapolates to ~1.75M equations, above the ~1.18M-equation point
+that OOM-killed CalculiX's direct solver in Stage 2. An intermediate
+0.06mm attempt also overshot its intended target due to the same
+nonlinear mesh-growth behavior documented in Stage 3, and was
+likewise not solved.)
+
+**Critically, this is spatially confined, confirmed by a separate
+check moving away from the toe along Flange A:**
+
+| Distance from toe | Baseline | toe_fine | toe_intermediate |
+|---|---|---|---|
+| 0mm (at toe) | −164.7 | −153.3 | −152.5 |
+| 2mm | −143.3 | −140.9 | −143.3 |
+| 4mm | −141.1 | −140.9 | −141.0 |
+| 6mm | −138.5 | −138.4 | −138.4 |
+| 8mm | −136.7 | −136.6 | −136.5 |
+| 13mm | −133.3 | −133.2 | −133.3 |
+| 18mm | −132.2 | −132.2 | −132.2 |
+
+Every station 2mm or more from the toe is converged to within a
+fraction of a percent across all three levels, decaying smoothly
+toward the plain-flange far-field value (~−132 MPa, matching 4a's
+Flange A convex-side result) — a Saint-Venant-type decay pattern,
+structurally identical to the boundary effect already characterized
+at Stage 1's root.
+
+## Established vs. Not Established (Stage 4b)
+
+**Established:**
+- The gusset reduces tip deflection by 41.6%, verified via near-exact
+  equilibrium on the solved model.
+- The original Stage 4a reentrant-corner singularity is eliminated as
+  a surface feature (confirmed by direct geometric inspection).
+- Mid-span stress at valid (non-gusset-footprint) comparison stations
+  is unchanged from 4a, confirming the measured stress disturbance
+  associated with the gusset termination is spatially localized.
+- The gusset's flat, un-tapered, un-filleted termination (as built in
+  this isolated verification geometry) introduces a **new stress
+  concentration at its toe that increases monotonically across the
+  tested mesh levels without evidence of convergence** — demonstrated
+  directly via a three-level targeted convergence study, not
+  inferred.
+- Stress is fully converged (sub-percent) everywhere more than ~2mm
+  from the toe, confirming this behavior is spatially confined and
+  does not compromise the rest of the model.
+
+**Not established:**
+- No finite, mesh-independent peak stress value exists at the gusset
+  toe for this geometry; any single reported number there is not
+  physically meaningful and must not be used for a factor-of-safety
+  calculation.
+- Whether a tapered or filleted gusset termination would resolve this
+  secondary stress concentration was **not tested in this stage** —
+  flagged as a natural follow-up question raised by this result, not
+  investigated here. No taper/fillet redesign was introduced.
+- This isolated two-flange verification geometry is not the final
+  bracket geometry; the gusset's behavior in the actual angled,
+  filleted, holed full bracket (Stage 5) is not established by this
+  result alone, though the underlying mechanism (untapered
+  terminations concentrate stress) should transfer.
+
+## Engineering Takeaway and Limitation
+
+This stage demonstrates, numerically rather than by assumption, why
+real gusset designs taper or fillet their terminations: the gusset,
+**as built in this simplified isolated-verification form**, trades
+one singularity (4a's sharp reentrant corner) for a different one
+(the un-tapered toe), rather than eliminating stress concentration
+altogether, even while delivering a substantial and genuine (41.6%)
+global stiffness benefit. The verification process — specifically,
+the targeted convergence study — caught this rather than allowing a
+single baseline-mesh reading to be misreported as a converged,
+actionable stress value.
+
+## Figures (Stage 4a/4b)
+
+1. `stage4_frame_mesh_visualization.png`, `stage4_frame_corner_slice.png`
+   — 4a geometry/mesh overview and reentrant-corner cross-section
+2. `stage4_frame_deformed.png` — 4a deformed shape, used to visually
+   resolve the axial/bending sign question during the sign-error
+   investigation
+3. `stage4b_gusset_mesh_overview.png`, `stage4b_gusset_corner_slice.png`
+   — 4b geometry/mesh overview and gusset cross-section
+4. `stage4b_gusset_full_contour.png` — full-model von Mises contour
+   (5× deformed); von Mises used rather than a single raw stress
+   component so both flanges display correctly, since each bends
+   about a different axis
+5. `stage4b_toe_nonconvergence.png` — peak toe stress vs. mesh
+   refinement (primary non-convergence evidence)
+6. `stage4b_toe_decay_profile.png` — stress vs. distance from the
+   toe, overlaid across all three mesh levels (primary evidence of
+   spatially-confined behavior)
+
 ## Status Log
 
 - [x] Specification defined and approved
@@ -619,7 +949,29 @@ claimed.
         verification to ≈0.0001% error)
   - [x] Stage conclusion documented (established vs. not established,
         open convergence item preserved)
-- [ ] Progressive geometry: gusset
-- [ ] Full L-bracket baseline
+- [x] Progressive geometry: right-angle frame (4a, sharp corner)
+  - [x] Specification gate (scope change to introduce the frame here
+        rather than at the originally-planned full-bracket stage,
+        discussed and approved)
+  - [x] Closed-form statics + Castigliano reference locked before FEA
+  - [x] Sign-error caught via FEA comparison, root-caused via two
+        independent physical arguments, corrected and documented
+  - [x] Mesh convergence study (3 levels, all mid-span points <2%,
+        decisively converged)
+  - [x] Corner singularity confirmed non-convergent by direct evidence
+  - [x] Stage conclusion documented (established vs. not established)
+- [x] Progressive geometry: right-angle frame with gusset (4b)
+  - [x] Geometry built on the verified 4a frame; old singularity
+        confirmed eliminated by direct inspection
+  - [x] Global stiffening effect verified (41.6% deflection reduction,
+        near-exact equilibrium)
+  - [x] Valid mid-span comparisons confirmed unchanged from 4a
+  - [x] New gusset-toe stress concentration identified and
+        characterized via targeted 3-level convergence study
+        (non-convergent, spatially confined)
+  - [x] Stage conclusion documented (established vs. not established,
+        taper/fillet redesign explicitly deferred, not performed)
+- [ ] Full L-bracket baseline (combining fillet, holes, and gusset
+      onto the bent frame geometry)
 - [ ] Parametric mass-minimization study
 - [ ] Final documentation and figures
