@@ -1,88 +1,143 @@
 # FEA Portfolio — Computational Aerospace Structures & Mechanics
 
-## Who I Am
+A structured computational mechanics portfolio focused on aerospace structures, finite element analysis, and the progression toward coupled thermal and fluid–structural problems.
 
-I am an aerospace engineering student/researcher building a computational
-engineering portfolio focused on structural analysis, finite element methods,
-and (eventually) coupled thermal/fluid-structure problems relevant to
-aerospace systems. This repository is aimed at demonstrating graduate-level
-computational engineering capability, not software tutorials.
+The projects move from fundamental structural analysis toward aerospace-specific loading, optimization, modal analysis, and eventually coupled aerodynamic and aerothermal problems.
 
-## What This Portfolio Is
+The objective is to develop the ability to **formulate, model, verify, validate, and interpret computational structural problems** rather than simply demonstrate FEA software.
 
-A sequence of FEA and computational mechanics projects, each treated as a
-self-contained engineering study following:
+---
 
-Problem → Theory → Modeling → Numerical Implementation → Verification →
-Validation → Parametric Investigation → Engineering Interpretation →
-Engineering Decision → Limitations
+## What This Portfolio Builds
 
-## Why I Am Building This
+The projects are designed to develop experience across:
 
-To demonstrate, with reproducible open-source tooling, that I can carry out
-credible computational structural/aerospace engineering analysis suitable
-for graduate research and technically serious engineering work.
+* Static structural analysis
+* Aerospace structural modelling
+* Load-path and structural configuration studies
+* Mesh convergence and numerical verification
+* Modal analysis
+* Structural optimization
+* Aerodynamic pressure → structural response
+* Thermal → structural coupling
+* High-temperature aerospace structures
+* Fluid–structure and thermo-structural analysis
 
-## Toolchain
+The sequence is intentional: establish reliable structural mechanics fundamentals before introducing increasingly coupled multiphysics problems.
 
-- **Geometry:** OpenSCAD
-- **Meshing:** Gmsh
-- **FEA Solver:** CalculiX
-- **CFD:** OpenFOAM (later projects)
-- **Post-processing:** ParaView, PyVista
-- **Analysis/Automation:** Python (NumPy, SciPy, Pandas, Matplotlib)
-- **Version Control:** Git / GitHub
+---
 
-## Engineering Philosophy
+## Project Roadmap
 
-- A simple, well-verified problem is more valuable than a complex,
-  unverified one.
-- Mesh convergence and verification are mandatory, not optional.
-- Verification (solving the math correctly) and validation (representing
-  reality correctly) are always distinguished explicitly.
-- Automation is introduced only after a single baseline case is confirmed
-  correct.
-- No result is reported without a stated basis for trusting it.
+| #  | Project                                                                               | Status         | Focus                                                             |
+| -- | ------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------- |
+| 01 | [**Aerospace Mounting Bracket**](01-aerospace-mounting-bracket/)                      | 🟡 In progress | Parametric ribbed L-bracket, static loading, mass minimization    |
+| 02 | [**1U CubeSat Primary Structure**](02-1u-cubesat-primary-structure/)                  | ⚪ Planned      | Structural architecture trade under representative launch loading |
+| 03 | [**UAV Wing Structural Analysis**](03-uav-wing-structural-analysis/)                  | ⚪ Planned      | Spar/rib/skin configuration under aerodynamic loading             |
+| 04 | [**NACA 0012 CFD → Structural FEA**](04-naca0012-cfd-structural/)                     | ⚪ Planned      | One-way aerodynamic pressure coupling to structural response      |
+| 05 | [**Thermo-Structural Aerospace Panel**](05-thermo-structural-panel/)                  | ⚪ Planned      | Thermal gradient → thermal stress                                 |
+| 06 | [**UAV Wing Spar Mass Optimization**](06-uav-wing-spar-optimization/)                 | ⚪ Planned      | Constrained mass minimization and structural trade study          |
+| 07 | [**CubeSat Modal Analysis**](07-cubesat-modal-analysis/)                              | ⚪ Planned      | Natural frequencies and mode shapes                               |
+| 08 | [**Thermal Protection / High-Temperature Structure**](08-high-temperature-structure/) | ⚪ Planned      | Aerothermal loading → thermal-structural response                 |
 
-## Project Status
+---
 
-### In Progress
-- **01 — Aerospace Mounting Bracket** — parametric ribbed L-bracket mass
-  minimization under static equipment loading. OpenSCAD → Gmsh → CalculiX →
-  Python → ParaView workflow.
+## Project Standards
 
-### Planned
-- **02 — 1U CubeSat Primary Structure** — structural architecture trade
-  study under representative launch loading.
-- **03 — UAV Wing Structural Analysis** — spar/rib/skin configuration study
-  under aerodynamic loading.
-- **04 — NACA 0012 CFD → Structural FEA** — one-way aerodynamic pressure
-  coupling to structural response.
-- **05 — Thermo-Structural Aerospace Panel** — thermal gradient → thermal
-  stress workflow.
-- **06 — UAV Wing Spar Mass Optimization** — constrained mass minimization
-  with Pareto-style trade study.
-- **07 — CubeSat Modal Analysis** — natural frequency / mode shape study.
-- **08 — Thermal Protection / High-Temperature Structure** — aerothermal
-  loading → thermal-structural response.
+Each project is expected to establish, where applicable:
+
+* A clearly defined engineering problem
+* Relevant structural theory and governing equations
+* Explicit material and loading assumptions
+* A justified structural model
+* Appropriate boundary conditions
+* Mesh sensitivity or convergence assessment
+* Numerical verification
+* Validation against analytical, experimental, or published data where credible references exist
+* Parametric investigation where relevant
+* Physical interpretation of structural behaviour
+* Engineering conclusions and limitations
+
+**A numerically solved model is not automatically a physically credible structural analysis.**
+
+Verification and validation are treated separately. Where meaningful validation data are unavailable, that limitation is documented explicitly.
+
+---
+
+## Computational Stack
+
+`CalculiX` · `Gmsh` · `OpenSCAD` · `Python` · `PyVista` · `ParaView` · `Git`
+
+`OpenFOAM` is introduced in later projects where aerodynamic or aerothermal loading is coupled to the structural model.
+
+---
+
+## Reproducibility
+
+Each project is maintained as a self-contained computational study.
+
+Project-level documentation covers:
+
+* Geometry and idealization
+* Material properties
+* Loading and boundary conditions
+* Mesh generation
+* Solver configuration
+* Numerical settings
+* Verification and validation approach
+* Post-processing
+* Reproduction procedure
+
+The objective is for each study to be reproducible from a clean environment using the instructions provided in its repository.
+
+---
 
 ## Repository Structure
 
-Each project directory follows:
+Each project follows a structure similar to:
 
+```text
 NN-project-name/
 ├── README.md
 ├── geometry/
-│ ├── cad/
-│ └── exported/
+│   ├── cad/
+│   └── exported/
 ├── mesh/
 ├── simulation/
 ├── scripts/
 ├── results/
 └── figures/
+```
 
+The exact structure may vary depending on the requirements of the individual analysis.
 
-## Reproducibility
+---
 
-Each project README documents the full environment, exact commands, and
-verification/validation basis needed to reproduce results independently.
+## Status
+
+* 🟢 **Complete** — project meets its documented completion standard
+* 🟡 **In progress** — active development or investigation is underway
+* ⚪ **Planned** — project has not yet begun
+
+Being **In progress** does not imply that the model has been fully verified or validated.
+
+A project is marked **Complete** only when the documented evidence supports its stated engineering conclusions and the reproducibility requirements have been satisfied.
+
+---
+
+## Direction
+
+This portfolio provides the computational structures foundation for the broader aerospace research program.
+
+The progression is:
+
+**Structural mechanics → Aerospace structures → Structural optimization → Aerodynamic loading → Thermal loading → Fluid–structure interaction → Aerothermoelasticity**
+
+The long-term goal is to develop the structural and computational mechanics capability required to study **coupled high-speed aerospace systems**, where aerodynamic, thermal, and structural physics interact.
+
+---
+
+## Author
+
+**Harsh Panchal**
+Aerospace Engineering · Computational Mechanics · Aerospace Structures
