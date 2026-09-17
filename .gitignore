@@ -55,3 +55,11 @@ resource_log.txt
 01-aerospace-mounting-bracket/simulation/stage5_level1_LINEAR_TEMP_solve.inp
 01-aerospace-mounting-bracket/simulation/stage5_level1_v3_solve.inp
 01-aerospace-mounting-bracket/simulation/stage5_level1_v3_solve_ITERATIVE.inp
+# Stage 6 parametric mesh .inp files - large (avg ~33MB, 766MB total
+# across 22 designs) and fully regenerable via
+# scripts/mesh_stage6_design.py from the committed .brep files,
+# lhs_design_points.csv, and the fixed L3 sizing scheme. Only the
+# .brep geometry, scripts, and results CSVs are tracked; mesh .inp
+# files are treated as reproducible intermediates, same precedent
+# as Stage 5's excluded L1/L2 .inp files.
+01-aerospace-mounting-bracket/simulation/stage6_parametric/*.inp
