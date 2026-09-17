@@ -1,0 +1,57 @@
+Info    : [  0%] Union                                                                                  Info    : [ 10%] Union                                                                                  Info    : [ 20%] Union                                                                                  Info    : [ 30%] Union                                                                                  Info    : [ 40%] Union                                                                                  Info    : [ 50%] Union                                                                                  Info    : [ 60%] Union                                                                                  Info    : [ 70%] Union                                                                                  Info    : [ 80%] Union                                                                                  Info    : [ 90%] Union - Classify solids                                                                                                                                                                Info    : [  0%] Union                                                                                  Info    : [ 10%] Union                                                                                  Info    : [ 20%] Union                                                                                  Info    : [ 30%] Union                                                                                  Info    : [ 40%] Union                                                                                  Info    : [ 50%] Union                                                                                  Info    : [ 60%] Union                                                                                  Info    : [ 70%] Union                                                                                  Info    : [ 80%] Union                                                                                  Info    : [ 90%] Union - Splitting solids                                                                                                                                                                Error   : Could not compute fillet
+=== STEP 1: FLANGES ===
+Flange A bbox: (-1e-07, -1e-07, -2.0000001, 60.0000001, 40.0000001, 2.0000001)
+Flange B bbox: (57.9999999, -1e-07, -1e-07, 62.0000001, 40.0000001, 60.0000001)
+Frame fused bbox: (-1.5e-07, -1.5e-07, -2.00000015, 62.00000015, 40.00000015, 60.00000015)  (expect x:0-62,y:0-40,z:-2-60)
+
+=== STEP 2: GUSSET ===
+Gusset bbox: (37.9999999, -1.0000000000000002e-07, 1.9999999, 58.0000001, 40.0000001, 22.0000001)  (expect x:38-58,y:0-40,z:2-22)
+Frame+gusset fused bbox: (-1.5e-07, -1.5e-07, -2.00000015, 62.00000015, 40.00000015, 60.00000015)
+Surfaces before any fillet: 11
+Edges before any fillet: 27
+
+=== STEP 3: GUSSET TOE FILLET (R=1.0mm) ===
+Toe edge identified: 14
+Toe fillet SUCCEEDED. Post-toe-fillet bbox: (-1.5e-07, -1.5e-07, -2.00000015, 62.00000015, 40.00000015, 60.00000015)
+Surfaces after toe fillet: 12
+
+--- FULL CURVE DUMP (post-toe-fillet) for diagnosis ---
+  Curve 1 (Line): bbox=(-1e-07, -1e-07, 1.9999999, 37.585786537626916, 1e-07, 2.0000001)
+  Curve 2 (TrimmedCurve): bbox=(37.585786337626914, -1e-07, 1.9999999, 38.29289331881346, 1e-07, 2.292893318813452)
+  Curve 3 (Line): bbox=(-1e-07, -1e-07, -2.0000001, 1e-07, 1e-07, 2.0000001)
+  Curve 4 (Line): bbox=(38.29289311881345, -1e-07, 2.2928931188134554, 58.0000001, 1e-07, 22.0000001)
+  Curve 5 (Line): bbox=(-1e-07, -1e-07, -2.0000001, 60.0000001, 1e-07, -1.9999999)
+  Curve 6 (Line): bbox=(57.9999999, -1e-07, 21.9999999, 58.0000001, 1e-07, 60.0000001)
+  Curve 7 (Line): bbox=(59.9999999, -1e-07, -2.0000001, 60.0000001, 1e-07, 1e-07)
+  Curve 8 (Line): bbox=(57.9999999, -1e-07, 59.9999999, 62.0000001, 1e-07, 60.0000001)
+  Curve 9 (Line): bbox=(59.9999999, -1e-07, -1e-07, 62.0000001, 1e-07, 1e-07)
+  Curve 10 (Line): bbox=(61.9999999, -1e-07, -1e-07, 62.0000001, 1e-07, 60.0000001)
+  Curve 11 (Line): bbox=(-1e-07, 39.9999999, 1.9999999, 37.585786537626916, 40.0000001, 2.0000001)
+  Curve 12 (Line): bbox=(37.585786337626914, -1e-07, 1.9999999, 37.585786537626916, 40.0000001, 2.0000001)
+  Curve 13 (Line): bbox=(-1e-07, -1e-07, 1.9999999, 1e-07, 40.0000001, 2.0000001)
+  Curve 14 (Line): bbox=(38.29289311881346, -1e-07, 2.2928931188134527, 38.29289331881346, 40.0000001, 2.2928933188134524)
+  Curve 15 (TrimmedCurve): bbox=(37.585786337626914, 39.9999999, 1.9999999, 38.29289331881346, 40.0000001, 2.292893318813452)
+  Curve 16 (Line): bbox=(-1e-07, 39.9999999, -2.0000001, 1e-07, 40.0000001, 2.0000001)
+  Curve 17 (Line): bbox=(-1e-07, -1e-07, -2.0000001, 1e-07, 40.0000001, -1.9999999)
+  Curve 18 (Line): bbox=(38.29289311881345, 39.9999999, 2.2928931188134554, 58.0000001, 40.0000001, 22.0000001)
+  Curve 19 (Line): bbox=(57.9999999, -1.0000000000000002e-07, 21.9999999, 58.0000001, 40.0000001, 22.0000001)
+  Curve 20 (Line): bbox=(-1e-07, 39.9999999, -2.0000001, 60.0000001, 40.0000001, -1.9999999)
+  Curve 21 (Line): bbox=(59.9999999, -1e-07, -2.0000001, 60.0000001, 40.0000001, -1.9999999)
+  Curve 22 (Line): bbox=(57.9999999, -1e-07, 59.9999999, 58.0000001, 40.0000001, 60.0000001)
+  Curve 23 (Line): bbox=(57.9999999, 39.9999999, 21.9999999, 58.0000001, 40.0000001, 60.0000001)
+  Curve 24 (Line): bbox=(59.99999985, -1.5e-07, -1.5e-07, 60.00000015, 40.00000015, 1.5e-07)
+  Curve 25 (Line): bbox=(59.9999999, 39.9999999, -2.0000001, 60.0000001, 40.0000001, 1e-07)
+  Curve 26 (Line): bbox=(57.9999999, 39.9999999, 59.9999999, 62.0000001, 40.0000001, 60.0000001)
+  Curve 27 (Line): bbox=(61.9999999, -1e-07, 59.9999999, 62.0000001, 40.0000001, 60.0000001)
+  Curve 28 (Line): bbox=(59.9999999, 39.9999999, -1e-07, 62.0000001, 40.0000001, 1e-07)
+  Curve 29 (Line): bbox=(61.9999999, -1e-07, -1e-07, 62.0000001, 40.0000001, 1e-07)
+  Curve 30 (Line): bbox=(61.9999999, 39.9999999, -1e-07, 62.0000001, 40.0000001, 60.0000001)
+
+=== STEP 4: OUTER STEP FILLET (R=3.0mm) ===
+Edge bottom-face -> riser-face (x=60,z=-2): 21
+Edge riser-face -> ledge-face (x=60,z=0): 24
+Edge ledge-face -> outer-face (x=62,z=0): 29
+Attempting fillet on 3 edge(s) at R=3.0mm.
+FATAL: outer-step fillet (R=3.0mm) failed with exception:
+  Could not compute fillet
+Stopping. Radius NOT silently changed - awaiting explicit decision.

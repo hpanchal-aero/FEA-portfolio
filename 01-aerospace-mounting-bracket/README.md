@@ -724,7 +724,7 @@ genuine stress singularity, confirmed rather than assumed.
 
 **Not established:**
 - No finite, mesh-independent stress value exists at the sharp
-  reentrant corner for this geometry — any single reported corner
+  reentrant corner for this geometry; any single reported corner
   value is not physically meaningful.
 
 ---
@@ -921,6 +921,349 @@ actionable stress value.
    toe, overlaid across all three mesh levels (primary evidence of
    spatially-confined behavior)
 
+---
+
+# Progressive Geometry Stage 5 — Full L-Bracket Integration
+
+## Geometry and Assumptions
+
+Combines every prior geometric feature onto the bent Stage 4a/4b
+frame, forming the final bracket geometry:
+
+- **R3mm interior flange-junction fillet** at the true 90° bend
+  (Option A construction: fillet built into the base frame first,
+  gusset legs attach at the fillet's tangent points — 17mm effective
+  leg length, rather than the original 20mm sharp-corner legs used
+  in Stage 4b's isolated gusset study).
+- **Quadrilateral gusset cross-section**, not triangular — the R3
+  fillet consumes the original sharp-corner vertex the Stage 4b
+  gusset attached to. Vertices: Toe (38,2), tangent point on Flange A
+  (55,2), tangent point on Flange B (58,5), far corner (58,22). Full
+  40mm frame width (matching every prior stage).
+- **R1mm toe fillet** at the gusset toe (38,2) — a deliberate response
+  to Stage 4b's finding that an un-tapered gusset termination produces
+  a non-convergent stress concentration. This stage tests whether a
+  fillet, rather than the untested taper/fillet redesign Stage 4b
+  explicitly deferred, resolves that behavior (see Toe Fillet Stress
+  Convergence, below).
+- **Ø5mm through-hole** in Flange A at (x=20, y=20), matching Stage
+  2's hole specification and location logic (clear of root
+  Saint-Venant effects, mid-width).
+- Same material (Al 7075-T6), load (F=235.44N at Flange B tip,
+  −x direction), and root encastre BC as every prior stage.
+- **A known, documented, intentional design consequence**: a small
+  "corner-bite void" (~102.7mm³) exists between the R3 fillet's arc
+  and the gusset's flat tangent-to-tangent chord face. This is a
+  direct geometric consequence of keeping the gusset flat rather than
+  lofting it to match the cylindrical fillet — not a defect, and not
+  revisited in this stage.
+- Final locked geometry: `full_bracket_geometry_final.brep`, mass =
+  26,859.58 mm³, single valid volume, verified clean via BRep
+  diagnostics (no slivers, no duplicate/non-manifold surfaces).
+
+**Unlike Stages 1–4b, no single closed-form or chart reference exists
+for this combined geometry.** This stage is explicitly framed as an
+*integration and consistency study*: checking equilibrium, checking
+global deflection against the Stage 4a/4b bracketing values (not
+assumed greater or lesser), and checking that feature-level behavior
+(hole SCF, fillet SCF) remains consistent with each feature's
+isolated characterization in Stages 2–4b, rather than claiming a new
+independent verification.
+
+## Toolchain Deviation — Netgen Replaces Gmsh for This Project, Locked Going Forward
+
+**This is a material methodology change from every prior stage,
+recorded explicitly rather than silently adopted.**
+
+Every previous stage used Gmsh (Python API) for meshing and CalculiX
+2.21 (apt-installed) as the solver. For Stage 5, meshing was
+performed with **Netgen** (`python3-netgen`, v6.2.2401) instead of
+Gmsh, and solving with **CalculiX 2.23** (installed via conda-forge
+into a dedicated `ccx223` environment) instead of 2.21. Following
+discussion, **this is now the locked methodology for the remainder of
+the project** (Stage 6 onward), not a Stage-5-only exception.
+
+### Why: an extensively investigated, unresolved Gmsh defect
+
+Meshing Stage 5's geometry with Gmsh and solving with C3D10 (10-node
+quadratic tetrahedra) produced a persistent, non-physical failure:*ERROR in e_c3d: nonpositive jacobian
+determinant in element [tag] 
+affecting a small fraction of elements (~0.3–1.4% depending on mesh
+density), consistently concentrated at the tail of Gmsh's internal
+element-numbering range, near — but not exclusively at — the tightly
+curved fillet and hole-bore regions.
+
+**Sixteen distinct mechanisms were investigated and ruled out, each
+with direct evidence, not assumption:**
+
+1. Curvature at known features — isolated single-element and
+   83-element neighbor-patch extracts passed; the identical element
+   failed only in the full-model context (a result that should be
+   mathematically impossible for a per-element geometric check).
+2. C3D10 midside-node ordering/connectivity — confirmed already
+   correct; a "fix" was applied, had zero effect, and was reverted.
+3. Toe-fillet relief mesh-sizing fields — ruled out; the same defect
+   appeared in meshes generated before these fields existed.
+4. Mesh periodicity from OCC extrude operations — checked directly
+   via `gmsh.model.getPeriodic()`; none exists anywhere in the model.
+5. Corner-node degeneracy / inverted neighbor elements — all 462
+   failing elements' linear (corner-only) volumes checked directly:
+   all positive, comparable in scale to neighboring good elements.
+6. Mixed element types / section controls / reduced integration —
+   confirmed only one `*ELEMENT` block exists, correctly declared,
+   no conflicting keywords present.
+7. `*COUPLING`/`*KINEMATIC` reference-node dependency — rebuilt with
+   coupling removed entirely (direct nodal load instead): failure
+   persisted, with a different but still tail-concentrated element set.
+8. Duplicate element tags — directly counted: zero duplicates across
+   157,467 elements.
+9. Direct vs. iterative solver — both failed, same signature.
+10. Coordinate-rounding node collisions (6-decimal `.inp` export) —
+    checked directly: zero collisions in the densest mesh.
+11. Coordinate precision itself, independent of collisions — rewrote
+    the `.inp` export at full floating-point precision: failure
+    persisted identically.
+12. CalculiX version — reproduced identically on both 2.21 and 2.23
+    against the exact same `.inp` file.
+13. Meshing algorithm — switched Gmsh's 3D algorithm from Delaunay to
+    HXT; produced a mesh with zero bad elements by Gmsh's own quality
+    metric, but CalculiX still failed, at the new mesh's own tail.
+14. Model scale — a deliberately coarsened mesh (61,718 vs. ~157,000
+    elements) failed at the same relative signature, ruling out a
+    simple large-model memory/precision threshold. (Separately
+    confirmed via the CalculiX user forum that a different, unrelated
+    large-model failure mode exists near 1M+ DOF due to a documented
+    32-bit integer limitation in the Spooles solver source — not
+    applicable here, since the smallest failing case was 277,971 DOF.)
+15. Gmsh's internal mesh-optimization pass — disabled entirely:
+    quality got dramatically worse and more broadly distributed,
+    confirming the optimizer performs necessary work rather than
+    causing this specific, narrow defect.
+16. A documented forum precedent describing an identical
+    isolated-vs-assembled Jacobian-failure symptom, resolved by the
+    original poster via remeshing with different internal numbering —
+    directly informed and motivated mechanism #13, which was tested
+    and also failed to resolve the issue.
+
+**Established conclusion:** this is a genuine limitation or edge case
+in Gmsh's Delaunay-family tetrahedral generation (both default and
+HXT algorithms) for this geometry's tightly-refined curved-feature
+regions. It is not a defect in the project's geometry (independently
+verified clean via BRep diagnostics), not a `.inp`-writing bug
+(multiple precision/connectivity fixes had no effect), not a CalculiX
+version issue (reproduced on 2.21 and 2.23), and not a simple scale
+effect. The repeatedly-observed context-dependence (identical node
+coordinates producing different Jacobian verdicts depending on
+whether the element is isolated or embedded in the full mesh) strongly
+suggests Gmsh silently produces subtly different node placement in
+the full-model context than in isolated extracts — the exact
+mechanism was not further identified, given the exhaustiveness of the
+above investigation and the availability of a working alternative.
+
+### The Netgen-based workaround
+
+Rather than continue debugging Gmsh, meshing was rebuilt from scratch
+using Netgen, with a deliberately independent method chosen to
+sidestep every failed Gmsh mechanism above, not merely to try a
+different tool:
+
+1. Load the verified BRep directly via `netgen.occ.OCCGeometry`.
+2. Generate an order-1 (4-node, corner-only) linear tetrahedral mesh
+   using Netgen's own native algorithm — entirely independent of Gmsh.
+3. **Verify every element has strictly positive linear volume** via
+   direct signed-volume computation in Python, before proceeding —
+   a hard mathematical check, not a solver-side hope.
+4. **Promote to C3D10 (quadratic) manually**, placing every midside
+   node at the exact geometric midpoint of its parent edge, rather
+   than using either tool's internal curving/order-2 logic. This
+   exploits a proven identity: a straight-sided quadratic tet's
+   Jacobian is identical everywhere to its linear parent's Jacobian.
+   Since step 3 already guarantees a positive linear-parent volume,
+   this **guarantees a valid quadratic element by construction** —
+   sidestepping the unresolved Gmsh/curving question entirely rather
+   than resolving it.
+5. Local mesh-size control via Netgen's `SetFaceMeshsize()` on the
+   three feature faces (hole bore, R3 fillet, R1 toe fillet),
+   identified robustly by area fingerprint — the same identification
+   method used with Gmsh throughout this project.
+
+This mesh generation and quadratic-promotion pipeline was successful
+at all three levels solved (see below), with zero Jacobian failures
+at any level — confirming the workaround, not merely masking the
+original defect.
+
+## Mesh Convergence Study
+
+Three refinement levels, controlled via face-level mesh sizing at the
+hole bore, R3 fillet, and R1 toe fillet (global background size held
+constant at 6.0mm across all levels):
+
+| Level | Nodes | Elements | Equations | Equil. error | Tip \|Ux\| (mm) | Peak VM near toe (MPa) |
+|---|---|---|---|---|---|---|
+| 1 | 67,720 | 43,686 | 202,896 | 0.0002% | 2.6367 | 226.21 |
+| 2 | 132,013 | 86,232 | 395,775 | 0.0008% | 2.6397 | 230.01 |
+| 3 | 270,250 | 179,242 | 810,486 | 0.0008% | 2.6401 | 230.55 |
+
+**% change, L2→L3:** displacement 0.02%, peak near-toe stress 0.24% —
+both decisively converged, with the stress delta shrinking sharply
+from the L1→L2 step (1.68%), the signature of genuine convergence to
+a finite value rather than the ever-growing, non-convergent pattern
+documented at Stage 4b's sharp (un-filleted) toe.
+
+**A fourth level was considered and deliberately not run.** Continuing
+the same refinement trend would have required ~1.6–1.7M equations,
+exceeding this project's documented ~1.18M-equation direct-solver
+ceiling; an iterative solver could reach that range but would
+introduce a solver-methodology variable into what is otherwise a
+single-solver convergence study. Given L1–L3 already show a clean,
+sharply shrinking convergence trend, L3 was accepted as sufficient —
+a defensible but explicit engineering judgment call, not a default.
+
+## Baseline Results (Level 3, accepted)
+
+**Global equilibrium**: 0.0008% error — excellent at all three levels,
+confirming the `*COUPLING`/`*KINEMATIC` setup (with the corrected
+`1, 3` DOF specification for solid elements) is correct across mesh
+densities.
+
+**Tip deflection**: −2.6401mm, bracketed as expected between Stage 4a
+(−4.2180mm, no gusset) and Stage 4b (−2.4628mm, gusset with 20mm
+sharp-corner legs) — sitting closer to 4b, consistent with Stage 5
+retaining the same dominant gusset-stiffening mechanism, offset
+slightly by the reduced 17mm effective leg length (fillet consumes
+3mm of each leg) and the added hole. Reported as an observed,
+internally consistent FEA comparison against the established
+bracketing values, not a predetermined target.
+
+## Stress Results — Two Distinct Governing Locations
+
+Direct inspection of the full nodal stress field (not just the
+toe-local search used for the convergence table above) identified
+**the global peak stress at 286.22 MPa, located at the Flange A hole
+edge — not at the toe fillet**:
+
+| Feature | Peak von Mises (L3) | Character |
+|---|---|---|
+| Flange A hole edge | **286.22 MPa** (global peak) | Classic bore concentration, located at the two points ~90°/270° around the bore relative to the load axis (x≈20±0.4, y≈20±2.5, matching the bore radius) — the textbook Kirsch-type pattern, also visually confirmed as a clean two-lobe contour |
+| Gusset toe fillet | 230.55 MPa (local peak) | Forms a continuous ridge along the full 40mm width, not a point concentration — confirmed by direct nodal inspection (a straight line of near-peak nodes spanning the width) and visually confirmed via a top-down contour view |
+
+**The hole, not the toe, governs Stage 5's peak stress** — a result
+this stage's structure did not originally set out to test for, but
+was surfaced directly by the L3 full-field inspection rather than
+assumed from the narrower toe-focused search that motivated the
+convergence study.
+
+### Toe fillet: does the R1 fillet resolve Stage 4b's non-convergence?
+
+Stage 4b found that an un-tapered, un-filleted gusset toe produces a
+stress concentration that grows without bound under mesh refinement —
+a genuine singularity. Stage 5 adds an R1mm fillet at the same
+location specifically to test whether this resolves that behavior.
+
+**Result: yes, on the evidence of this study.** The toe stress
+converges cleanly across L1→L3 (1.68% then 0.24% change), in sharp
+contrast to Stage 4b's monotonic, non-convergent growth. This is
+physically expected — a finite fillet radius regularizes what would
+otherwise be a sharp re-entrant corner — but Stage 5 is the first
+point in this project where that expectation is confirmed
+numerically for this bracket's specific geometry, rather than merely
+argued as a general principle.
+
+## Established vs. Not Established (Stage 5)
+
+**Established:**
+- Global equilibrium is verified to ≤0.0008% error at all three mesh
+  levels, confirming the coupling/BC/load setup is correct.
+- Tip deflection is converged (0.02% L2→L3) and falls consistently
+  between the Stage 4a and 4b bracketing values.
+- The R1mm toe fillet resolves Stage 4b's non-convergent toe
+  singularity — the toe stress is now mesh-convergent (0.24% L2→L3),
+  demonstrated directly via the same three-level methodology used to
+  characterize Stage 4b's non-convergence, not merely predicted.
+- The Flange A hole edge, not the gusset toe, is the bracket's
+  governing (global peak) stress location — identified via direct
+  full-field nodal inspection, not assumed from a narrower search.
+- The Gmsh C3D10 Jacobian failure is a genuine, reproducible defect
+  independent of geometry validity, `.inp` precision/connectivity, and
+  CalculiX version, established via sixteen independently tested and
+  ruled-out mechanisms.
+- The Netgen-based straight-sided quadratic promotion produces
+  mathematically guaranteed valid C3D10 elements by construction, and
+  eliminated the Jacobian failure entirely across all three mesh
+  levels solved.
+
+**Not established:**
+- No independent analytical, chart, or published reference exists for
+  this combined geometry's stress field — this stage is an internal
+  consistency and convergence study, not a verification against an
+  external ground truth, unlike Stages 2 and 3.
+- The hole-edge peak (286.22 MPa) has not been independently checked
+  against a Peterson-style Kt reference for this specific combined
+  loading state (bending + local bracket flexibility, rather than the
+  simpler cantilever bending case characterized in Stage 2) — a
+  natural follow-up, not performed in this stage.
+- A fourth mesh level was not run; the L1–L3 convergence trend is
+  clean and decisively shrinking, but this is a smaller evidentiary
+  base than, for example, Stage 4b's toe non-convergence study (which
+  itself used three levels to establish non-convergence, an inherently
+  easier claim than establishing convergence).
+- The exact mechanism behind Gmsh's context-dependent Jacobian failure
+  (why isolated and embedded instances of the same element differ)
+  was not identified, only its existence and independence from every
+  tested alternative explanation.
+
+## Limitations (Stage 5)
+
+- **Toolchain methodology changed mid-project** (Gmsh/CalculiX 2.21 →
+  Netgen/CalculiX 2.23), now locked for Stage 6 onward. Any future
+  return to Gmsh for a similarly tightly-refined curved-feature
+  geometry should anticipate the same class of failure documented
+  here, unless the underlying Gmsh defect is independently resolved
+  upstream.
+- The corner-bite void (~102.7mm³) between the R3 fillet and the
+  gusset's flat chord face is a permanent, intentional feature of the
+  Option A geometry decision — not evaluated for its own local stress
+  effect in this stage.
+- The "near-toe" stress search used a fixed sampling radius (3mm in
+  the convergence table, 8mm in the visualization crop); the toe
+  concentration is a line feature along the full 40mm width, so this
+  metric reports the maximum found within that window, not a fixed
+  material point tracked across levels.
+- The Stage 5 global stress peak (hole edge, 286.22 MPa) has not been
+  checked against Stage 2's isolated hole-in-cantilever result (135.35
+  MPa observed / no reconciled literature Kt); the two loading states
+  differ substantially (Stage 2: simple cantilever bending; Stage 5:
+  bent-bracket combined load path), so a direct comparison was not
+  attempted and should not be assumed valid.
+
+## Figures (Stage 5)
+
+1. `stage5_full_bracket_vm_iso.png` — full bracket, isometric, von
+   Mises, global 0–286.22 MPa scale
+2. `stage5_full_bracket_vm_top.png` — plan view showing Flange A, hole,
+   and the transition to Flange B in one frame
+3. `stage5_full_bracket_vm_front.png`, `stage5_full_bracket_vm_back.png`
+   — orthogonal elevation views
+4. `stage5_hole_vm_top.png`, `stage5_hole_vm_angle.png` — hole
+   close-up, showing the two-lobe Kirsch-type concentration pattern
+   (governing global peak, 286.22 MPa)
+5. `stage5_toe_vm_top.png`, `stage5_toe_vm_angle.png` — toe fillet
+   close-up; the top-down view confirms the concentration is a
+   continuous ridge along the full width, not a localized artifact
+
+## Reproducibility
+
+- Mesh generation: `scripts/mesh_netgen_level1_v2.py [1|2|3]`, run
+  with system Python (`/usr/bin/python3` — must not be run inside the
+  `ccx223` conda environment, which does not have `netgen` installed)
+- Solve: `conda activate ccx223`, then
+  `ccx -i simulation/stage5_netgen_L[N]_solve`
+- Result extraction: `scripts/extract_convergence_results.py`
+  (`/usr/bin/python3`)
+- Stress-location diagnostics: `scripts/diagnose_peak_stress.py`
+- Visualization: `scripts/visualize_stage5_stress.py`
+  (`/usr/bin/python3`; requires PyVista, offscreen rendering)
+
 ## Status Log
 
 - [x] Specification defined and approved
@@ -971,7 +1314,24 @@ actionable stress value.
         (non-convergent, spatially confined)
   - [x] Stage conclusion documented (established vs. not established,
         taper/fillet redesign explicitly deferred, not performed)
-- [ ] Full L-bracket baseline (combining fillet, holes, and gusset
-      onto the bent frame geometry)
+- [x] Full L-bracket integration (Stage 5)
+  - [x] Final geometry locked (R3 fillet + quadrilateral gusset + R1
+        toe fillet + Ø5mm hole), verified clean via BRep diagnostics
+  - [x] Gmsh C3D10 Jacobian failure investigated and characterized
+        (16 mechanisms tested and ruled out); Netgen-based
+        straight-sided quadratic promotion adopted as the resolution
+  - [x] Toolchain methodology change (Netgen + CalculiX 2.23) locked
+        for the remainder of the project, documented explicitly
+  - [x] 3-level mesh convergence study (displacement and toe stress
+        both converged; equilibrium ≤0.0008% at all levels)
+  - [x] Global stress field inspected directly; hole edge identified
+        as the true governing peak (286.22 MPa), toe fillet confirmed
+        as a separate, now-convergent local concentration (230.55 MPa)
+  - [x] R1 toe fillet confirmed to resolve Stage 4b's non-convergent
+        toe singularity
+  - [x] PyVista von Mises visualization (multiple angles, full bracket
+        + hole + toe close-ups)
+  - [x] Stage conclusion documented (established vs. not established)
+  - [ ] Git commit and push
 - [ ] Parametric mass-minimization study
 - [ ] Final documentation and figures

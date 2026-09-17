@@ -38,3 +38,20 @@ gmsh_log.txt
 
 # Debugging/environment-troubleshooting artifacts (not part of the pipeline)
 resource_log.txt
+# Stage 5 Netgen full-mesh .inp files - large (6-27MB each) and fully
+# regenerable via scripts/mesh_netgen_level1_v2.py [1|2|3]. Only the
+# final accepted L3 result is tracked as the reproducibility artifact.
+01-aerospace-mounting-bracket/simulation/stage5_netgen_L1_solve.inp
+01-aerospace-mounting-bracket/simulation/stage5_netgen_L2_solve.inp
+01-aerospace-mounting-bracket/simulation/stage5_netgen_solve.inp
+01-aerospace-mounting-bracket/simulation/stage5_netgen_level2_solve.inp
+
+# Dead-end Jacobian-investigation .inp files (Gmsh-era, superseded by
+# the Netgen pipeline) - investigation is documented in README.md
+01-aerospace-mounting-bracket/simulation/full_model_no_coupling_test.inp
+01-aerospace-mounting-bracket/simulation/neighbor_patch_test.inp
+01-aerospace-mounting-bracket/simulation/neighbor_patch_test_v2.inp
+01-aerospace-mounting-bracket/simulation/single_element_test.inp
+01-aerospace-mounting-bracket/simulation/stage5_level1_LINEAR_TEMP_solve.inp
+01-aerospace-mounting-bracket/simulation/stage5_level1_v3_solve.inp
+01-aerospace-mounting-bracket/simulation/stage5_level1_v3_solve_ITERATIVE.inp
