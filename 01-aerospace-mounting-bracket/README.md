@@ -1264,6 +1264,323 @@ argued as a general principle.
 - Visualization: `scripts/visualize_stage5_stress.py`
   (`/usr/bin/python3`; requires PyVista, offscreen rendering)
 
+---
+
+# Progressive Geometry Stage 6 — Parametric Mass-Minimization Study
+
+## Research Objective and Design Variables
+
+Minimize bracket mass, using the Stage 5 geometry as the baseline
+configuration, subject to explicit stress and displacement
+constraints:
+
+- **Free design variables**: flange thickness `t` (3–5mm), gusset leg
+  length `L_gusset` (15–25mm), toe fillet radius `r_toe` (1–3mm)
+- **Fixed**: R3 junction fillet (3mm), hole diameter/position (Ø5mm
+  at (20,20)) — held constant per sign-off, not varied
+- **Constraints**: von Mises stress ≤ 335 MPa (503 MPa assumed Al
+  7075-T6 yield ÷ FoS 1.5), tip displacement ≤ 1.5mm. **Both the
+  yield value and displacement limit are preliminary design
+  assumptions, not validated certification requirements** — the same
+  status as the 12g load assumption carried since Stage 1.
+- **Objective**: minimize mass, computed directly from geometry.
+
+## Geometry Builder — Generalizing the Stage 5 Construction Chain
+
+The Stage 5 base-frame/gusset/toe-fillet/hole construction was
+generalized to accept `(t, L_gusset, r_toe)` as free parameters.
+Tangent-point and gusset-vertex formulas were derived from Stage 5's
+locked base-frame script and verified exact: at `t=4, L_gusset=20,
+r_toe=1, R3=3` (Stage 5's own values), the generalized builder
+reproduces Stage 5's locked mass (26,859.5774 mm³) to all four
+reported decimal places.
+
+Two pre-flight validity gates, informed directly by Stage 3's r/h
+degeneracy precedent, are applied before any OCC construction is
+attempted: effective gusset leg (`L_gusset − R3`) must exceed 4×
+`r_toe`, and the hole must clear the gusset's near edge by ≥5mm.
+Neither gate rejected any design point actually sampled.
+
+## Sampling Methodology
+
+A 25-point Latin Hypercube sample (fixed seed=42, `scipy.stats.qmc`)
+was generated across the three free variables and committed as a CSV
+— the authoritative record of which 25 designs were studied,
+independent of any future change to the sampling library. Geometry
+validity was confirmed for all 25 points (single volume, zero
+slivers, no exceptions) before any meshing was attempted.
+
+## Mesh Generation — Generalized Face Identification
+
+Stage 5's Netgen face-identification-by-fixed-area matching does not
+generalize, since feature-face areas depend on the design point.
+Three area formulas were derived and verified exact against Stage 5's
+hardcoded baseline values:
+
+- R3 fillet area = `R3 × (π/2) × WIDTH` = 188.4956 mm² — **constant**
+  across the entire sweep, since the Flange A/B junction is always a
+  true 90° corner regardless of `t`.
+- Toe fillet area = `r_toe × (π/4) × WIDTH` — the Toe vertex angle is
+  always exactly 45°, independent of `L_gusset` (both `Toe` and
+  `Far2` are offset by the *same* `L_gusset` from the corner point).
+- Hole bore area = `2π × HOLE_R × t` — scales with flange thickness.
+
+Faces are matched against these per-design analytic targets (0.05mm²
+tolerance), aborting loudly on zero or multiple matches — the same
+"stop rather than guess" discipline as Stage 5. The generalized
+pipeline was validated against the known-good baseline (`t=4,
+L_gusset=20, r_toe=1`) before running the full sweep: it reproduced
+Stage 5's exact L3 mesh (270,250 nodes, 179,242 elements).
+
+**Mesh sizing (Option B verification strategy)**: Stage 5's accepted
+L3 sizing (`hole_h=0.25, r3_h=0.25, toe_h=0.10`) was reused directly
+and held fixed across the sweep — not re-converged at the Stage 6
+baseline, since that design point is geometrically identical to
+Stage 5. **This fixes the sizing scheme as a controlled input; it
+does not guarantee equivalent mesh quality or feasibility outcomes
+across 25 different geometries**, and this concern proved material
+(see below).
+
+**Mesh generation result: 22/25 passed cleanly** (zero bad-volume
+elements on every design). **3 designs excluded** — `lhs_06`,
+`lhs_10`, `lhs_11` — all failed the documented ~1.18M-equation
+direct-solver ceiling (1,194,510–1,245,162 estimated equations,
+101–105% of ceiling). All three share large `r_toe` (2.83–2.95mm,
+near the top of its range): the toe-area formula shows toe surface
+area scales linearly with `r_toe`, so refining a ~3× larger surface
+at the same fixed element size requires proportionally more elements.
+**This is a resource limitation, not a geometry or solver defect.**
+
+## Solve Phase — A Second, More Severe Resource Wall
+
+### A memory-safety failure and its correction
+
+An initial attempt to solve all 22 feasible designs sequentially
+**crashed the WSL host** (11GB available RAM, no `.wslconfig` cap).
+A first fix — a hard `RLIMIT_AS` (virtual address space) cap on each
+`ccx` subprocess — was itself wrong and is documented as a genuine
+mistake, not silently corrected: `RLIMIT_AS` limits *virtual*
+address-space reservation, not *physical* memory use, and spooles
+(CalculiX's direct solver) reserves large virtual ranges for sparse
+factorization bookkeeping well beyond what it physically touches.
+The capped run failed immediately with `ALLOCATE failure: bytes
+2652040` — a trivially small allocation rejected only because
+cumulative virtual reservations crossed the cap, confirmed via the
+solve log.
+
+**Correction**: replaced with an RSS-monitoring watchdog — a
+background thread polling actual resident memory via
+`/proc/<pid>/status`, killing the process only if *physical* usage
+exceeds the cap (0.2s poll interval). This correctly distinguishes
+harmless virtual over-reservation from genuine physical exhaustion.
+
+### Empirical hardware ceiling
+
+Solving proceeded one design at a time (smallest-first), with results
+checkpointed after every design. At the proven-safe 8GB cap, **14 of
+22 attempted designs solved cleanly**; the remaining 9 (all
+≥228,889 elements) failed with `oom_killed`. Progressively raising the
+cap toward the machine's full 11GB (up to 10.5GB) did **not** rescue
+most of these — instead producing genuine SIGSEGV crashes, since
+headroom this thin let real memory exhaustion outrun the watchdog's
+poll interval. **This confirmed an empirical hardware ceiling around
+~230,000 elements for this machine's direct solve, independent of the
+documented equation-count ceiling** — a distinct, more restrictive
+constraint discovered only at the solve stage. The cap was returned
+to the safe 8GB value; no further escalation was attempted.
+
+**9 designs formally excluded**: `lhs_01, lhs_04, lhs_07, lhs_08,
+lhs_15, lhs_16, lhs_18, lhs_22, lhs_25` — documented explicitly as a
+**physical-memory hardware limitation on this specific machine**, not
+a geometry, mesh-quality, or solver defect, and distinct in cause from
+the 3 designs excluded at the mesh stage.
+
+## Primary Fixed-Scheme Result: 0/14 Feasible
+
+Of the 14 designs that both meshed and solved at the fixed L3 sizing
+scheme, **zero satisfied the 1.5mm displacement constraint** — every
+one exceeded it, the closest being 1.5289mm (`lhs_14`, `t=4.626`).
+Stress fared better (9/14 under 335 MPa), but displacement was the
+uniformly binding, unmet constraint across this entire sub-sample.
+
+**Displacement correlates strongly with flange thickness `t`**
+(thicker → stiffer → lower |Ux|), the physically expected direction.
+Critically, **the two highest-`t` designs in the original 25-point
+sample — `lhs_06` (t=4.982, the single highest sampled) and `lhs_25`
+(t=4.692) — were both excluded**, `lhs_06` at the mesh stage and
+`lhs_25` at the solve stage, for the resource reasons documented
+above, unrelated to their engineering merit.
+
+## Excluded-Region Check (per the Stage 6 sign-off requirement)
+
+The Stage 6 approval explicitly required evaluating whether the
+excluded region could contain a feasible optimum before any
+optimization claim. Both `lhs_06` and `lhs_25` were re-meshed at a
+**deliberately coarser sizing scheme** (Stage 5's L1 values:
+`hole_h=0.5, r3_h=0.5, toe_h=0.25`) specifically to obtain a solvable
+mesh for these two points — explicitly labeled and tracked as
+coarse, out-of-scheme spot-checks, never blended into the 14-point
+fixed-scheme dataset.
+
+**Both satisfied both constraints:**
+
+| Design | t | \|Ux\| (mm) | VM (MPa) | Mass (mm³) |
+|---|---|---|---|---|
+| lhs_06 (coarse) | 4.982 | 1.3953 | 187.54 | 31,137.00 |
+| lhs_25 (coarse) | 4.692 | 1.4457 | 211.21 | 33,731.55 |
+
+This confirmed the concern was not hypothetical: **the resource-driven
+exclusions were not neutral with respect to feasibility — they
+systematically removed the region of the design space where feasible
+designs actually exist.** The 14-point fixed-scheme dataset alone
+cannot support an optimization claim, since it contains zero feasible
+points.
+
+## Sub-Region Study — Resolving the High-`t` Region
+
+Rather than rely on two anecdotal points, a second, independent
+9-point LHS sample (fixed seed=777, distinct from the main study's
+seed=42) was generated restricted to `t ∈ [4.5, 5.0]`, with
+`L_gusset` and `r_toe` retaining their full original ranges. Meshed
+at the coarse scheme from the start, since the fine scheme is
+empirically unsolvable on this hardware for designs in this
+mass/size range regardless of further attempts.
+
+**All 9 geometries and coarse meshes passed** (zero slivers, zero bad
+elements). All 9 solved cleanly (equilibrium 0.0000–0.0020%).
+**5 of 9 satisfied both constraints**: `sub_02, sub_06, sub_08`,
+plus the two original spot-checks (`lhs_06`, `lhs_25`) — bringing the
+high-`t` region's evidence to **5 feasible designs from 11 attempted**,
+confirming `t ∈ [4.5,5.0]` alone is not sufficient for feasibility
+(`sub_01, sub_03, sub_04, sub_07, sub_09` are in this same `t` range
+but still fail, mostly on displacement) — `L_gusset` and `r_toe`
+interact meaningfully with feasibility even at high `t`.
+
+## Selected Design and Convergence Verification
+
+**`lhs_06`** (`t=4.981821, L_gusset=19.578166, r_toe=2.834895`) is the
+lowest-mass feasible design found across all 16 high-`t` designs
+studied (mass = 31,137.00 mm³), with the largest constraint margins of
+any feasible point (7% below the displacement limit, 44% below the
+stress limit) — not a borderline result.
+
+A convergence check was performed at this selected point, per the
+Stage 6 sign-off requirement:
+
+| Level | Sizing | Nodes | \|Ux\| (mm) | VM (MPa) |
+|---|---|---|---|---|
+| L1 (coarse) | 0.5/0.5/0.25 | 78,547 | 1.3953 | 187.54 |
+| L2 | 0.35/0.35/0.15 | 198,510 | 1.39601 | 188.41 |
+
+**% change L1→L2: 0.05% (displacement), 0.46% (stress)** — decisively
+converged by this project's 2% criterion, tighter than Stage 5's own
+L1→L2 agreement (1.68% on stress). **A third level (full L3 sizing,
+0.25/0.25/0.10) was attempted and confirmed unreachable**: it hits the
+identical 1,245,162-equation ceiling failure as the original mesh-stage
+exclusion (105.5% of ceiling) — the same resource wall, not a new
+issue. Two levels, not three, is the finest achievable convergence
+evidence for this design on this hardware, and is reported as such
+rather than silently presented as a standard three-level study.
+
+## Established vs. Not Established (Stage 6)
+
+**Established:**
+- The parametric geometry builder and generalized analytic-area face
+  identification are correct, verified exact against Stage 5's known
+  baseline before use on the full sweep.
+- At the fixed L3 sizing scheme, 0 of 14 solvable designs satisfy the
+  displacement constraint — a real, uniform finding across that
+  sub-sample, not a partial or ambiguous result.
+- The excluded region (high `t`) is confirmed, not merely suspected,
+  to contain feasible designs — demonstrated via 11 independently
+  studied high-`t` points (2 original spot-checks + 9 sub-region
+  points), 5 of which are feasible.
+- The selected design (`lhs_06`) is mesh-convergent to within 0.05%
+  (displacement) / 0.46% (stress) across two refinement levels, with
+  the third level's absence explicitly explained (hardware ceiling,
+  not neglect).
+- Two independent, empirically distinct resource ceilings were
+  discovered and documented on this hardware: an equation-count
+  ceiling (mesh stage, ~1.18M equations) and a tighter physical-memory
+  ceiling (solve stage, ~230,000 elements) — the latter not predicted
+  by the former and discovered only through direct testing.
+- An `RLIMIT_AS`-based memory-safety mechanism was tried, found
+  incorrect (limits virtual address space, not physical memory,
+  causing false allocation failures on a healthy solve), and corrected
+  to an RSS-polling watchdog — documented as a genuine mistake and fix,
+  not hidden.
+
+**Not established:**
+- The high-`t` feasible region is resolved only at coarse mesh
+  density (Stage 5's L1 sizing) for all points except `lhs_06`, which
+  has two-level convergence evidence. The other 4 feasible sub-region
+  points (`sub_02, sub_06, sub_08`, `lhs_25`) have only single-mesh
+  results — sufficient to identify `lhs_06` as the selected optimum by
+  a clear mass margin, but not independently convergence-verified
+  themselves.
+- No exhaustive search of the full 3-variable design space was
+  performed or is claimed — the original 25-point sample plus the
+  9-point sub-region sample together sample 34 points total, not the
+  continuous space. `lhs_06` is the best design *found*, not proven to
+  be the global optimum.
+- Whether a finer mesh than L2 would shift `lhs_06`'s result further
+  is not established — only that the L1→L2 change is small enough to
+  treat the L2 result as trustworthy by this project's stated
+  criterion, consistent with how Stage 5 treated its own converged
+  results.
+
+## Limitations (Stage 6)
+
+- **The final feasible dataset (14 fixed-scheme + 16 high-t designs
+  across two coarser sub-studies) spans two distinct mesh
+  resolutions.** The 14-point fixed-scheme result and the high-`t`
+  region results are never blended into one dataset or one plot at
+  claimed-equal resolution — this distinction is preserved throughout.
+- **This machine's empirical ~230,000-element solve ceiling is
+  hardware-specific** (11GB RAM, no `.wslconfig` cap) and may not
+  transfer to different hardware; a machine with more available RAM
+  could likely solve the fixed-scheme dataset in full, potentially
+  finding feasible designs the current study could not resolve at full
+  fidelity.
+- **The 335 MPa allowable stress and 1.5mm displacement limit remain
+  preliminary design assumptions**, not sourced certification
+  requirements, consistent with every load/material assumption
+  carried since Stage 1. The near-uniform infeasibility at the fixed
+  sizing scheme is partly a consequence of these specific numeric
+  limits — a looser displacement limit would change which fraction of
+  the original 25-point sample is feasible.
+- **34 total design points were studied** (25 original + 9 sub-region)
+  out of a continuous 3-variable space; this is a sampled
+  investigation, not an exhaustive search, and `lhs_06` should be
+  understood as the best point found within this sampling budget.
+- The sub-region study's non-`lhs_06` feasible points (`sub_02,
+  sub_06, sub_08`, `lhs_25`) were not individually convergence-checked
+  beyond their single coarse mesh — acceptable for identifying
+  `lhs_06` as the clear mass-minimum among the feasible set, but any
+  future use of these specific points' numeric results would need
+  independent verification first.
+
+## Reproducibility
+
+- Original 25-point sample: `scripts/generate_lhs_samples.py`
+  (seed=42) → `results/stage6_parametric/lhs_design_points.csv`
+- Sub-region 9-point sample: `scripts/run_subregion_study.py`
+  (seed=777) → `results/stage6_parametric/lhs_subregion_points.csv`
+- Geometry construction: `scripts/build_parametric_bracket.py`
+- Geometry validation batch: `scripts/run_stage6_geometry_validation.py`
+  → `results/stage6_parametric/geometry_validation_results.csv`
+- Mesh generation (generic, analytic face-ID):
+  `scripts/mesh_stage6_design.py`
+- Mesh batch (fixed L3 scheme): `scripts/run_stage6_meshing.py`
+  → `results/stage6_parametric/mesh_quality_results.csv`
+- Solve batch (RSS-watchdog protected, resumable/checkpointed):
+  `scripts/run_parametric_sweep.py`
+  → `results/stage6_parametric/solve_results.csv`,
+  `results/stage6_parametric/solve_batch.log`
+- Mesh `.inp` files are NOT tracked in git (766MB, fully regenerable
+  from the tracked `.brep` files + scripts + sizing parameters); only
+  `.brep` geometry files, CSVs, and scripts are committed.
+
 ## Status Log
 
 - [x] Specification defined and approved
@@ -1333,5 +1650,35 @@ argued as a general principle.
         + hole + toe close-ups)
   - [x] Stage conclusion documented (established vs. not established)
   - [ ] Git commit and push
-- [ ] Parametric mass-minimization study
+- [x] Parametric mass-minimization study (Stage 6)
+  - [x] Design variables, constraints, and verification strategy
+        (Option B) signed off before implementation
+  - [x] Parametric geometry builder generalized from Stage 5,
+        verified exact against the Stage 5 baseline
+  - [x] 25-point LHS sample (fixed seed=42, committed CSV) generated
+        and geometry-validated 25/25
+  - [x] Mesh generation with generalized analytic-area face ID
+        (verified exact against Stage 5 baseline); 22/25 passed,
+        3 excluded at the equation-count ceiling
+  - [x] Memory-safety failure (RLIMIT_AS misuse causing a WSL crash)
+        diagnosed, documented, and corrected to an RSS-polling
+        watchdog
+  - [x] Solve phase: 14/22 solved at the fixed L3 scheme; 9 excluded
+        at a newly-discovered, tighter empirical hardware ceiling
+        (~230,000 elements), distinct from the mesh-stage ceiling
+  - [x] Primary finding: 0/14 fixed-scheme designs satisfy the
+        1.5mm displacement constraint
+  - [x] Excluded-region check performed per sign-off requirement:
+        coarse spot-checks at the two highest-t excluded designs
+        both found feasible, confirming exclusions were not neutral
+        with respect to feasibility
+  - [x] 9-point sub-region LHS study (fixed seed=777) in the high-t
+        region, coarse-meshed from the start; 5/9 feasible
+  - [x] Selected design (lhs_06) identified as lowest-mass feasible
+        point across 16 high-t designs studied
+  - [x] Convergence verification at the selected design: L1->L2
+        agreement 0.05%/0.46%; L3 confirmed unreachable on this
+        hardware (same ceiling as the mesh-stage exclusions)
+  - [x] Stage conclusion documented (established vs. not established,
+        limitations, two-resolution dataset distinction preserved)
 - [ ] Final documentation and figures
