@@ -31,8 +31,8 @@ The sequence is intentional: establish reliable structural mechanics fundamental
 
 | #  | Project                                                                               | Status         | Focus                                                             |
 | -- | ------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------- |
-| 01 | [**Aerospace Mounting Bracket**](01-aerospace-mounting-bracket/)                      | 🟢 Complete | Parametric ribbed L-bracket, static loading, mass minimization    |
-| 02 | [**1U CubeSat Primary Structure**](02-1u-cubesat-primary-structure/)                  | ⚪ Planned      | Structural architecture trade under representative launch loading |
+| 01 | [**Aerospace Mounting Bracket**](01-aerospace-mounting-bracket/)                      | 🟢 Completed | Parametric ribbed L-bracket, static loading, mass minimization    |
+| 02 | [**1U CubeSat Primary Structure**](02-1u-cubesat-primary-structure/)                  | 🟡 In progress | Structural architecture trade under representative launch loading |
 | 03 | [**UAV Wing Structural Analysis**](03-uav-wing-structural-analysis/)                  | ⚪ Planned      | Spar/rib/skin configuration under aerodynamic loading             |
 | 04 | [**NACA 0012 CFD → Structural FEA**](04-naca0012-cfd-structural/)                     | ⚪ Planned      | One-way aerodynamic pressure coupling to structural response      |
 | 05 | [**Thermo-Structural Aerospace Panel**](05-thermo-structural-panel/)                  | ⚪ Planned      | Thermal gradient → thermal stress                                 |
