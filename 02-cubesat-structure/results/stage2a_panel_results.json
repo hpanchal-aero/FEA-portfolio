@@ -1,0 +1,25 @@
+{
+  "job": "simulation/stage2a_panel_solve",
+  "nodes": 81735,
+  "elements": 47888,
+  "equations": 245205,
+  "applied_N": 27.2738,
+  "reaction_z_bottom_N": 27.273801800000005,
+  "rf_z_top_N": -27.27382880000019,
+  "rf_z_all_N": -2.7000001678653658e-05,
+  "equilibrium_err_pct": 6.599740422205218e-06,
+  "uz_top_mean_mm": -0.00023537359759759764,
+  "uz_theory_mm": -0.00023846153846153847,
+  "uz_pct_diff": 1.2949429429429273,
+  "mean_vm_slab_MPa": 0.1638276336315659,
+  "mean_vm_slab_pct_diff": -0.287502354494273,
+  "peak_vm_MPa": 0.3450263055388019,
+  "peak_vm_location": [
+    41.5,
+    -1.0,
+    0.0
+  ],
+  "top10_peak_nodes_below_3mm": 10,
+  "closed_form_P_cr_N": 24517.894024219215,
+  "applied_over_critical": 0.0011124038619735631
+}

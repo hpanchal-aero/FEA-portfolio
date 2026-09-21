@@ -1,0 +1,23 @@
+{
+  "job": "simulation/config_a_h3p0_rollerBC",
+  "nodes": 62076,
+  "elements": 31013,
+  "equations": 186228,
+  "reaction_z_bottom_N": 156.5780180000009,
+  "applied_N": 156.5779,
+  "equilibrium_err_pct": 7.53618492110256e-05,
+  "rf_z_top_N": -156.57802400000085,
+  "rf_z_all_N": -6.000000388473037e-06,
+  "uz_top_mean_mm": -0.00023846200000000002,
+  "uz_theory_mm": -0.00023846153846153847,
+  "uz_pct_diff": 0.00019354838710419344,
+  "mean_vm_slab_MPa": 0.1642980000000001,
+  "mean_vm_rail_MPa": 0.16429799999999992,
+  "mean_vm_panel_MPa": 0.16429800000000014,
+  "peak_vm_MPa": 0.16429800000099296,
+  "peak_vm_location": [
+    50.0,
+    -50.0,
+    0.0
+  ]
+}

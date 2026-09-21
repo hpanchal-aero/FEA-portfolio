@@ -1,0 +1,25 @@
+{
+  "job": "simulation/stage2b_rail_solve",
+  "nodes": 18755,
+  "elements": 11398,
+  "equations": 56265,
+  "applied_N": 11.870675,
+  "reaction_z_bottom_N": 11.870675944700002,
+  "rf_z_top_N": -11.87067980000003,
+  "rf_z_all_N": -3.855298181151516e-06,
+  "equilibrium_err_pct": 7.958266920638332e-06,
+  "uz_top_mean_mm": -0.00023767411764705884,
+  "uz_theory_mm": -0.00023846153846153847,
+  "uz_pct_diff": 0.33020872865274437,
+  "mean_vm_slab_MPa": 0.1642979989565673,
+  "mean_vm_slab_pct_diff": -0.0012179205311645485,
+  "peak_vm_MPa": 0.25928380602699,
+  "peak_vm_location": [
+    -4.25,
+    -4.25,
+    0.0
+  ],
+  "top10_peak_nodes_below_3mm": 10,
+  "closed_form_P_cr_N": 7395.259751397809,
+  "applied_over_critical": 0.001605173502899107
+}

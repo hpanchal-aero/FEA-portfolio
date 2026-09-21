@@ -1,0 +1,23 @@
+{
+  "job": "simulation/config_a_h2p0",
+  "nodes": 158069,
+  "elements": 83854,
+  "equations": 474207,
+  "reaction_z_bottom_N": 156.5778902667998,
+  "applied_N": 156.5779,
+  "equilibrium_err_pct": -6.2162030447185706e-06,
+  "rf_z_top_N": -156.5778877999993,
+  "rf_z_all_N": 2.4668005923814645e-06,
+  "uz_top_mean_mm": -0.00023452604850746268,
+  "uz_theory_mm": -0.00023846153846153847,
+  "uz_pct_diff": -1.6503667549350074,
+  "mean_vm_slab_MPa": 0.16329396930932077,
+  "mean_vm_rail_MPa": 0.1606108865885274,
+  "mean_vm_panel_MPa": 0.16423974815069636,
+  "peak_vm_MPa": 0.42228630836555603,
+  "peak_vm_location": [
+    -50.0,
+    50.0,
+    0.0
+  ]
+}
