@@ -1,0 +1,13 @@
+job,maxh,peak_rss_mb,wall_s
+config_b_rect_10pct_h2p0,2.0,1899,28.2
+config_b_rect_20pct_h2p0,2.0,1734,25.4
+config_b_rect_30pct_h2p0,2.0,1561,19.0
+config_b_circle_10pct_h2p0,2.0,1879,26.2
+config_b_circle_20pct_h2p0,2.0,1657,21.0
+config_b_circle_30pct_h2p0,2.0,1525,18.4
+config_b_grid_10pct_h2p0,2.0,1882,29.9
+config_b_grid_20pct_h2p0,2.0,1678,23.6
+config_b_grid_30pct_h2p0,2.0,1483,22.8
+config_b_cross_10pct_h2p0,2.0,1759,23.8
+config_b_cross_20pct_h2p0,2.0,1567,21.7
+config_b_cross_30pct_h2p0,2.0,1452,19.8

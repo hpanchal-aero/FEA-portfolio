@@ -1,0 +1,12 @@
+{
+  "job": "simulation/config_b_random_attempt114_hull_h3p0",
+  "nodes": 56221,
+  "elements": 27866,
+  "reaction_z_bottom_N": 156.57789686999976,
+  "equilibrium_err_pct": -1.999005119918634e-06,
+  "uz_top_mean_mm": -0.00028052100000000005,
+  "stiffness_N_per_mm": 558168.1941815406,
+  "net_section_szz_full_MPa": -0.23549541547277938,
+  "net_section_szz_excl_MPa": -0.2281143742550656,
+  "peak_vm_MPa": 0.6057150611054131
+}

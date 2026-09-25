@@ -1,0 +1,23 @@
+{
+  "job": "simulation/config_a_h3p0_eqLoad",
+  "nodes": 62077,
+  "elements": 31013,
+  "equations": 186231,
+  "reaction_z_bottom_N": 156.57790056800008,
+  "applied_N": 156.5779,
+  "equilibrium_err_pct": 3.627587772081757e-07,
+  "rf_z_top_N": -156.57789687609915,
+  "rf_z_all_N": 3.6919022339820806e-06,
+  "uz_top_mean_mm": -0.000234527,
+  "uz_theory_mm": -0.00023846153846153847,
+  "uz_pct_diff": -1.649967741935486,
+  "mean_vm_slab_MPa": 0.1638042327840798,
+  "mean_vm_rail_MPa": 0.1598480394098653,
+  "mean_vm_panel_MPa": 0.16460119481559687,
+  "peak_vm_MPa": 0.3683906392280618,
+  "peak_vm_location": [
+    -50.0,
+    -50.0,
+    0.0
+  ]
+}

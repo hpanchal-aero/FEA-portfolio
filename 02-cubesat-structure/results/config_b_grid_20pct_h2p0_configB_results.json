@@ -1,0 +1,12 @@
+{
+  "job": "simulation/config_b_grid_20pct_h2p0",
+  "nodes": 132972,
+  "elements": 70555,
+  "reaction_z_bottom_N": 156.57789990600017,
+  "equilibrium_err_pct": -6.003390653592297e-08,
+  "uz_top_mean_mm": -0.000329396,
+  "stiffness_N_per_mm": 475348.5166790125,
+  "net_section_szz_full_MPa": -0.14082396031375125,
+  "net_section_szz_excl_MPa": -0.1416916436807204,
+  "peak_vm_MPa": 0.5210705576796724
+}

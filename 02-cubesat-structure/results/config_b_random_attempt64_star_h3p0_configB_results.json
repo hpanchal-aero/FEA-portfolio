@@ -1,0 +1,12 @@
+{
+  "job": "simulation/config_b_random_attempt64_star_h3p0",
+  "nodes": 57600,
+  "elements": 28421,
+  "reaction_z_bottom_N": 156.57790167200005,
+  "equilibrium_err_pct": 1.067839109527444e-06,
+  "uz_top_mean_mm": -0.00030941099999999994,
+  "stiffness_N_per_mm": 506051.49784590735,
+  "net_section_szz_full_MPa": -0.19166243125000001,
+  "net_section_szz_excl_MPa": -0.1996171640625,
+  "peak_vm_MPa": 0.9423112381516332
+}

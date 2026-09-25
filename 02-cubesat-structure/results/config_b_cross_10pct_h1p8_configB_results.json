@@ -1,0 +1,12 @@
+{
+  "job": "simulation/config_b_cross_10pct_h1p8",
+  "nodes": 177737,
+  "elements": 93264,
+  "reaction_z_bottom_N": 156.57789731407996,
+  "equilibrium_err_pct": -1.7153889773032503e-06,
+  "uz_top_mean_mm": -0.0004936860000000001,
+  "stiffness_N_per_mm": 317160.90794553614,
+  "net_section_szz_full_MPa": -0.7176187884615386,
+  "net_section_szz_excl_MPa": -0.7155959735576923,
+  "peak_vm_MPa": 1.4461946006138076
+}
