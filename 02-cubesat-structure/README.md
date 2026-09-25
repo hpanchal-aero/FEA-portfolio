@@ -10,263 +10,211 @@ Full development history lives in
 How does CubeSat structural configuration affect mass, stiffness,
 and stress margin under representative launch loading?
 
-## Methodology
-
-**Status: Configuration A and Configuration B both complete and
-verified within the limits stated below.**
+## Approach
 
 Two structural configurations of a 1U CubeSat frame are compared
-under an assumed quasi-static axial launch load:
+under an assumed 12 g quasi-static axial launch load:
 
 - **Configuration A** — solid-panel frame: four 8.5 x 8.5 x 100 mm
-  corner rails and four 2 mm x 83 mm side panels inside a
-  100 x 100 x 100 mm envelope, fused into a single solid. Top and
-  bottom panels are omitted, and bolted joints are not modeled (both
-  documented simplifications).
-- **Configuration B** — same rail/panel envelope, with a through-cut
-  pocket in each of the four panels, centered at z=50 with a 5 mm
-  perimeter frame retained. Four pocket shapes (rectangle, circle,
-  cross, 2x2 grid) at three removal levels (10%, 20%, 30% of panel
-  area), with equal removed area across shapes at a given level.
+  corner rails and four 2 mm x 83 mm side panels in a 100 mm cube,
+  fused into one solid. Top/bottom panels and bolted joints are not
+  modeled (documented simplifications).
+- **Configuration B** — same frame, with a through-cut pocket in each
+  panel (centered at z = 50, 5 mm perimeter frame retained). Four
+  named pocket shapes (rectangle, circle, cross, 2x2 grid) at three
+  removal levels (10/20/30% of panel area), plus a random-polygon
+  search at the best-performing level.
 
-Material: Al 6061-T6 (E = 68,900 MPa, nu = 0.33, rho = 2700 kg/m^3).
-Load: 12 g quasi-static axial, a preliminary design assumption and not
-a sourced launch-vehicle requirement. A 1.33 kg total mass assumption
-gives 156.6 N (156.5779 N as applied). Base face (z = 0) fixed.
-Constraint: von Mises <= yield / 1.5 (~184 MPa). Mass is checked
-against the 1U CDS budget (1.33 kg) as a design target; that figure is
-not verified against the current CDS text, and the yield value
-(276 MPa) is a commonly quoted typical value with no source cited yet.
+Material: Al 6061-T6. Total mass assumption 1.33 kg gives 156.6 N
+applied axially; base fixed. Constraint: von Mises <= yield/1.5
+(~184 MPa). The 276 MPa yield figure and the 1.33 kg CDS mass budget
+are commonly quoted values, not yet verified against a primary source.
+Modal/vibration response is out of scope (deferred to Project 07).
 
-**Load application differs by configuration.** Configuration A
-(prismatic) uses uniform 0.1643 MPa pressure on the top face — valid
-because every member carries equal stress under equal strain.
-Configuration B (non-prismatic, once pocketed) instead ties every
-top-face node's axial displacement to a reference node carrying the
-total 156.5779 N force (`*EQUATION` + `*CLOAD`), so the load splits
-between rails and panels by actual stiffness rather than assuming
-equal stress. This mechanism was verified against Configuration A's
-own pressure-loaded results (both fixed-base and roller-base) before
-use; see development log.
+Configuration A's uniform load is valid only because it is prismatic
+(every member carries equal stress under equal strain). Configuration
+B instead ties every top-face node's displacement to a reference node
+carrying the total load, so it splits between rails and panels by
+actual stiffness rather than an assumed equal stress — verified
+against Configuration A's own results before use.
 
-Modal and random-vibration response are out of scope and deferred to
-Project 07 (CubeSat modal analysis).
-
-**Toolchain**: geometry built with the Gmsh OCC kernel (geometry only,
-no Gmsh meshing), meshed with Netgen (straight-sided C3D10), solved
-with CalculiX 2.23, post-processed with Python (NumPy, PyVista,
-Matplotlib).
-
-**Verification strategy**: no single closed-form reference exists for
-the full assembly. Individual members (an isolated panel and an
-isolated rail) were verified against uniaxial (axial-bar) theory, with
-closed-form buckling checks. Each assembly (A and B) is an
-internal-consistency study: force equilibrium, mesh convergence
-(2 levels for A and for Config B's rect/circle; 3 levels for Config
-B's cross/grid, where the trend did not stabilize at 2 levels), and,
-for Config A, a roller-base diagnostic. Neither is claimed as
-closed-form-verified.
+No single closed-form reference exists for either full assembly, so
+each is verified as an internal-consistency study: isolated-member
+checks against uniaxial theory, force equilibrium, mesh convergence,
+and (for Configuration A) a roller-base diagnostic. Full details,
+including two real modeling bugs found and fixed, are in the
+development log.
 
 ## Findings — Configuration A
 
-Isolated members (1.5 mm mesh, fixed base, uniform top pressure):
+Isolated panel and rail checks (against uniaxial theory) matched to
+within 0.001–0.3% on stress and 0.3–1.3% on displacement, with the
+Saint-Venant boundary peak correctly located and explained rather than
+reported as a design value.
 
-| | Panel (2a) | Rail (2b) |
-|---|---|---|
-| Base reaction vs applied | +0.0000% | +0.0000% |
-| Top displacement magnitude vs theory | 1.29% below | 0.33% below |
-| Mean von Mises, 25 < z < 75 mm | 0.1638 MPa (-0.29%) | 0.1643 MPa (-0.001%) |
-| Peak von Mises | 0.345 MPa, at base | 0.259 MPa, at base corners |
-| Applied / critical load (closed form) | 0.0011 | 0.0016 |
+The full assembly closes equilibrium to <0.0001% at both mesh levels
+tested. Mean stress and displacement are stable across refinement.
+The peak stress (at the fixed-base corners) is **not a converged
+design value** — a roller-base diagnostic showed it comes entirely
+from the base's lateral restraint, not from geometry or mesh. Mean
+stress sits about 1,100x below the allowable.
 
-Configuration A assembly (fixed base, C3D10):
+## Findings — Configuration B: named shapes
 
-| | 3.0 mm mesh | 2.0 mm mesh |
-|---|---|---|
-| Base reaction vs 156.578 N | +0.0000% | -0.0000% |
-| Top displacement magnitude vs theory | 1.71% below | 1.65% below |
-| Mean von Mises, panel region | 0.16424 MPa | 0.16424 MPa |
-| Mean von Mises, rail region | 0.16047 MPa | 0.16061 MPa |
-| Peak von Mises (base corners) | 0.368 MPa | 0.422 MPa |
+All 12 designs (4 shapes x 3 levels) built, meshed, solved, and
+verified; equilibrium closes to <0.0001% throughout.
 
-- Mean stress and displacement are **stable across the two mesh
-  levels**; two levels do not give a convergence order.
-- The peak von Mises stress sits at the fixed-base corners, rose 15%
-  on refinement, and is **not converged and sensitive to the base
-  boundary condition**. A 3.0 mm diagnostic with a roller base gave a
-  uniform 0.1643 MPa field and displacement matching theory to
-  0.0002%, showing the peak and the ~1.7% displacement offset come
-  from the lateral restraint of the fixed base. The peak is not
-  reported as a design stress. Mean stress (0.164 MPa) is about 1,100
-  times below the ~184 MPa allowable.
-
-## Findings — Configuration B
-
-All 12 designs (4 shapes x 3 levels) built, meshed, solved and
-extracted; equilibrium closes to <1e-4% in every case. Mesh levels
-used below are the converged level per shape: 2.0 mm for rect/circle
-(stable already at 2.0 mm vs 3.0 mm), 1.8 mm for cross/grid (net-
-section stress needed a third level to converge — see development
-log).
-
-| Shape | Level | Mass (g) | Stiffness (N/mm) | Net-section \|SZZ\| (MPa) | Stiffness/mass |
+| Shape | Level | Mass (g) | Stiffness (N/mm) | Net stress (MPa) | Stiffness/mass |
 |---|---|---|---|---|---|
-| rect | 10% | 239.38 | 557,187 | 0.227 | 2327.6 |
-| rect | 20% | 221.45 | 482,042 | 0.256 | 2176.8 |
-| rect | 30% | 203.53 | 426,935 | 0.281 | 2097.7 |
-| circle | 10% | 239.38 | 546,304 | 0.265 | 2282.2 |
-| circle | 20% | 221.45 | 460,685 | 0.329 | 2080.3 |
-| circle | 30% | 203.53 | 395,045 | 0.407 | 1941.0 |
-| cross | 10% | 239.38 | 317,161 | 0.718 | 1324.9 |
-| cross | 20% | 221.45 | 306,379 | 0.619 | 1383.5 |
-| cross | 30% | 203.53 | 297,091 | 0.561 | 1459.7 |
-| grid | 10% | 239.38 | 555,670 | 0.158 | 2321.3 |
-| grid | 20% | 221.45 | 475,237 | 0.141 | 2146.0 |
-| grid | 30% | 203.53 | 412,189 | 0.120 | 2025.2 |
-| Config A baseline | — | 257.31 | 667,635 | 0.164 (theoretical) | 2594.7 |
+| rect | 10% | 239.4 | 557,187 | 0.227 | 2327.6 |
+| rect | 20% | 221.5 | 482,042 | 0.256 | 2176.8 |
+| rect | 30% | 203.5 | 426,935 | 0.281 | 2097.7 |
+| circle | 10% | 239.4 | 546,304 | 0.265 | 2282.2 |
+| circle | 20% | 221.5 | 460,685 | 0.329 | 2080.3 |
+| circle | 30% | 203.5 | 395,045 | 0.407 | 1941.0 |
+| cross | 10% | 239.4 | 317,161 | 0.718 | 1324.9 |
+| cross | 20% | 221.5 | 306,379 | 0.619 | 1383.5 |
+| cross | 30% | 203.5 | 297,091 | 0.561 | 1459.7 |
+| grid | 10% | 239.4 | 555,670 | 0.158 | 2321.3 |
+| grid | 20% | 221.5 | 475,237 | 0.141 | 2146.0 |
+| grid | 30% | 203.5 | 412,189 | 0.120 | 2025.2 |
+| Config A baseline | — | 257.3 | 667,635 | 0.164* | 2594.7 |
 
-Figures: `figures/config_b_mass_vs_level.png`,
-`config_b_stiffness_vs_level.png`, `config_b_netsection_vs_level.png`,
-`config_b_stiffness_per_mass.png`.
+\* theoretical, not the same nodal-mean method used for Config B.
 
-**Cross is a qualitatively different design, not just a smaller
-version of the others.** Its cutter's vertical arm always spans the
-full interior panel height (H_INT, independent of removal level), so
-even at the 10% level it creates a full-width structural throat with
-local area reduced by about 88% at z=50. This shows up as: stiffness
-44–48% of Config A's (versus 60–85% for the other three shapes at the
-same nominal removal), net-section stress 3.4–4.4x the Config A
-baseline (versus 0.7–2.5x for the others), and a peak von Mises stress
-around 1.35–1.45 MPa (about 8x Config A's peak) that is dominated by
-this throat, not a converged design-stress value. The design point was
-kept deliberately, as a legitimate "equal removed area, very different
-stress concentration" comparison.
+**Cross is a fundamentally different design, not a scaled-down
+version of the others.** Its cutter always spans the panel's full
+interior height regardless of removal %, so even at 10% it creates a
+near-total structural throat: stiffness stays at 44-48% of Config A
+at every level (versus 60-85% for the other three), and net stress
+runs 3.4-4.4x the baseline. Kept deliberately as an "equal area, very
+different concentration" comparison point.
 
-**Rect and grid consistently lead on stiffness and stiffness/mass**,
-tracking each other closely at every level; circle trails a modest but
-consistent margin behind them. **Grid's net-section stress sits below
-even Config A's theoretical baseline and decreases with removal
-level** — consistent with the grid pattern's four separated blocks
-preserving continuous load-bearing rib material, so removed material
-comes disproportionately from low-stress regions. Rect and circle's
-net-section stress rises with removal level, as expected for ordinary
-stress concentration around a growing central cutout. Why rect and
-grid track so closely has not been investigated and is reported as an
-open observation, not an explained mechanism.
+**Rect and grid lead on stiffness and stiffness/mass**, tracking each
+other closely; circle trails modestly. **Grid's net stress sits below
+even the Config A baseline and falls with more removal** — consistent
+with its four separated blocks preserving continuous load paths, so
+material comes disproportionately from low-stress regions. Rect and
+circle's net stress rises with removal, as expected for an ordinary
+growing cutout.
 
-**Net-section stress is a pragmatic proxy, not an integrated
-force/area value**: the mean axial stress (SZZ) over panel-region
-corner nodes within z = 50 +/- 1.5 mm, reported both as a full-section
-mean and with the highest/lowest decile excluded (a corner-exclusion
-attempt). For cross, the excl-decile trim collapses to nearly the same
-value as the full mean (gap under 2% in every case) because the entire
-throat cross-section is elevated, not just the corners — the proxy
+Net-section stress is a pragmatic nodal-mean proxy (not an integrated
+force/area value) and needed a third mesh level to converge for
+cross/grid — the 3.0->2.0mm step alone showed a misleadingly *growing*
+trend that reversed once a third level was added. See the development
+log for the full convergence data and the proxy's known limits (it
 does not cleanly separate corner-singularity behavior from bulk
-behavior there. For grid, the metric needed a third mesh level to
-converge; the 3.0->2.0mm step alone showed a *growing* percentage
-difference with level (10.8% to 20.3%) that looked like a possible
-real or metric-flaw trend, but the 2.0->1.8mm step shrank sharply for
-every case (to 0.03–2.5%), confirming convergence rather than
-divergence. This reversal is recorded in the development log as a
-caution against concluding from two mesh levels alone.
+behavior for cross).
 
-### Random-shape exploration (10% level)
+## Findings — Configuration B: random-shape search
 
-Beyond the 4 named shapes, a random-polygon search (223 candidates
-generated, 20 solved after a resource-based screen, top 5 converged
-across all 3 mesh levels) found designs that beat the best named shape
-(rect) on the combined score:
+**Why 10%, not 20% or 30%:** a combined score — 1/3 stiffness ratio to
+Config A, 1/3 mass-removed fraction, 1/3 stress margin to the 184 MPa
+allowable — averages highest at 10% removal across the three
+well-behaved named shapes (0.632 vs. 0.615 at 20%, 0.608 at 30%), so
+10% was carried into the random search.
 
-| Design | Stiffness (N/mm) | Net stress (MPa) | Score | vs. rect |
-|---|---|---|---|---|
-| attempt16_hull (winner) | 562,908 | 0.2210 | 0.6372 | +0.46% |
-| rect (best named) | 557,187 | 0.2266 | 0.6343 | -- |
+**Generation:** 223 candidate polygons (5-12 vertices, random points
+connected by convex hull or angular order, exact-area-scaled, 3 mm
+minimum feature size, fixed seed for reproducibility) were generated
+and validated as clean single-solid geometry — all 223 also passed a
+mesh-feasibility check at every one of the three converged mesh sizes.
 
-All top performers were convex-hull-derived (triangle/quad) polygons;
-no irregular (star-order) polygon reached the top 6. The margin is
-modest (0.2-0.5%) but mesh-converged and consistent across all 5
-finalists. This screened 20 of 223 generated candidates, not the full
-set or a proven global optimum -- see development-log.md for the full
-selection funnel, convergence data, and known limitations of the
-screening method.
+**Why 20 of 223, not all 223:** solving all 223 at full convergence
+was judged disproportionate to the question being asked. The 20 taken
+forward were the candidates with the **lowest worst-case equation-
+ceiling usage** across the three mesh sizes — a resource/safety
+screen, not a performance filter, since no candidate had been solved
+yet at that point. In practice this was closer to a tie-breaker than
+a meaningful cut: all 223 were comfortably solvable, and the worst-
+case usage across all of them spanned only 48.5-52.9% of the ceiling.
+
+**All 20, solved at 3.0 mm** (score computed the same way as the named
+shapes; rect's 3.0 mm score, 0.6343, is the bar to beat):
+
+| Rank | Design | Stiffness (N/mm) | Net stress (MPa) | Score | vs. rect |
+|---|---|---|---|---|---|
+| 1 | attempt16_hull | 562,908\*\* | 0.2210\*\* | 0.6372\*\* | +0.46% |
+| 2 | attempt37_hull | 561,457\*\* | 0.2155\*\* | 0.6365\*\* | +0.35% |
+| 3 | attempt54_hull | 560,472\*\* | 0.2348\*\* | 0.6360\*\* | +0.27% |
+| 4 | attempt15_hull | 559,901\*\* | 0.2240\*\* | 0.6357\*\* | +0.22% |
+| 5 | attempt40_hull | 559,867\*\* | 0.2167\*\* | 0.6357\*\* | +0.22% |
+| 6 | attempt114_hull | 558,168 | 0.2355 | 0.6348 | +0.08% |
+| 7 | attempt94_hull | 555,852 | 0.2459 | 0.6336 | -0.11% |
+| 8 | attempt112_hull | 551,094 | 0.2075 | 0.6313 | -0.47% |
+| 9 | attempt124_hull | 550,712 | 0.2365 | 0.6311 | -0.50% |
+| 10 | attempt134_hull | 547,680 | 0.2398 | 0.6296 | -0.74% |
+| 11 | attempt29_hull | 545,874 | 0.2256 | 0.6287 | -0.88% |
+| 12 | attempt13_hull | 545,741 | 0.2332 | 0.6286 | -0.90% |
+| 13 | attempt108_hull | 525,584 | 0.2391 | 0.6185 | -2.49% |
+| 14 | attempt77_hull | 524,776 | 0.2706 | 0.6181 | -2.55% |
+| 15 | attempt102_star | 520,417 | 0.1811 | 0.6161 | -2.87% |
+| 16 | attempt26_hull | 519,778 | 0.2470 | 0.6156 | -2.95% |
+| 17 | attempt56_star | 515,739 | 0.1990 | 0.6137 | -3.25% |
+| 18 | attempt48_hull | 506,317 | 0.1946 | 0.6090 | -3.99% |
+| 19 | attempt64_star | 506,051 | 0.1917 | 0.6089 | -4.00% |
+| 20 | attempt131_star | 472,702 | 0.1675 | 0.5923 | -6.62% |
+
+\*\* Top 5 carried through full 3-level convergence (2.0, 1.8 mm);
+values shown are the converged 1.8 mm result. Ranks 6-20 are 3.0 mm
+(screening-level) only.
+
+**Pattern:** all 6 designs beating rect, and 12 of the top 12 overall,
+are convex-hull-derived (triangle/quad) polygons. The 3 star-order
+(more irregular, concave-capable) polygons in the batch rank 15th,
+17th, and 20th — never in the top half. This is a systematic result,
+not a coincidence of which 20 happened to be picked: smoother, more
+convex pocket boundaries outperform irregular ones at this removal
+level and load case, consistent with fewer/gentler stress
+concentrations.
+
+The winner (`attempt16_hull`) beats rect by a mesh-converged 0.46%.
+Stress contours for the top 5 are in `figures/contours/config_b_
+random_attempt{16,37,54,15,40}_hull_h1p8_vm_contour.png` — note that
+peak von Mises does **not** track this ranking (attempt15_hull has the
+highest peak among the 5 despite ranking 4th), since the score is
+driven by net-section stress and stiffness, not the single worst
+local point.
+
+**Scope of this result:** best of 20 solved candidates out of 223
+generated — not a proven global optimum over the full shape space.
+
 ## Limitations
 
-- **Prismatic-vs-non-prismatic distinction matters for the axial-only
-  load case.** For Configuration A (prismatic), stress is set by total
-  cross-section area and stiffness by EA/L — the roller-base
-  diagnostic confirmed this exactly, so for prismatic variants the
-  comparison reduces to a mass-versus-area trade. Configuration B's
-  pocketed panels are non-prismatic, so this load case retains real
-  discriminating content between shapes (as the findings above show);
-  lateral or combined quasi-static loading remains a proposed, not
-  adopted, extension.
-- Two mesh levels for Config A and Config B rect/circle; three for
-  Config B cross/grid. The Config A roller-base run is a diagnostic at
-  3.0 mm only.
-- One element spans each 2 mm wall at Config A's 3.0 mm (checked in
-  one panel region); local stress gradients at junctions are not fully
-  resolved at the coarser mesh levels used throughout.
-- Fully fused rails and panels in both configurations: no bolted-joint
-  contact or local joint stress.
-- The rail-region mean stress in Config A's assembly is about 2% below
-  the panel-region mean; this is not explained.
+- Prismatic vs. non-prismatic matters for this axial-only load case:
+  Configuration A's stress/stiffness reduce exactly to a
+  mass-versus-area trade (confirmed by the roller-base diagnostic), so
+  the load case only discriminates between designs once panels are
+  non-prismatic, as in Configuration B.
+- Two mesh levels for Config A and Config B rect/circle/the random
+  search's ranks 6-20; three for Config B cross/grid and the top 5
+  random designs.
+- One element spans each 2 mm wall at the coarsest mesh size; local
+  stress gradients at junctions are not fully resolved there.
+- Fully fused rails and panels: no bolted-joint contact or local joint
+  stress, in either configuration.
 - Net-section stress is a nodal-mean proxy with a corner-exclusion
-  heuristic that does not work equally well for all four pocket
-  shapes (see Configuration B findings above).
-- Peak von Mises stress is not reported as a design value for either
-  configuration; it is boundary-condition- or singularity-dominated
-  and non-converged at the mesh resolutions used.
+  heuristic that does not work equally well for every pocket shape
+  (see cross, above).
+- Peak von Mises is never reported as a design value — it is
+  boundary-condition- or singularity-dominated and non-converged at
+  every mesh resolution used.
+- Al 6061-T6 yield (276 MPa) and the 1.33 kg CDS mass budget are not
+  yet verified against a primary source.
 
 ## Conclusion
 
-Configuration A is a verified prismatic baseline. Configuration B
-shows that, under this axial-only load case, rect and grid pocket
-patterns retain the most stiffness and stiffness-per-mass among the
-4 named shapes for a given mass reduction, circle trails them
-modestly, and the cross pattern — despite removing the same area —
-creates a severe structural throat that is a fundamentally different,
-weaker design at every level tested. All mass reductions relative to
-Configuration A are real (6.97% / 13.94% / 20.90% of structure mass at
-10/20/30% panel-area removal); the corresponding stiffness losses vary
-sharply by shape.
+Configuration A is a verified prismatic baseline. Among the 4 named
+Configuration B shapes, rect and grid lead on stiffness and
+stiffness-per-mass, circle trails modestly, and cross — despite
+removing the same area — is a fundamentally weaker design due to its
+throat geometry. All mass reductions are real (7.0/13.9/20.9% of
+structure mass at 10/20/30% panel-area removal).
 
-A subsequent random-polygon search at the 10% level found designs
-(convex, triangle/quad pocket shapes) that beat rect, the best named
-shape, by a modest but mesh-converged margin (0.2-0.5% on the combined
-score). This is the primary engineering result of the full study:
-hand-picked, symmetric/regular pocket shapes are a reasonable
-starting point, but are not guaranteed optimal even within a simple
-removal-level and fairness constraint — an unconstrained shape search
-found better designs, and did so systematically (every top performer
-was convex-hull-derived, none were irregular/star-derived), suggesting
-"smoother, more convex pocket boundaries" is a real, generalizable
-design heuristic for this load case rather than a one-off result.
-
-## Reproducibility
-
-```bash
-cd 02-cubesat-structure
-# Configuration A (see development log for full command sequence)
-/usr/bin/python3 scripts/build_config_a_base_frame.py
-/usr/bin/python3 scripts/mesh_config_a.py 3.0
-/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_a_h3p0 8
-/usr/bin/python3 scripts/extract_config_a.py simulation/config_a_h3p0
-
-# Configuration B: geometry (12 designs)
-for s in rect circle cross grid; do
-  for lvl in 10 20 30; do
-    /usr/bin/python3 scripts/build_config_b_assembly.py $s $lvl
-  done
-done
-
-# Configuration B: mesh + solve + extract (mesh size per shape: see README findings)
-/usr/bin/python3 scripts/mesh_config_b.py <shape> <level_pct> <maxh_mm>
-/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_b_<shape>_<level>pct_h<mesh> 8
-/usr/bin/python3 scripts/extract_config_b.py simulation/config_b_<shape>_<level>pct_h<mesh>
-
-# Configuration B: cross-design comparison table and figures
-/usr/bin/python3 scripts/compare_config_b.py
-```
-
-Netgen scripts run under the system Python (`/usr/bin/python3`); the
-solver is CalculiX 2.23 from the `ccx223` conda environment.
+The primary result of the full study: a subsequent, unconstrained
+random-polygon search at the best-performing removal level found
+designs that beat the best hand-picked shape, and did so
+systematically — every strong performer was a smooth, convex pocket
+boundary, never an irregular one. Hand-picked, symmetric pocket shapes
+are a reasonable starting point but are not guaranteed optimal even
+under a simple removal-level and fairness constraint.

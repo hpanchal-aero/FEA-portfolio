@@ -32,8 +32,8 @@ The sequence is intentional: establish reliable structural mechanics fundamental
 | #  | Project                                                                               | Status         | Focus                                                             |
 | -- | ------------------------------------------------------------------------------------- | -------------- | ----------------------------------------------------------------- |
 | 01 | [**Aerospace Mounting Bracket**](01-aerospace-mounting-bracket/)                      | 🟢 Completed | Parametric ribbed L-bracket, static loading, mass minimization    |
-| 02 | [**1U CubeSat Primary Structure**](02-1u-cubesat-primary-structure/)                  | 🟡 In progress | Structural architecture trade under representative launch loading |
-| 03 | [**UAV Wing Structural Analysis**](03-uav-wing-structural-analysis/)                  | ⚪ Planned      | Spar/rib/skin configuration under aerodynamic loading             |
+| 02 | [**1U CubeSat Primary Structure**](02-cubesat-structure/)                             | 🟢 Completed | Structural architecture trade under representative launch loading |
+| 03 | [**UAV Wing Structural Analysis**](03-uav-wing-structural-analysis/)                  | 🟡 In Progress | Spar/rib/skin configuration under aerodynamic loading             |
 | 04 | [**NACA 0012 CFD → Structural FEA**](04-naca0012-cfd-structural/)                     | ⚪ Planned      | One-way aerodynamic pressure coupling to structural response      |
 | 05 | [**Thermo-Structural Aerospace Panel**](05-thermo-structural-panel/)                  | ⚪ Planned      | Thermal gradient → thermal stress                                 |
 | 06 | [**UAV Wing Spar Mass Optimization**](06-uav-wing-spar-optimization/)                 | ⚪ Planned      | Constrained mass minimization and structural trade study          |
@@ -115,7 +115,7 @@ The exact structure may vary depending on the requirements of the individual ana
 
 ## Status
 
-* 🟢 **Complete** — project meets its documented completion standard
+* 🟢 **Completed** — project meets its documented completion standard
 * 🟡 **In progress** — active development or investigation is underway
 * ⚪ **Planned** — project has not yet begun
 

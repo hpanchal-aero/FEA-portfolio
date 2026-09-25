@@ -699,3 +699,71 @@ stress concentration.
    lost, but this is recorded as a reminder that `git`-committed content
    is the safety net for exactly this kind of accidental overwrite.
 
+
+## Reproducibility (full command reference)
+
+```bash
+cd 02-cubesat-structure
+
+# Configuration A
+/usr/bin/python3 scripts/build_config_a_base_frame.py
+/usr/bin/python3 scripts/mesh_config_a.py 3.0
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_a_h3p0 8
+/usr/bin/python3 scripts/extract_config_a.py simulation/config_a_h3p0
+/usr/bin/python3 scripts/make_roller_bc_case.py simulation/config_a_h3p0.inp simulation/config_a_h3p0_rollerBC.inp
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_a_h3p0_rollerBC 8
+/usr/bin/python3 scripts/extract_config_a.py simulation/config_a_h3p0_rollerBC
+/usr/bin/python3 scripts/view_config_a_mesh.py simulation/config_a_h3p0.inp
+
+# Sub-stages 2a / 2b (isolated panel / rail)
+/usr/bin/python3 scripts/mesh_and_solve_2a_panel.py
+/usr/bin/python3 scripts/mesh_and_solve_2b_rail.py
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/stage2a_panel_solve 8
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/stage2b_rail_solve 8
+/usr/bin/python3 scripts/extract_isolated_member.py a
+/usr/bin/python3 scripts/extract_isolated_member.py b
+
+# *EQUATION load-mechanism verification (Config A, both BCs)
+/usr/bin/python3 scripts/make_equation_load_case.py simulation/config_a_h3p0.inp simulation/config_a_h3p0_eqLoad.inp
+/usr/bin/python3 scripts/make_equation_load_case.py simulation/config_a_h3p0_rollerBC.inp simulation/config_a_h3p0_rollerBC_eqLoad.inp
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_a_h3p0_eqLoad 8
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_a_h3p0_rollerBC_eqLoad 8
+/usr/bin/python3 scripts/extract_config_a.py simulation/config_a_h3p0_eqLoad
+/usr/bin/python3 scripts/extract_config_a.py simulation/config_a_h3p0_rollerBC_eqLoad
+
+# Configuration B: 4 named shapes, geometry (12 designs)
+for s in rect circle cross grid; do
+  for lvl in 10 20 30; do
+    /usr/bin/python3 scripts/build_config_b_assembly.py $s $lvl
+  done
+done
+
+# Configuration B: mesh + solve + extract per named design
+# (mesh size per shape: 2.0mm rect/circle, 1.8mm cross/grid -- converged levels)
+/usr/bin/python3 scripts/mesh_config_b.py <shape> <level_pct> <maxh_mm>
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_b_<shape>_<level>pct_h<mesh> 8
+/usr/bin/python3 scripts/extract_config_b.py simulation/config_b_<shape>_<level>pct_h<mesh>
+
+/usr/bin/python3 scripts/compare_config_b.py   # cross-design comparison table + figures
+
+# Configuration B: random-shape exploration
+/usr/bin/python3 scripts/build_config_b_random.py                  # 223 candidates, seed=2
+/usr/bin/python3 scripts/build_config_b_random_assembly.py --all   # full-assembly geometry, all 223
+/usr/bin/python3 scripts/mesh_config_b_random_feasibility.py --all 3.0 2.0 1.8
+/usr/bin/python3 scripts/random_feasibility_table.py                # 223x3 table vs ceilings, selects top 20
+
+/usr/bin/python3 scripts/mesh_config_b.py --random <tag> <maxh_mm>
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/config_b_random_<tag>_h<mesh> 8
+/usr/bin/python3 scripts/extract_config_b.py simulation/config_b_random_<tag>_h<mesh>
+
+# Stress contours (any solved job)
+/usr/bin/python3 scripts/plot_stress_contour.py simulation/<job>
+```
+
+Netgen scripts run under the system Python (`/usr/bin/python3`); the
+solver is CalculiX 2.23 from the `ccx223` conda environment
+(`/home/harsh/miniconda3/envs/ccx223/bin/ccx`). The 2a/2b solves were
+originally run by direct `ccx -i` calls before the watchdog wrapper
+existed; the watchdog commands above are the reproducible equivalent
+and were confirmed to work but were not the exact commands used for
+the results quoted (those results came from `ccx -i` directly).
