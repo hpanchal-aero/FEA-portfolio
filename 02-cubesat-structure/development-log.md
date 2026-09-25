@@ -63,19 +63,6 @@ toolchain as Project 01's Stage 5 onward.
 (geometry and mesh inputs in `mesh/<case>_study/`), `results/`,
 `figures/`. A `geometry/` directory exists but is unused.
 
-## Status Log
-
-- [x] Specification defined and approved
-- [x] Baseline geometry (Configuration A) — validated
-- [x] Baseline mesh
-- [x] Baseline solve + sanity check (equilibrium, uniaxial comparison)
-- [~] Mesh convergence study — two levels (3.0, 2.0 mm); means stable, peak not converged (BC-sensitive); further refinement deliberately skipped
-- [x] Feature-level analytical verification (panel 2a, rail 2b)
-- [ ] Configuration B (ribbed/lightened) — begins after Configuration A is finished; early geometry candidates exist (see below)
-- [ ] Comparative analysis (A vs. B: mass, stress, stiffness)
-- [~] Documentation and figures — this update covers Configuration A
-- [~] Git: Configuration A stage committed locally; push deferred until the project is complete
-
 ## Load-sharing assumption
 
 1.33 kg x 12 g x 9.81 m/s^2 = 156.6 N, applied as uniform pressure
