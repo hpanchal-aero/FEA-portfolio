@@ -1,0 +1,11 @@
+{
+  "job": "simulation/stage1_spar_h2p0",
+  "nodes": 118841,
+  "root_reaction_Y_N": -22.309613479999996,
+  "equilibrium_err_pct": -0.13634673172321174,
+  "uy_tip_mean_mm": 3.8410034841628957,
+  "tier2_theory_tip_mm": 3.8472554758680335,
+  "tier2_pct_diff": -0.16250523897759075,
+  "tier1_sanity_bound_mm": 4.189855302840229,
+  "peak_vm_MPa": 16.59585906737016
+}
