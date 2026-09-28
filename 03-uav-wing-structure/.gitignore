@@ -16,3 +16,7 @@ spooles.out
 
 # Python cache
 scripts/__pycache__/
+
+# Stage 2 additions: visualization fields and preview geometry (regenerable)
+simulation/*.vtu
+mesh/stage2_ribs/*PREVIEW*

@@ -1,0 +1,17 @@
+{
+  "job": "simulation/stage2_ribs_h2p0",
+  "nodes": 216583,
+  "elements": 108415,
+  "root_reaction_Y_N": -21.333526644367264,
+  "equilibrium_err_naive_pct": -0.23628284573592745,
+  "equilibrium_err_fixed_node_load_excluded_pct": -5.879877441418908e-06,
+  "gravity_share_on_fixed_nodes_N": -0.05028738603532727,
+  "uy_spar_axis_mm": 3.6791212868217054,
+  "uy_regression_intercept_mm": 3.680408298704053,
+  "twist_slope_mm_per_mm": -0.0016766738923811868,
+  "reference_ribs_as_weights_mm": 3.6836392698567546,
+  "pct_vs_reference": -0.12264998562752685,
+  "reference_spar_alone_mm": 3.8472554758680335,
+  "stage1_fea_tip_mm": 3.841,
+  "peak_vm_MPa": 16.963786211860253
+}

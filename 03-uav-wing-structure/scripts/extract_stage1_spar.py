@@ -156,8 +156,8 @@ def main():
     w_udl = TOTAL_LIFT_N / SPAN
     v_tier1 = w_udl * SPAN**4 / (8 * E_MOD * I_root)
     print(f"\nTier 1 (prismatic root, UDL approx, sanity bound only): {v_tier1:.6f} mm")
-    print(f"(Tier 1 is expected to UNDERESTIMATE vs FEA/Tier-2, since it uses the "
-          f"stiffer root section throughout and omits self-weight)")
+    print(f"(Tier 1 is a same-order sanity check only, NOT a bound: its "
+          f"simplifications act in opposite directions -- see development-log.md)")
 
     print("\n--- Peak von Mises ---")
     order = np.argsort(vm[1:])[::-1][:5] + 1

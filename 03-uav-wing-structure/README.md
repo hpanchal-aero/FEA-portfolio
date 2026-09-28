@@ -16,7 +16,8 @@ thickness?
 
 ## Status
 
-**Stage 1 (spar alone) complete and verified.** Stages 2-6 not started.
+**Stages 1 (spar alone) and 2 (spar + ribs) complete and verified.**
+Stages 3-6 not started.
 
 ## Approach
 
@@ -36,7 +37,8 @@ ribs' main structural role is resisting skin buckling.
 1. **Spar alone — complete.** Tapered I-beam spar (root height 28.8 mm,
    tip height 14.4 mm, 30% chord position), verified against tapered
    Euler-Bernoulli beam theory.
-2. + ribs at a placeholder spacing (structure only) — not started.
+2. **+ ribs at a placeholder spacing — complete.** Six true-airfoil ribs
+   (1.5 mm thick, 200 mm spacing) fused to the spar.
 3. + skin (full airfoil, skin structurally participating) — skin
    thickness selection study runs here — not started.
 4. Load application refinement (distributing the elliptical load over
@@ -60,19 +62,55 @@ design requirement, to be replaced in Stage 4).
 
 | | 2.0 mm mesh | 1.5 mm mesh |
 |---|---|---|
-| Equilibrium (root reaction vs. applied) | -0.14% | -0.09% |
 | Tip deflection vs. tapered beam theory | -0.16% | -0.21% |
-| Peak von Mises | 16.60 MPa | 18.24 MPa |
+| Flange bending stress vs. beam theory | within 0.14% | within 0.22% |
+| Peak von Mises (root corner) | 16.60 MPa | 18.24 MPa |
 
-Tip deflection (3.84 mm) and equilibrium are essentially converged
-between the two mesh levels. Peak von Mises (at the root flange-web
-corner, a geometric discontinuity) shows a real but modest mesh
-sensitivity (+9.9% from 2.0 to 1.5 mm) — consistent with the same
-discontinuity-driven, slower-converging peak-stress pattern already
-documented in Project 02; both values remain far below the ~290-345
-MPa yield of Al 2024-T3. A conservative prismatic-root sanity bound
-(4.19 mm, ignoring taper and self-weight) correctly overestimates
-stiffness relative to the actual tapered result, as expected.
+Tip deflection (3.84 mm) and flange stress agree with beam theory to
+better than 0.25% and are converged between the two mesh levels. Peak
+von Mises (at the root flange-web corner, a geometric discontinuity)
+shows a real but modest mesh sensitivity (+9.9% from 2.0 to 1.5 mm),
+consistent with the discontinuity-driven peak-stress behaviour
+documented in Project 02; it is not treated as a design value. Both
+values remain far below the ~290-345 MPa yield of Al 2024-T3. A
+prismatic-root sanity bound (4.19 mm) is only a same-order check: its
+simplifications partly cancel (see the development log).
+
+## Findings — Stage 2 (spar + ribs)
+
+Six NACA 0012 airfoil-shaped ribs (1.5 mm thick, at z = 0, 200, 400,
+600, 800, 1000 mm) fused to the Stage 1 spar, same placeholder load.
+
+| | 2.0 mm mesh | 2.5 mm mesh |
+|---|---|---|
+| Spar-axis tip deflection | 3.679 mm | 3.679 mm |
+| vs. beam reference (ribs as point weights) | -0.12% | -0.11% |
+| Flange bending stress vs. beam theory | within 0.06% | within 0.06% |
+| Peak von Mises (root corner, unconverged) | 16.96 MPa | 16.16 MPa |
+
+![Deformed shape, Uy](figures/contours/stage2_h2p0_uy_side.png)
+
+*Uy, deformation exaggerated x50, black = undeformed.*
+
+![von Mises](figures/contours/stage2_h2p0_vonmises.png)
+
+*von Mises, colour scale capped at the 99th percentile (11.6 MPa).*
+
+**The ribs add weight, not bending stiffness.** Tip deflection fell
+4.2% relative to the spar alone (3.841 to 3.679 mm), and the ribs'
+added self-weight alone predicts a 4.25% fall: the FEA matches a beam
+model in which the ribs are point weights with zero bending stiffness
+to within about 0.1%. Von Mises in the ribs is near zero. The ribs cost
++108 g (+49% mass) and, being off the spar axis, add a small twist
+(about 0.1 degrees at the tip). Their structural value has to come from
+the skin (buckling resistance, shape retention), which is what Stage 3
+onward examines.
+
+The path to this result included a load-application error (the
+nodal load distribution followed the locally refined mesh around the
+ribs, shifting load toward the root by 4% on the finer mesh) and an
+earlier, incorrect attribution of the deflection change to rib
+stiffness. Both are documented in the development log.
 
 ## Limitations
 
@@ -81,10 +119,15 @@ stiffness relative to the actual tapered result, as expected.
   Stage 4 once the full structure exists and a real load case is
   defined.
 - The load is applied directly to the spar's top-cap outer face (a
-  Stage-1 approximation, since no skin exists yet to distribute
+  Stage 1-2 approximation, since no skin exists yet to distribute
   aerodynamic pressure over) — this will change once skin is added.
-- Peak von Mises stress at the root is not mesh-converged (see
-  Findings above) and is not used as a design value at this stage.
+- Peak von Mises stress at the root is not mesh-converged and is not
+  used as a design value.
+- Convergence is demonstrated between two mesh levels; a finer level
+  was excluded on memory grounds.
+- The ribs' twist effect is not checked against torsion theory.
+- The finding that ribs add no bending stiffness applies to this load
+  case (spanwise bending, no skin).
 - Al 2024-T3 material properties (E, yield, density) are standard
   literature values, not yet verified against a primary/certified
   source.
@@ -94,11 +137,13 @@ stiffness relative to the actual tapered result, as expected.
 
 ## Conclusion
 
-Stage 1 establishes a verified FEA pipeline for this project: the
-Netgen/CalculiX/Python toolchain, the tapered-beam numerical
-verification method, and the mesh/solve/extract scripts all produce
-results matching closed-form-adjacent theory to within 0.2% on the
-governing (deflection, equilibrium) quantities. A real density-unit
-bug (1000x error, present but never triggered in Projects 01-02) was
-found and fixed here — see development log. Ready to proceed to Stage
-2 (adding ribs).
+Stages 1-2 establish a verified FEA pipeline for this project: the
+Netgen/CalculiX/Python toolchain, a tapered-beam numerical reference
+for deflection and bending stress, and mesh/solve/extract scripts that
+match that reference to within 0.25% on deflection and stress. Adding
+ribs to the spar showed they contribute weight and twist but no bending
+stiffness, which sets up the skin stages: the ribs' justification has
+to be resisting skin buckling, and that is what the eigenvalue analysis
+in Stage 3 will test. A real density-unit bug (1000x error, present
+but never triggered in Projects 01-02) was found and fixed in Stage 1;
+see the development log.
