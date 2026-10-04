@@ -1,0 +1,16 @@
+{
+  "job": "simulation/stage3_skin_s2p5_k8_t1",
+  "t_skin_mm": 1.0,
+  "skin_area_mm2": 459622.6823215543,
+  "W_solid_N": 3.506665902727298,
+  "W_skin_N": 12.534737867736963,
+  "root_reaction_Y_N": -4.4880833611302755,
+  "eq_err_naive_pct": 46.94055837309266,
+  "eq_err_solid_share_pct": 47.255254127645536,
+  "eq_err_both_pct": 47.2813573552798,
+  "uy_spar_axis_mm": 0.0919256540201005,
+  "bracket_lo_mm": 0.6767634014010039,
+  "bracket_hi_mm": 0.0928675879600717,
+  "inside_bracket": false,
+  "twist_slope": -5.188685511730557e-05
+}

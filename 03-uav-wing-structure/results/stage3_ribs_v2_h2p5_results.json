@@ -1,0 +1,22 @@
+{
+  "job": "simulation/stage3_ribs_v2_h2p5",
+  "nodes": 157772,
+  "elements": 76140,
+  "root_reaction_Y_N": -21.043818756773828,
+  "equilibrium_err_naive_pct": -0.24046438583388516,
+  "equilibrium_err_corrected_pct": 3.085663771500022e-05,
+  "uy_spar_axis_mm": 2.066309084158416,
+  "twist_slope_mm_per_mm": -0.0018440508454959001,
+  "reference_ribs_as_weights_mm": 2.064326306911809,
+  "pct_vs_reference": 0.09604960417198766,
+  "reference_spar_alone_mm": 2.157189115091337,
+  "stress_pct_diffs": {
+    "top_100": 0.05056586911527536,
+    "bottom_100": -0.02433563063473127,
+    "top_300": 0.03723763347384166,
+    "bottom_300": -0.05217796318159103,
+    "top_500": 0.09884177114987144,
+    "bottom_500": -0.05147997523096005
+  },
+  "peak_vm_MPa": 11.035318988325965
+}

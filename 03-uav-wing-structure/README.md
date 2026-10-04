@@ -16,49 +16,61 @@ thickness?
 
 ## Status
 
-**Stages 1 (spar alone) and 2 (spar + ribs) complete and verified.**
-Stages 3-6 not started.
+**Stages 1 (spar alone), 2 (spar + ribs) and 3 (spar + ribs + skin,
+skin thickness selected) complete.** Skin thickness is locked at
+**1.0 mm**. Stages 4-6 not started.
 
 ## Approach
 
 **Geometry:** NACA 0012 airfoil, tapered planform (root chord 300 mm,
-tip chord 150 mm), 1 m half-span.
+tip chord 150 mm), 1 m half-span, spar at 30% chord, six ribs at
+200 mm spacing (1.5 mm thick, true airfoil outline).
 
-**Material:** Al 2024-T3 (E = 73,100 MPa, nu = 0.33, rho = 2780 kg/m^3
-— standard literature values, not yet cited to a primary source).
+**Material:** Al 2024-T3 for spar, ribs and skin (E = 73,100 MPa,
+nu = 0.33, rho = 2780 kg/m^3 — standard literature values, not yet
+cited to a primary source).
 
-**Load cases:** self-weight (gravity) and an elliptical spanwise
-aerodynamic load, applied together as one combined/superposed static
-case. Constraint: von Mises stress <= yield / 1.5. A linear eigenvalue
-buckling analysis will be added once skin exists (Stage 3+), since
-ribs' main structural role is resisting skin buckling.
+**Spar:** Stages 1-2 used a spar whose depth was 80% of the local
+airfoil thickness. Stage 3 found that this leaves a 3.6 mm (root) /
+1.8 mm (tip) gap between the spar caps and the airfoil outline, so no
+skin could touch the spar. The spar was therefore redesigned ("spar
+v2": depth equal to the airfoil depth, same 2 mm web and 8x3 mm caps,
++30 g). Stage 1-2 results describe the old spar and are kept as the
+verified baseline of the pipeline.
 
-**Build sequence** (progressive verification, Project-01-style):
-1. **Spar alone — complete.** Tapered I-beam spar (root height 28.8 mm,
-   tip height 14.4 mm, 30% chord position), verified against tapered
-   Euler-Bernoulli beam theory.
-2. **+ ribs at a placeholder spacing — complete.** Six true-airfoil ribs
-   (1.5 mm thick, 200 mm spacing) fused to the spar.
-3. + skin (full airfoil, skin structurally participating) — skin
-   thickness selection study runs here — not started.
+**Load cases:**
+- Stages 1-2: self-weight + a 24.5 N elliptical lift (5 kg aircraft,
+  n = 1) — an explicit placeholder.
+- Stage 3: **limit load**, load factor n = 3.8, an assumed 20 kg
+  aircraft, so a half-wing elliptical lift of 372.78 N, with
+  self-weight x 3.8 on solid and skin. The load factor follows the 3.8
+  cap of the transport-category formula (14 CFR 25.337(b)); the primary
+  STANAG 4671 / CS-23 text was not retrieved. **The aircraft mass is an
+  assumption and not from any standard.**
+- Requirements at limit load: von Mises <= yield / 1.5 (yield assumed
+  290 MPa, uncited) and linear buckling factor >= 1.5.
+
+**Skin model:** closed airfoil skin of S6 shell elements (0.5 / 1.0 /
+1.5 mm candidates) sharing nodes with the solid ribs and spar caps
+along their contact lines (conformal Netgen mesh, no constraint
+cards). CalculiX's `*TIE` does not support shell elements.
+
+**Build sequence:**
+1. Spar alone — complete.
+2. + ribs at 200 mm spacing — complete.
+3. **+ skin, skin thickness selection and buckling — complete
+   (t = 1.0 mm locked).**
 4. Load application refinement (distributing the elliptical load over
-   the completed skin) — not started.
-5. Rib spacing study (100/50/20 mm spacings) — not started.
-6. Rib placement study (non-uniform positions at the winning rib
-   count, screened for self-weight+aero structural margin) — not
+   the skin instead of the spar cap) — not started.
+5. Rib spacing study (100 / 50 / 20 mm) — not started.
+6. Rib placement study (non-uniform positions at a fixed count) — not
    started.
 
-Spar position and dimensions are held fixed for the entire project (a
+Spar position and dimensions are held fixed for the project (a
 documented scope limitation); only skin thickness and rib
-configuration are varied.
+configuration vary.
 
-## Findings — Stage 1 (spar alone)
-
-Isolated tapered I-beam spar (30% chord, root height 28.8 mm tapering
-to 14.4 mm at the tip, 2 mm web, 8x3 mm caps), root fixed, under a
-**placeholder** combined load: self-weight + a 24.5 N total elliptical
-lift (assuming a 5 kg aircraft at load factor n=1 — not a sourced
-design requirement, to be replaced in Stage 4).
+## Findings — Stage 1 (spar alone, old spar, 24.5 N placeholder load)
 
 | | 2.0 mm mesh | 1.5 mm mesh |
 |---|---|---|
@@ -67,19 +79,13 @@ design requirement, to be replaced in Stage 4).
 | Peak von Mises (root corner) | 16.60 MPa | 18.24 MPa |
 
 Tip deflection (3.84 mm) and flange stress agree with beam theory to
-better than 0.25% and are converged between the two mesh levels. Peak
-von Mises (at the root flange-web corner, a geometric discontinuity)
-shows a real but modest mesh sensitivity (+9.9% from 2.0 to 1.5 mm),
-consistent with the discontinuity-driven peak-stress behaviour
-documented in Project 02; it is not treated as a design value. Both
-values remain far below the ~290-345 MPa yield of Al 2024-T3. A
-prismatic-root sanity bound (4.19 mm) is only a same-order check: its
-simplifications partly cancel (see the development log).
+better than 0.25% and are converged between the two mesh levels. The
+peak von Mises (root flange-web corner) is not converged and is not a
+design value. A prismatic-root sanity estimate (4.19 mm) is a
+same-order check only: its simplifications partly cancel (see the
+development log).
 
-## Findings — Stage 2 (spar + ribs)
-
-Six NACA 0012 airfoil-shaped ribs (1.5 mm thick, at z = 0, 200, 400,
-600, 800, 1000 mm) fused to the Stage 1 spar, same placeholder load.
+## Findings — Stage 2 (spar + ribs, old spar, 24.5 N placeholder load)
 
 | | 2.0 mm mesh | 2.5 mm mesh |
 |---|---|---|
@@ -96,54 +102,124 @@ Six NACA 0012 airfoil-shaped ribs (1.5 mm thick, at z = 0, 200, 400,
 
 *von Mises, colour scale capped at the 99th percentile (11.6 MPa).*
 
-**The ribs add weight, not bending stiffness.** Tip deflection fell
-4.2% relative to the spar alone (3.841 to 3.679 mm), and the ribs'
-added self-weight alone predicts a 4.25% fall: the FEA matches a beam
-model in which the ribs are point weights with zero bending stiffness
-to within about 0.1%. Von Mises in the ribs is near zero. The ribs cost
-+108 g (+49% mass) and, being off the spar axis, add a small twist
-(about 0.1 degrees at the tip). Their structural value has to come from
-the skin (buckling resistance, shape retention), which is what Stage 3
-onward examines.
+**The ribs add weight, not bending stiffness:** the tip deflection fell
+4.2% (3.841 to 3.679 mm), and the ribs' added self-weight alone
+predicts 4.25%. The ribs cost +108 g (+49% mass) and add a small twist.
+Their structural value has to come from the skin.
 
-The path to this result included a load-application error (the
-nodal load distribution followed the locally refined mesh around the
-ribs, shifting load toward the root by 4% on the finer mesh) and an
-earlier, incorrect attribution of the deflection change to rib
-stiffness. Both are documented in the development log.
+## Findings — Stage 3 (spar v2 + ribs + skin, limit load)
+
+![Mesh overview](figures/stage3_mesh_overview.png)
+
+*Production mesh (t = 1.0 mm): free skin (blue), skin sharing nodes with
+the solid (orange: rib rims and spar-cap strips), other solid faces
+(grey).*
+
+![Root close-up](figures/stage3_mesh_root.png)
+
+**Skin thickness study** (limit load n = 3.8, lift 372.78 N per
+half-wing, 200 mm rib spacing, aircraft mass 20 kg assumed, yield
+290 MPa assumed):
+
+| Skin t | Skin mass | Tip deflection | Buckling factor (>= 1.5) | Design skin stress* | Result |
+|---|---|---|---|---|---|
+| 0.5 mm | 0.64 kg | 8.36 mm | 0.91 (6 mm skin mesh: 0.93) | 39.4 MPa | **fails** buckling |
+| **1.0 mm** | 1.28 kg | 4.20 mm | **3.14** (6 mm: 3.12) | 34.2 MPa | **passes; locked** |
+| 1.5 mm | 1.92 kg | 2.52 mm | 8.61 | 25.3 MPa | passes, 50% heavier |
+
+*Maximum von Mises over skin nodes at least 3 mm from the trailing edge
+and more than 10 mm from the fixed root (see the singularity finding
+below); factors of safety against the assumed yield are about 7.4 / 8.5
+/ 11.5.
+
+![Thickness study](figures/stage3_thickness_summary.png)
+
+![Critical buckling mode](figures/stage3_buckling_mode1.png)
+
+*Critical mode at t = 1.0 mm (factor 3.14): a single local buckle of the
+upper skin aft of the spar in the root bay. All six computed modes, at
+every thickness, are upper-skin, aft-of-spar, out-of-plane buckles in
+the two root bays, none at the edges or at rib planes.*
+
+**Verification and convergence (what was and was not shown):**
+- Load application: results at the n = 1 and n = 3.8 load cases
+  superpose exactly (lift x15.215 minus gravity x3.8 reproduces the
+  limit-load tip deflection to four digits), and the effect of solid and
+  skin gravity matches the beam model to 0.5% and 0.1%.
+- Tip deflection vs. a tapered beam with a fully effective skin ring
+  (an approximate reference, not a bound): +0.82% / -0.35% / -3.07% at
+  0.5 / 1.0 / 1.5 mm; with a nearly absent skin (0.05 mm control) the
+  model matches the spar-only beam to +0.15%.
+- Mesh: solid 2.5 -> 4 mm changes the tip deflection by -0.02%; skin
+  8 -> 6 mm changes the t = 1.0 mm buckling factor by -0.5% (and the
+  0.5 mm factor by +2.2%), and the skin stress percentiles by under 2%.
+- Buckling plausibility: the critical stress of the first mode (32.5 MPa)
+  agrees with simply supported flat-plate theory for the buckle's own
+  width (31.6 MPa) to 2.7% — a plausibility check, not a verification.
+
+**Trailing-edge stress peak is a singularity of the model.** The
+largest skin stress (238 MPa at t = 1.0 mm) sits at the trailing-edge
+vertex at the ribs. Local refinement at one rib (median edge 2.1 to
+0.28 mm) made the peak grow without bound (232 -> 536 MPa skin,
+83 -> 473 MPa solid), while the stress farther than 3 mm from the
+trailing edge converged (3-6 mm ring: 29.3 -> 35.7 MPa; 6-15 mm:
+15.1 -> 19.3 MPa) and unrefined control ribs did not move. This peak is
+excluded from the stress requirement; the true trailing-edge stress of a
+real finite-thickness trailing edge is not predicted.
+
+![Trailing-edge refinement](figures/stage3_te_refinement.png)
+
+**Sensitivity to the assumed aircraft mass.** The analysis is linear, so
+the buckling factor scales roughly as 1 / load: 0.5 mm would pass for an
+aircraft of about 12 kg or less, 1.0 mm up to about 40 kg. The locked
+thickness is valid for the 20 kg assumption only.
+
+**Unresolved:** away from the root the skin stress and bending curvature
+in the FEA are lower than the beam reference (stress ratio at
+z = 700 mm: 0.88 / 0.74 / 0.58 at 0.5 / 1.0 / 1.5 mm; the tip deflection
+agreement within 3% is partly a compensation with extra inboard
+flexibility). A skin-free control agrees, so the cause is skin-related
+and not found. Reaction-force output is not interpretable for CalculiX
+expanded shells, so global equilibrium is checked indirectly (see the
+development log).
 
 ## Limitations
 
-- The applied load (24.5 N total lift) is an explicit placeholder, not
-  a sourced aircraft weight or lift requirement — to be replaced in
-  Stage 4 once the full structure exists and a real load case is
-  defined.
-- The load is applied directly to the spar's top-cap outer face (a
-  Stage 1-2 approximation, since no skin exists yet to distribute
-  aerodynamic pressure over) — this will change once skin is added.
-- Peak von Mises stress at the root is not mesh-converged and is not
-  used as a design value.
-- Convergence is demonstrated between two mesh levels; a finer level
-  was excluded on memory grounds.
-- The ribs' twist effect is not checked against torsion theory.
-- The finding that ribs add no bending stiffness applies to this load
-  case (spanwise bending, no skin).
-- Al 2024-T3 material properties (E, yield, density) are standard
-  literature values, not yet verified against a primary/certified
-  source.
-- Spar position (30% chord) and dimensions are fixed for the entire
-  project — not varied or optimized (a deliberate scope decision, see
-  development log).
+- **Unsourced inputs:** aircraft mass (20 kg, my assumption), yield
+  (290 MPa, uncited), and the load factor's primary source (STANAG 4671
+  / CS-23 not retrieved). The thickness lock depends on the first two.
+- The elliptical load is still applied to the spar's top-cap face
+  (Stage 4 will distribute it over the skin).
+- Shell rotations at shared nodes are not coupled to the solid (solid
+  nodes have no rotational DOF): the skin is effectively hinged to the
+  caps and rib rims. Expected to be conservative for buckling; not
+  quantified.
+- Linear eigenvalue buckling only: no imperfections or post-buckling.
+- Trailing-edge geometry is idealized (asymmetric polyline closure, sharp
+  junction at the ribs); the trailing-edge stress is a mesh-dependent
+  singularity and is excluded. Refinement was done at one rib.
+- Four thin wedge-shaped skin pieces (0.07% of the skin area) force
+  triangle angles down to 0.18 degrees; accepted, effect not isolated.
+- The skin-vs-beam stress and curvature discrepancy above is unexplained.
+- Global equilibrium by reaction forces could not be evaluated for the
+  shell model.
+- Convergence is shown between two mesh levels per mesh parameter.
+- Stages 1-2 results describe the old (80%-depth) spar and the 24.5 N
+  placeholder load.
+- Al 2024-T3 properties are literature values, not verified against a
+  primary source. Spar position and dimensions are fixed project-wide.
 
 ## Conclusion
 
-Stages 1-2 establish a verified FEA pipeline for this project: the
-Netgen/CalculiX/Python toolchain, a tapered-beam numerical reference
-for deflection and bending stress, and mesh/solve/extract scripts that
-match that reference to within 0.25% on deflection and stress. Adding
-ribs to the spar showed they contribute weight and twist but no bending
-stiffness, which sets up the skin stages: the ribs' justification has
-to be resisting skin buckling, and that is what the eigenvalue analysis
-in Stage 3 will test. A real density-unit bug (1000x error, present
-but never triggered in Projects 01-02) was found and fixed in Stage 1;
-see the development log.
+Stages 1-3 establish a verified solid-and-shell FEA pipeline and a
+skin-thickness selection under a defined limit-load case. With 200 mm
+rib spacing the lightest of the three candidate skins that meets both
+the buckling requirement (factor 3.1 at 1.0 mm against 1.5) and the
+stress requirement (factor of safety about 8 outside the trailing-edge
+singularity) is 1.0 mm; 0.5 mm buckles below limit load. Skin buckling
+is local (the aft panel between spar and trailing edge, about 93 mm
+wide), so ribs closer than about that width, not the 200 mm baseline
+spacing, are what the rib studies of Stages 5-6 will probe. The result
+is conditional on the stated assumptions and carries the documented
+unresolved items. See the development log for the full record,
+including every error and retraction.

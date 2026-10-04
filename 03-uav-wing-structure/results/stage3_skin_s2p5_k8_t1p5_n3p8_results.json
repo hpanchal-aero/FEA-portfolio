@@ -1,0 +1,16 @@
+{
+  "job": "simulation/stage3_skin_s2p5_k8_t1p5_n3p8",
+  "lift_N": 372.78,
+  "n": 3.8,
+  "t_skin_mm": 1.5,
+  "W_solid_N": 13.325330430363731,
+  "W_skin_N": 71.44800584610068,
+  "uy_spar_axis_mm": 2.522609547738693,
+  "bracket_lo_mm": 27.91000561468442,
+  "bracket_hi_mm": 2.602532895651067,
+  "skin_effectiveness_fraction": 1.0031580928210293,
+  "vm_skin_max_MPa": 169.07625759433463,
+  "vm_skin_max_z_gt_10_MPa": 169.07625759433463,
+  "vm_solid_only_max_MPa": 90.8227204028849,
+  "vm_solid_only_max_z_gt_10_MPa": 90.8227204028849
+}

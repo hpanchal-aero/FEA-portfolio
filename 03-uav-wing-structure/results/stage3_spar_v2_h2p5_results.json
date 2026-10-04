@@ -1,0 +1,19 @@
+{
+  "job": "simulation/stage3_spar_v2_h2p5",
+  "nodes": 80824,
+  "root_reaction_Y_N": -22.017833203,
+  "equilibrium_err_raw_pct": -0.13673418349076888,
+  "equilibrium_err_corrected_pct": 0.00013150946527646677,
+  "uy_tip_mean_mm": 2.158979847908745,
+  "beam_ref_tip_mm": 2.157189115091337,
+  "tip_pct_diff": 0.08301232399515442,
+  "stress_pct_diffs": {
+    "top_100": 0.10385286517648182,
+    "bottom_100": 0.035638408045512195,
+    "top_300": 0.14721568993138734,
+    "bottom_300": 0.045767462377234454,
+    "top_500": 0.2200579459679049,
+    "bottom_500": 0.0757541454256444
+  },
+  "peak_vm_MPa": 12.036079450452334
+}

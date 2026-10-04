@@ -20,3 +20,11 @@ scripts/__pycache__/
 # Stage 2 additions: visualization fields and preview geometry (regenerable)
 simulation/*.vtu
 mesh/stage2_ribs/*PREVIEW*
+
+# Stage 3 additions: regenerable intermediates (rebuilt by scripts/build_stage3_skin_geom.py,
+# scripts/mesh_stage3_skin_raw.py, scripts/build_stage3_skin_inp.py from the tracked STEP files)
+simulation/*.nam
+mesh/stage3_skin/*.npz
+mesh/stage3_skin/*.msz
+mesh/stage3_skin/stage3_skin_geom.step
+mesh/stage3_skin/stage3_skin_geom.brep

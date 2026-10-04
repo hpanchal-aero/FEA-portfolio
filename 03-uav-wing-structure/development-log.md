@@ -537,6 +537,299 @@ deformation slider.
 - The CalculiX reaction-force convention was established empirically.
 - Rib stiffness contribution was measured for this load case only.
 
+## Stage 3: spar v2 + ribs + skin (skin thickness locked at 1.0 mm)
+
+Status: numerically complete; skin thickness locked at 1.0 mm by the
+user. Stage 1/2 describe the old spar and the 24.5 N placeholder load;
+this section supersedes the load case and the spar for Stage 3 onward
+without altering the earlier records.
+
+### Decisions (locked)
+
+- **Spar redesign (Option C).** The Stage 1/2 spar depth was 80% of the
+  local airfoil thickness, leaving the caps 3.6 mm (root) / 1.8 mm (tip)
+  inside the airfoil outline, so no skin could reach the spar. Options:
+  (A) skin attached at the ribs only, (B) same-material filler strips on
+  the caps, (C) spar depth = airfoil depth. The user first chose B on my
+  description ("a little mass"); I then retracted that description: the
+  filler would add about 120 g and roughly double the spar bending
+  inertia (hand estimate x2.1-2.5), i.e. not a thin shim. With the
+  corrected numbers the user chose C. Spar v2: web 2.0 mm and caps
+  8x3 mm unchanged, cap outer faces on the airfoil envelope; depth
+  35.99 mm (root) / 17.99 mm (tip); mass 249.95 g (+29.77 g); spar +
+  ribs 357.46 g (Stage 2: 327.9 g).
+- **Skin:** closed NACA 0012 skin, Al 2024-T3, **shell elements (S6)**,
+  candidates 0.5 / 1.0 / 1.5 mm. Solid tets were rejected: 0.5-1.5 mm
+  needs 2-3 elements through the thickness and would exceed the
+  ~230,000-element ceiling (a job near that size crashed the WSL host in
+  Project 01).
+- **Skin convention:** shell nodes on the airfoil envelope, material
+  outward (`*SHELL SECTION, OFFSET=-0.5`, outward normals), so the outer
+  mold line is the nominal NACA 0012 plus t.
+- **Connection:** shared nodes with the solid on the rib rims and the
+  spar-cap strips (conformal mesh), no `*TIE` / `*EQUATION`.
+- **Load case (replaces the placeholder):** the 24.5 N placeholder was
+  incompatible with the skin: at 1.0 mm the skin alone weighs 12.5 N and
+  at 1.5 mm structure weight would cancel nearly all of the lift (net
+  about 2 N). User: "whatever standard UAV has". Adopted limit load
+  factor **n = 3.8** (the cap of 14 CFR 25.337(b): 2.1 + 24000/(W+10000)
+  with a ceiling of 3.8; for a 44 lb aircraft the formula gives 4.49 so
+  the cap applies; 3.8 is also quoted for normal-category aircraft in
+  secondary sources. I could not retrieve the STANAG 4671 / CS-23 text;
+  verify before citing). **Aircraft mass 20 kg is my assumption**, chosen
+  so the wing pair is about 10 / 16 / 23% of the mass at t = 0.5 / 1.0 /
+  1.5 mm. Half-wing lift 3.8 x 20 x 9.81 / 2 = **372.78 N** (elliptical,
+  on the spar-cap face as in Stages 1-2), gravity x3.8 on solid and skin.
+- **Requirements at limit load:** yield / von Mises >= 1.5 (yield
+  **assumed 290 MPa, uncited**) and linear buckling factor >= 1.5.
+- **Thickness lock (user):** t = 1.0 mm, the lightest candidate meeting
+  both requirements. The 0.75 mm candidate suggested by interpolation
+  (factor 1.5 at about 0.65-0.7 mm) was not run.
+
+### Geometry (scripts/build_stage3_solid.py, build_stage3_skin_geom.py)
+
+- Wing envelope: ruled loft of the root and tip NACA 0012 polylines.
+  Because the outline scales linearly with chord about the spar axis,
+  every facet is planar and each rib is an exact slice. Spar v2 and the
+  rib slabs are built oversized and trimmed to the envelope by a
+  boolean intersection, so cap tops, rib rims and the skin inner surface
+  coincide exactly.
+- Validation: volume vs. independent numerical integration (spar
+  89,910.4455 mm^3, +0.00001%; spar + ribs 128,582.1216 mm^3), centroid
+  z identical to the numerical value, 1 volume, no slivers. **Bug:**
+  OCC `getBoundingBox` is loose after the boolean (reported the cutter
+  extents); the bounding box is now taken from the nodes of a coarse
+  surface mesh.
+- Skin imprint: the 78 lateral envelope faces are fragmented with the
+  solid into 834 pieces (446 shared with the solid, 388 free); skin area
+  459,622.6823 mm^2 equals the independent quad-sum; shared area
+  20,011.3512 vs. independent 20,011.3506 mm^2; the solid volume is
+  unchanged.
+- Known geometry limitations: the polyline trailing-edge closure is
+  asymmetric (upper surface ends at the true TE point, the lower
+  surface one point earlier, a slanted closing facet; inherited from
+  Stage 2, flagged, not changed). The constant-width cap edge (x = -4 mm)
+  crosses a scaled facet line near z = 742 mm, producing four wedge
+  pieces (about 300 mm^2 in all) whose apex angle (0.18 degrees) bounds
+  the skin triangle quality: inherent to the geometry, accepted.
+
+### Skin connection and buckling pipeline (verification sub-stages)
+
+- **`*TIE` is impossible for shells.** The first attempt failed with a
+  Python error (`exportStep` does not exist; `WriteStep` does), then
+  `gen3dnor` (a copy-paste mismatch: elements declared S6 but written
+  with 8 nodes), then "nonpositive jacobian determinant" on every shell
+  element even for a single element. Root cause, from the official
+  manual and not from guessing: `*TIE` can only be used with 3D
+  elements. Forum posts claiming otherwise were not relied on.
+- **Shared-node flush test** (100x10x10 mm block, 1 mm shell plate on
+  top, tip load 10 N): composite-beam reference 0.041112 mm. The first
+  result was 0.021321 mm (+48% too stiff) with no solver error: shell
+  elements built on the solid's faces had inconsistent winding, so with
+  `OFFSET=-0.5` about half of them put material into the block;
+  CalculiX's `*INFO ... opposite normals` messages were the symptom.
+  144 of 264 elements had to be flipped; afterwards 0.042998 mm,
+  -4.59% vs. the reference (attributed, not proven, to shear
+  deformation of this stubby beam). **The code for this test and its
+  reference calculation was run as inline code and was never saved as a
+  script; it cannot be reproduced from the repository.** In the
+  production pipeline the shell winding is set by an explicit outward
+  test plus a directed-edge consistency check (0 flips needed, 0
+  inconsistent edges).
+- **Buckling pipeline verification:** flat plate 200x30x1.0 mm, simply
+  supported, closed-form k = 4.0095 (m = 7), sigma_cr = 300.58 MPa:
+  S8R meshes 20x4 / 40x8 / 80x16 give factors 0.9801 / 0.9778 / 0.9777
+  (-1.99 / -2.22 / -2.23%, converged; the ~2% residual is attributed to
+  fully restrained in-plane edges, not proven; accepted by the user as
+  verified for screening). A curved root-bay panel (placeholder load,
+  idealized edges) gave 2.103 / 2.098 at 8 / 5 mm; it was a pipeline
+  stepping stone and is superseded by the full assembly.
+  `buckle_verify_extract.py` always printed "deviation from the
+  closed-form target of 1.0", meaningless outside the flat-plate case;
+  fixed (the target is now an optional argument).
+
+### Mesh and input generation
+
+Pipeline (interpreter split: Netgen / Gmsh-OCC scripts run with
+`/usr/bin/python3`, scipy-based builders in the `ccx223` conda env):
+Netgen meshes the imprinted solid + skin faces in one conformal mesh
+(solid, boundary and shared faces at the solid size, free skin faces at
+the skin size; the global maxh is the skin size because per-face sizes
+can only refine); free-face nodes carry no shared IDs and are welded by
+coordinate (1e-6 mm, the solid node ID survives); the welded skin is
+checked (no degenerate or duplicate triangles, edge-manifold, boundary
+edges only at the two end planes, area = geometry); winding is set
+outward and checked by directed edges; nodes are renumbered contiguously;
+one midside-node table serves the C3D10 tets and the S6 triangles; the
+`.inp` carries a `** LOADCASE LIFT_N= NG=` header that the extractors
+read.
+
+| Mesh (solid / skin) | C3D10 | S6 | Nodes | Equation estimate | Static solve | Buckle solve |
+|---|---|---|---|---|---|---|
+| 2.5 / 8 mm | 73,209 | 40,080 | 212,645 | 880k (75%) | 73 s, 5.7 GB | — |
+| 4 / 8 mm | 44,899 | 34,698 | 150,322 | 660k (56%) | 50 s, 4.35 GB | 125 s, 4.7 GB |
+| 4 / 6 mm | 44,868 | 44,528 | 169,941 | 778k (66%) | 72 s, 5.4 GB | 185 s, 5.8 GB |
+
+The 8 mm skin already needs 5.7 GB in the static solve (8 GB watchdog
+limit; WSL host crash history), so a finer skin was not attempted.
+CalculiX's `.frd` holds only the solid original node IDs plus its own
+expanded shell nodes (IDs above the input node count): skin-only
+original IDs are absent, so extractors read the `.frd` node coordinates.
+
+### Debugging and retractions (chronological)
+
+- Netgen meshes free faces with their own node copies (probe: 21,756
+  free-skin nodes, 0 shared IDs, 3,299 coincident with solid nodes,
+  8,303 duplicate groups among free faces): fixed by the coordinate weld.
+- First viewer images were identical (camera set after the render) and
+  were deleted; fixed with one fresh plotter per image.
+- **Reaction forces:** my first hypothesis (the "missing" 4 N sits on
+  expanded root nodes) was wrong. `FORC` is nonzero at every node, and
+  the sums over the original and over the expanded groups are each zero;
+  free nodes carry about 25.5 N of constraint forces for 24.5 N applied
+  (the same x2 factor for solid-only loads); `*NODE PRINT, TOTALS=ONLY`
+  also failed to close (lift only 25.96 N vs. 24.5 N with spurious X and
+  Z components; full model 7.54 N vs. 8.46 N). **No reaction-based
+  equilibrium check is interpretable for expanded shells.**
+- **Retracted claims:** (1) I called the fully-effective-skin beam a
+  "bound"; it is only an approximate reference (vertical-offset ring, no
+  Poisson or rib effects). (2) I predicted a limit-load tip deflection of
+  about 3.4 mm by scaling the net force; lift scales x15.2 and gravity
+  x3.8, and the correct superposition gives the 4.204 mm that was found.
+  (3) I described the filler option as adding "a little mass".
+  (4) I called the earlier tip agreement with the beam a clean
+  confirmation; the deflection profile showed compensating inboard and
+  outboard differences. (5) A stale note about an unresolved git
+  divergence was wrong: origin/main contained nothing missing locally.
+- Script mix-up: the buckling extractor text was saved into
+  `make_buckle_inp.py`; fixed by rename and recreate. A Python run with
+  the wrong interpreter (no numpy) failed harmlessly.
+- Local-size routes for the trailing-edge study: a Netgen mesh-size file
+  failed with "Problem in Surface mesh generation" and hung (now run
+  under `timeout`); vertex sizes had no effect; **edge sizes on the 34
+  edges near the trailing edge at rib 800 work** (`TE_MODE=edge`).
+
+### Verification results
+
+**Load application (t = 1.0 mm, 2.5 mm solid / 8 mm skin).** Tip deflection
+of three n = 1 variants vs. the fully-effective-skin beam: lift only
+0.33767 vs. 0.33867 mm (-0.29%), + solid gravity 0.28437 vs. 0.28511
+(-0.26%), full 0.09193 vs. 0.09287 (-1.01%; absolute offset about 1 um in
+each case); effect of solid gravity FEA / beam 0.995, of skin gravity
+1.001. Limit load: 4.2040 mm = 15.215 x 0.33767 - 3.8 x 0.24575.
+
+**Tip deflection vs. beam, by thickness (limit load):** 0.5 mm 8.359 vs.
+8.292 mm (+0.82%); 1.0 mm 4.204 vs. 4.219 (-0.35%); 1.5 mm 2.523 vs.
+2.603 (-3.07%); control t = 0.05 mm 27.603 vs. 27.561 (+0.15%, skin stress
+ratio 0.995 at z = 300, 0.993 at z = 700). The deflection profile at 1.0 mm
+differs from the beam by +23% at z = 100, +8% at 300, +3.6% at 500 and
+-0.35% at the tip (extra inboard slope about 1.5e-4 rad).
+
+**Skin stress / beam, expanded nodes (sigma_zz / -M y / I_tot):** z = 100:
+1.006 (all thicknesses roughly 1.0); z = 300: 0.968 / 0.933 / 0.891;
+z = 500: - / 0.886 / -; z = 700: 0.879 / 0.739 / 0.578 at t = 0.5 / 1.0 /
+1.5 mm. The pattern is unchanged without gravity and the ratio is lowest
+on the spar strip; the absolute offset is about 0.6 MPa for t >= 0.5 mm.
+**Cause not found** (candidates: shear lag or shear deformation, skin
+modeling).
+
+**Mesh convergence.** Solid 2.5 -> 4 mm (t = 1.0, skin 8): tip -0.02%,
+skin p99 -0.7%. Skin 8 -> 6 mm: tip +0.002%; buckling factors at
+t = 1.0: 3.1388 -> 3.1226 (-0.5%; all six modes -0.5 to -1.1%), at
+t = 0.5: 0.9122 -> 0.9325 (+2.2%).
+
+**Buckling at limit load (8 mm skin):** 0.5 mm 0.912 (FAIL); 1.0 mm 3.139;
+1.5 mm 8.611 (modes 8.611, 8.786, 12.15, 13.00, 13.95, 14.90). All modes:
+upper skin (100%), aft of the spar (x 40-166 mm), out-of-plane, root bays
+(0-200 and 200-400 mm), 0% near the edges or rib planes. Plate
+plausibility (t = 1.0): buckle width 92.6 mm, static sigma_zz 10.36 MPa x
+3.1388 = 32.5 MPa vs. simply supported plate k = 4.02 -> 31.6 MPa
+(ratio 1.027).
+
+**Stress.** Skin von Mises (CalculiX expanded nodes; the interpretation is
+verified only near the root): p99 36.1 / 18.8 / 11.9 MPa; peak at the
+trailing-edge vertex at the ribs 300 / 238 / 169 MPa; maximum at least 3 mm
+from the trailing edge 39.4 / 34.2 / 25.3 MPa (assumed-yield factors of
+safety 7.4 / 8.5 / 11.5).
+
+**Trailing-edge refinement (t = 1.0, rib 800).** Local median edge near the
+vertex 2.12 / 1.23 / 0.54 / 0.28 mm: skin peak 231.8 / 298.7 / 444.1 /
+535.6 MPa, solid-only peak 82.9 / 123.8 / 271.2 / 473.3 MPa (no
+convergence); rings 1-3 mm 90.3 / 98.4 / 56.3 / 59.8 (still drifting), 3-6
+mm 29.3 / 31.7 / 35.4 / 35.7, 6-15 mm 15.1 / 18.1 / 19.1 / 19.3, 15-40 mm
+4.9 / 5.3 / 5.7 / 5.9; unrefined ribs moved by at most 2.5%.
+
+All tables are regenerated by `scripts/collect_stage3_results.py`
+(`results/stage3_*.csv`, `stage3_summary.json`).
+
+### Findings
+
+- The skin carries essentially all of the bending (skin effectiveness
+  fraction 1.00): at limit load a spar alone would deflect 30.5 mm against
+  4.2 mm with the 1.0 mm skin.
+- Skin buckling governs the thickness: 0.5 mm buckles below limit load
+  (0.91), 1.0 mm has a factor of 3.1, 1.5 mm 8.6. The buckle is local to
+  the aft panel between spar and trailing edge (width about 93 mm), so the
+  200 mm rib spacing is not the controlling length (plate k is nearly
+  constant for panels longer than they are wide). Denser ribs should
+  help only below about 93 mm spacing (a square-panel estimate gives k of
+  about 5.8 at 50 mm and about 24 at 20 mm) — an estimate, not computed.
+- With 200 mm spacing the lightest candidate meeting buckling >= 1.5 and
+  stress (factor of safety >= 1.5 outside the singularity) is 1.0 mm.
+- The factor scales roughly as 1 / load; 0.5 mm would pass for about
+  12 kg or less, 1.0 mm up to about 40 kg (approximate).
+
+### Figures
+
+figures/stage3_mesh_overview.png and stage3_mesh_root.png (mesh classes),
+stage3_buckling_mode1.png (critical mode, plan view of the upper skin,
+the white stripes are gaps between node rows of the point cloud),
+stage3_thickness_summary.png, stage3_te_refinement.png (all from
+scripts/plot_stage3_summary.py and render_stage3_figures.py).
+scripts/view_skin_mesh.py opens a rotatable view (WSLg).
+
+### Limitations and open items
+
+- Unsourced: aircraft mass (assumed), yield (assumed, uncited), the
+  primary load-factor source.
+- The load is still applied to the spar-cap face (Stage 4).
+- Skin rotations at shared nodes are uncoupled from the solid (hinged
+  skin); not quantified.
+- Linear buckling only; no imperfections or post-buckling.
+- Trailing-edge geometry idealized; the singular peak is excluded and the
+  real trailing-edge stress is unknown; refinement at one rib only (other
+  ribs inferred).
+- Wedge-piece sliver triangles (0.18 degrees) accepted; their effect was
+  not isolated (a removal test was considered, not run).
+- Unexplained skin stress / curvature deficit relative to the beam.
+- No reaction-based equilibrium for the shell model.
+- Skin-size convergence is two levels; a finer skin did not fit in memory.
+- Yield and the 0.75 mm candidate not run; early flush-test code lost.
+
+### Reproducibility (commands as run; `ccx223` = conda env with scipy)
+/usr/bin/python3 scripts/build_stage3_solid.py spar # and: ribs
+/usr/bin/python3 scripts/build_stage3_skin_geom.py # imprint + face list
+/usr/bin/python3 scripts/mesh_stage3_solid.py ribs 2.5 # no-skin baselines
+/usr/bin/python3 scripts/mesh_stage3_skin_raw.py 4.0 8.0 # raw Netgen mesh
+python3 scripts/build_stage3_skin_inp.py mesh/stage3_skin/raw_s4_k8.npz 1.0 372.78 3.8 # ccx223
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/stage3_skin_s4_k8_t1_n3p8 8
+/usr/bin/python3 scripts/extract_stage3_skin.py simulation/stage3_skin_s4_k8_t1_n3p8
+python3 scripts/make_buckle_inp.py <static.inp> <buckle.inp> # then watchdog
+python3 scripts/extract_stage3_buckle.py <buckle job>
+/usr/bin/python3 scripts/analyze_buckle_modes.py <buckle job>
+/usr/bin/python3 scripts/check_buckle_vs_plate.py <buckle job> <static job> <factor>
+/usr/bin/python3 scripts/verify_skin_stress.py <job> # also check_deflection_profile.py,
+# check_skin_load_variants.py
+TE_MODE=edge /usr/bin/python3 scripts/mesh_stage3_skin_raw.py 4.0 8.0 <te_h> 800
+/usr/bin/python3 scripts/te_hotspot_report.py <job>
+/usr/bin/python3 scripts/collect_stage3_results.py
+python3 scripts/plot_stage3_summary.py; python3 scripts/render_stage3_figures.py
+
+Variant inputs for the load check were made by deleting the `*DLOAD` /
+`ESKIN, GRAV` lines from the n = 1 input with `sed`. Meshes, solver
+files and viewer files are not in git (regenerated by the scripts; see
+`.gitignore`).
+
 ## Status Log
 
 - Specification defined and approved
@@ -546,8 +839,10 @@ deformation slider.
 - Stage 2 (+ ribs, placeholder spacing): complete and verified
   (documentation in this entry); ribs contribute weight, not bending
   stiffness
-- Stage 3 (+ skin, skin thickness study): not started
+- Stage 3 (spar v2 + skin, thickness locked at 1.0 mm): complete and documented in this
+  entry; commit pending
 - Stage 4 (load application refinement): not started
 - Stage 5 / Phase A (rib spacing): not started
 - Phase B (rib placement search): not started
-- Git: Stage 2 commit pending; not pushed
+- Git: Stage 1 (1f64068) and Stage 2 (7b67903) committed locally; Stage 3 commit pending;
+  nothing pushed
