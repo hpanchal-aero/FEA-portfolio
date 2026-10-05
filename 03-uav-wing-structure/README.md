@@ -16,9 +16,11 @@ thickness?
 
 ## Status
 
-**Stages 1 (spar alone), 2 (spar + ribs) and 3 (spar + ribs + skin,
-skin thickness selected) complete.** Skin thickness is locked at
-**1.0 mm**. Stages 4-6 not started.
+**Stages 1 (spar alone), 2 (spar + ribs), 3 (spar + ribs + skin,
+skin thickness selected) and 4 (lift distributed over the skin as an
+analytic placeholder pressure) complete.** Skin thickness is locked at
+**1.0 mm**. Stages 5-6 (rib studies) not started; the project is not
+complete.
 
 ## Approach
 
@@ -130,7 +132,10 @@ half-wing, 200 mm rib spacing, aircraft mass 20 kg assumed, yield
 *Maximum von Mises over skin nodes at least 3 mm from the trailing edge
 and more than 10 mm from the fixed root (see the singularity finding
 below); factors of safety against the assumed yield are about 7.4 / 8.5
-/ 11.5.
+/ 11.5. In Stage 4 the location of this maximum was examined: it
+sits at the tip leading-edge node and next to the 3 mm trailing-edge
+exclusion band, not in the bending field (skin p99 is about 18 MPa);
+see Stage 4 below.
 
 ![Thickness study](figures/stage3_thickness_summary.png)
 
@@ -183,13 +188,124 @@ and not found. Reaction-force output is not interpretable for CalculiX
 expanded shells, so global equilibrium is checked indirectly (see the
 development log).
 
+## Findings — Stage 4 (lift distributed over the skin, limit load)
+
+Stages 1-3 applied the half-wing lift as nodal forces on the spar's
+top-cap face. Stage 4 applies the same limit-load lift (372.78 N per
+half-wing at n = 3.8; aircraft mass 20 kg assumed) to the skin. **The
+distribution is an analytic placeholder, not an aerodynamic prediction**;
+CFD-derived pressure belongs to Project 04. Choices:
+
+- Spanwise: elliptical, q(z) = q0 sqrt(1 - (z/1000)^2).
+- Chordwise: thin-airfoil flat-plate loading, dCp proportional to
+  sqrt((1 - xi)/xi) with xi from the leading edge. Its centre of pressure
+  (25% chord) lies 5% chord ahead of the spar axis (30%), so the lift
+  twists the wing.
+- Split: antisymmetric, suction on the upper skin and pressure on the
+  lower skin, each carrying half of the net lift.
+- Implementation: consistent nodal forces on the S6 skin nodes, with the
+  leading-edge singularity integrated exactly (means from exact
+  antiderivatives over 64 sub-triangles per element), normalised to a net
+  vertical force of 372.78 N. Gravity (x 3.8) is unchanged.
+
+**Load checks before any solve** (recomputed independently from the
+written input files): net Fy = 372.78 N (normalisation factor 1.00003);
+root moment within 0.0002% of the elliptical value (158,213 N mm);
+sum(Fy x) about the spar axis within 0.04% of the 25%-chord value;
+chordwise centre of pressure 0.2493-0.2506 in every 100 mm span bin
+(0.2495-0.2504 at the finer skin mesh); net horizontal residuals 0.04 N
+(x) and 0.004 N (z). 95% of the load acts on shell-only nodes.
+
+![Applied load](figures/stage4_load_distribution.png)
+
+**Stage 3 (spar-cap load) against Stage 4 (skin pressure), t = 1.0 mm,
+200 mm rib spacing** (4/8 = solid 4 mm / skin 8 mm; 4/6 = skin 6 mm):
+
+| Quantity | S3 4/8 | S4 4/8 | S3 4/6 | S4 4/6 |
+|---|---|---|---|---|
+| Tip deflection, spar axis [mm] | 4.203 | 4.198 | 4.203 | 4.198 |
+| Design skin stress* [MPa] | 32.9 | 32.1 | 32.8 | 32.1 |
+| Skin p99 von Mises [MPa] | 18.7 | 18.5 | 18.3 | 18.2 |
+| Critical buckling factor (>= 1.5) | 3.139 | 3.194 | 3.123 | 3.178 |
+| Tip twist, nose-up [1e-4 rad] | 1.59 | 3.99 | 1.58 | 3.98 |
+
+*Same definition as Stage 3 (at least 3 mm from the trailing edge, more
+than 10 mm from the root); see below for where it occurs.
+
+**Bending and stress.** Moving the load from the spar-cap face to the
+skin changes the tip deflection by -0.12% and the design stress by -2.3%.
+Local stress changes of about +-4 MPa appear on the skin next to rib 400
+(plausible local panel bending under the pressure; not checked). The
+design maximum sits at the tip leading-edge node (free skin edge at the
+tip rib) and at nodes just outside the 3 mm trailing-edge band at the
+ribs, not in the bending field (skin p99 about 18.5 MPa). Excluding the
+tip end (z >= 995 mm) it is 29.3 / 29.7 MPa (Stage 3 / Stage 4); also
+excluding distances below 6 mm from the trailing edge, 24.8 / 24.4 MPa
+(cutoffs chosen after inspecting the data). Under every definition Stage 3
+and Stage 4 agree within about 2%, and the factor of safety against the
+assumed yield is about 9 (8.8 in Stage 3, 9.0 in Stage 4, official definition): stress does not govern at 1.0 mm.
+
+**Buckling.** The critical factor rises from 3.14 to 3.19 (+1.75%; 3.12 to
+3.18 on the finer skin mesh), against the requirement of 1.5. The mode is
+unchanged in kind: a local out-of-plane buckle of the upper skin aft of
+the spar in the first root bay (all six modes are upper-skin, none near
+the edges or rib planes). The cause of the +1.75% was not isolated, and
+the thickness lock stands.
+
+**Twist (new in Stage 4).** The tip rotates nose-up by 0.023 degrees
+(3.99e-4 rad): 2.50e-4 rad from the lift and 1.49e-4 rad from gravity
+(presumably because the skin's centre of gravity lies aft of the spar
+axis; not computed). A tip leading edge 45 mm ahead of the spar rises by
+about 0.018 mm, 0.4% of the bending deflection: twist is not a design
+driver here. Rotation is fitted from the rib-plane nodes (rms fit
+residual <= 0.0073 mm; the ribs are not rigid).
+
+![Twist](figures/stage4_twist_span.png)
+
+*Dashed: single-cell Bredt-Batho estimate with the shear centre assumed at
+the spar axis (3.0e-4 rad at the tip for the lift). It is linear in the
+assumed shear-centre offset, so it is a plausibility check only, not a
+verification; hand/FEA ranges from 0.80 at z = 200 mm to 1.20 at the tip.*
+
+**What was and was not shown.** Lift-only plus gravity-only reproduces the
+full case to 1 nm in tip deflection (a consistency check of the linear
+solutions). The lift-only tip deflection (5.132 mm) is within 0.12% of the
+value inferred from the spar-cap-loaded model (5.138 mm), which shows
+that the load placed on shell nodes is transmitted in vertical bending;
+it does not verify the chordwise distribution or the antisymmetric
+split. Skin refinement 8 to 6 mm changes the tip deflection by +0.003%,
+the twist by -0.3%, the design stress by -0.02% and the buckling factor by
+-0.5% (two mesh levels only).
+
+
 ## Limitations
 
 - **Unsourced inputs:** aircraft mass (20 kg, my assumption), yield
   (290 MPa, uncited), and the load factor's primary source (STANAG 4671
   / CS-23 not retrieved). The thickness lock depends on the first two.
-- The elliptical load is still applied to the spar's top-cap face
-  (Stage 4 will distribute it over the skin).
+- Stage 3 results use the elliptical load on the spar's top-cap face;
+  Stage 4 (above) replaces it by an analytic placeholder pressure on the
+  skin. That pressure is not an aerodynamic prediction: the net lift is
+  split equally between upper suction and lower pressure by assumption,
+  and the nodal load follows the analytic chordwise distribution to 1.4%
+  (maximum cumulative difference; 0.2% spanwise), limited near the
+  leading edge by the 8 mm skin mesh.
+- The Stage 4 load acts through nodal forces on shell nodes: they were
+  checked through vertical bending (lift-only tip deflection within 0.12%
+  of the spar-cap-loaded model, exact superposition), not independently
+  for the chordwise or antisymmetric detail. In the linear buckling
+  preload the forces are fixed-direction (not follower) loads.
+- The twist reference is a hand estimate (single cell, shear centre
+  assumed at the spar axis, ribs and web ignored); the FEA lift-only
+  twist is 25% above it at z = 200 mm and 17% below it at the tip,
+  and the difference is unexplained. The twist is small and not a
+  design driver.
+- The design skin stress is set by local locations (tip leading-edge
+  node; band just outside the trailing-edge exclusion), not by the
+  bending field; its absolute value should not be read as a field stress.
+- The inherited asymmetric trailing-edge closure produces 46 skin
+  elements (0.04% of the area, 4/8 mm mesh) whose outward normal points
+  downward and which are treated as upper skin; their load is negligible.
 - Shell rotations at shared nodes are not coupled to the solid (solid
   nodes have no rotational DOF): the skin is effectively hinged to the
   caps and rib rims. Expected to be conservative for buckling; not
@@ -223,3 +339,12 @@ spacing, are what the rib studies of Stages 5-6 will probe. The result
 is conditional on the stated assumptions and carries the documented
 unresolved items. See the development log for the full record,
 including every error and retraction.
+
+Stage 4 replaces the spar-cap lift by an analytic placeholder pressure on
+the skin (elliptical span, thin-airfoil chord, antisymmetric). At the same
+total lift and root moment it changes the tip deflection by -0.12%, the
+design skin stress by -2.3% and the critical buckling factor by +1.75%
+(3.14 to 3.19), and adds a small nose-up twist (0.023 degrees at the tip).
+The 1.0 mm thickness lock is unchanged. These results describe the
+placeholder load, not aerodynamic loading; aerodynamic pressure belongs to
+Project 04.
