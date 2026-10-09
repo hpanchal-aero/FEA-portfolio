@@ -1152,6 +1152,311 @@ python3 scripts/make_buckle_inp.py simulation/stage4_s4_k8_t1_n3p8.inp simulatio
 python3 scripts/plot_stage4_figures.py # ccx223
 
 
+## Stage 5: rib spacing (reduced scope: 200 mm against 100 mm)
+
+Locked question: how does uniform rib spacing (100, 50, 20 mm against the
+200 mm baseline) affect tip deflection, skin buckling resistance and margin?
+Outcome: only 200 mm and 100 mm could be solved at the validated mesh on this
+machine (11 GB RAM). **The 50 mm and 20 mm cases were not run.**
+
+### Decisions (locked by the user)
+
+- D1 = A: skin t = 1.0 mm at every spacing (the thickness lock); the 0.5 and
+  0.75 mm candidates were not studied.
+- D2: the Stage 4 analytic placeholder pressure is the baseline load; the
+  200 mm baseline is the Stage 4 result (critical buckling factor 3.1938).
+- D3: rib model unchanged (solid, 1.5 mm thick, no lightening holes).
+- Spacings uniform, root and tip ribs included: 11 / 21 / 51 ribs.
+- Scope (2026-10-07): option A, drop 50 and 20 mm now and extend after a RAM
+  upgrade. Presented and not chosen: B (coarser solid mesh, would need the
+  200 mm baseline re-verified), C (ribs as shells, contradicts D3), D (dense
+  ribs over part of the span only), E (iterative solver), F (linear elements).
+- Assistant implementation choices: the `RIB_SPACING` environment variable
+  (default 200 = unchanged behaviour and file names), the `_rs<N>` suffix on
+  all outputs, `.gitignore` rules for the regenerable `_rs*` geometry, and the
+  `NETGEN_KW` environment variable for extra `GenerateMesh` keywords.
+
+### Parametrised pipeline (guarded patches, all anchors checked)
+
+- build_stage3_solid.py: `RIB_STATIONS` from `RIB_SPACING` (must divide the
+  1000 mm span), output name with the suffix.
+- build_stage3_skin_geom.py: input/output names with the suffix; the expected
+  solid volume at other spacings comes from the builder's own numerical
+  integration (relative tolerance 1e-7) instead of the 6-rib constant, and a
+  sidecar `stage3_solid_volume_rs<N>.txt` carries it to the input builder.
+- mesh_stage3_skin_raw.py: names with the suffix; the face-count check compares
+  the classified faces with the imprint JSON (388/446/72 is kept at 200 mm);
+  `NETGEN_KW` (e.g. `closeedgefac=None`) adds keywords and a tag suffix.
+- build_stage3_skin_inp.py: the suffix is taken from the raw-mesh file name and
+  the sidecar volume is read.
+- extract_stage3_skin.py: refuses to run if the job name's `_rs<N>` disagrees
+  with `RIB_SPACING` (its beam reference depends on the rib stations).
+- Regression check at 200 mm: solid volume 128,582.1216 mm^3, 834 skin pieces,
+  tracked `stage3_skin_faces.json` byte-identical; the rebuilt tracked solid
+  STEP differs only in its header timestamp (restored with `git checkout`).
+
+### Geometry (builder and imprint; all validations PASS)
+
+| Spacing | Ribs | Solid volume [mm^3] | Mass | Skin pieces (shared / free) | Solid boundary faces / non-skin | Imprint time |
+|---|---|---|---|---|---|---|
+| 200 mm | 6 | 128,582.1216 | 357.46 g | 834 (446 / 388) | 518 / 72 | |
+| 100 mm | 11 | 160,188.1389 | 445.32 g | 1590 (814 / 776) | 956 / 142 | |
+| 50 mm | 21 | 223,469.4464 | 621.25 g | 3098 (1548 / 1550) | 1830 / 282 | 2 m 53 s |
+| 20 mm | 51 | 413,368.7873 | 1149.17 g | 7630 (3754 / 3876) | 4456 / 702 | 13 m 26 s |
+
+The skin area after the imprint is 459,622.6823 mm^2 in all cases (the
+envelope does not depend on the ribs) and the shared areas match the
+independent rim-plus-cap estimates (e.g. 23,333.3512 against 23,333.3506 mm^2
+at 100 mm). At 20 mm the imprint has four sliver pieces: two free pieces of
+0.0037 mm^2 and two of 0.7228 mm^2 (scripts/diag_rs_slivers.py). They are
+remnants of the inherited wedge piece (the cap-edge line x = -4 crossing a
+scaled facet line near z = 742.3, apex angle about 0.18 degrees) cut by the
+ribs at z = 720 and 740; the other spacings have no piece below 1.14 mm^2.
+
+### Meshes (solid 4 mm / skin 8 mm, Netgen; counts from the input builder)
+
+| Spacing | C3D10 | S6 | Nodes | Elements (share of 230k) | Equation estimate (share of 1.18M) |
+|---|---|---|---|---|---|
+| 200 mm | 44,899 | 34,698 | 150,322 | 79,597 (34.6%) | 660,486 (56.0%) |
+| 100 mm | 68,050 | 46,028 | 214,545 | 114,078 (49.6%) | 921,135 (78.1%) |
+| 50 mm | 112,518 | 65,800 | 334,992 | 178,318 (77.5%) | 1,401,108 (**118.7%**, over) |
+| 20 mm | not meshed; about 246,000 tets extrapolated (6, 11, 21 ribs: +4630 and +4447 tets per added rib) | | | | |
+
+The equation estimate is 3 per node plus 3 more per skin node (an estimate). A
+rough extrapolation from the Stage 3 solves (880k equations needed 5.7 GB)
+puts the 50 mm static solve at about 9 GB, above the 8 GB watchdog limit and
+close to the 11 GB host, which was crashed at about 1.18 million equations in
+Project 01. The 50 mm builder run stops at the ceiling check ('size exceeds
+ceiling'); the mesh itself is built and checks out (skin boundary edges only at
+the root and tip ends, tet volume +0.0000%, 0 tet-boundary faces without a
+surface triangle).
+
+### Netgen investigation at 50 mm (chronological)
+
+1. The first mesh run at 4/8 (timeout 2400 s) ended with exit 124 after 41 min
+   26 s, using only 634 MB (the 100 mm mesh takes 54 s and 380 MB). The timeout
+   was far too generous; the log held only a Netgen line ' ERROR: Problem in
+   Surface mesh generation' (Python's buffered output was lost on the kill).
+2. An unbuffered 300 s re-run printed 'Faces: 3380 (free 1550, shared 1548 +
+   non-skin 282)' as predicted and no 'GenerateMesh OK'; my `grep -v` filter
+   hid the ERROR line (it begins with a space). A coarse trial at solid 6 /
+   skin 10 mm failed the same way: not a mesh-size effect.
+3. scripts/diag_netgen_faces.py (modes map, verbose, face, edges, single, topo)
+   verified that Netgen's face number k is `shape.faces[k-1]` (1732 of 1732
+   indices on the 100 mm mesh). Message levels 5 and 9 print identical logs.
+   scripts/parse_netgen_face_log.py: the ERROR came while face 2603 was in
+   progress ('give up with qualclass 201', 'number of frontlines = 9'), Netgen
+   continued, and it spun on face 2986 (started twice, never finished; a front
+   of more than 2,100 lines on a 110 mm^2 face), so faces 2987 to 3380 never
+   started.
+4. **Misreading, retracted:** I first read the 'faces = N trials = N elements =
+   N' lines as the volume mesher; they are the 2D surface mesher's (the first
+   one is at log line 14, interleaved with the face lines).
+5. The faces are ordinary free skin pieces (2603: a quadrilateral 6.8 x 48.7 mm
+   at the trailing edge; 2986: a strip 2.3 x 48.5 mm, the root-end bay of the
+   wedge family; 2987: the wedge triangle with a 0.13209 mm base). Each of them
+   alone meshes in 0.03 to 0.05 s (12, 17 and 28 triangles). Topology is
+   conforming (no edge used by one face; 2 or 3 faces per edge at 100 and 50
+   mm). The shortest edge, 0.13209 mm (the wedge base), is the same at 100 and
+   50 mm. **API slip:** my first `edges` mode used an unverified `e.start.p`
+   and printed None; it was rewritten with `e.center` and `e.mass`.
+6. The `GenerateMesh` documentation lists the OCC option
+   `closeedgefac: Optional[float] = 2.` ('if None it is disabled'), on by
+   default. With `closeedgefac=None` all 3380 faces are meshed with no ERROR;
+   with 1.0 the run still fails (2812 faces done, one ERROR). The full 50 mm
+   mesh with the option takes 88.4 s (2 min 39 s wall, 605 MB).
+7. With `closeedgefac=None` the raw meshes at **100 mm and 200 mm are
+   array-for-array identical** to the default ones (scripts/compare_raw_meshes.py:
+   P, tets, tris, tri_idx, in_tet_bnd), so no earlier result needed re-meshing;
+   the option only matters for the 50 mm geometry. Why the default refinement
+   fails there was not determined.
+
+### Tet quality (scripts/check_tet_quality.py; mean ratio q, 1 = regular tet)
+
+| Mesh | Tets | q min | q p1 | q median | tets q < 0.05 / < 0.10 | Max edge ratio |
+|---|---|---|---|---|---|---|
+| 200 mm (Stage 3/4 mesh) | 44,899 | 0.0311 | 0.483 | 0.818 | 6 / 35 | 46.2 |
+| 100 mm | 68,050 | 0.0301 | 0.529 | 0.822 | 7 / 32 | 63.4 |
+| 50 mm (not solved) | 112,518 | 0.0306 | 0.545 | 0.829 | 4 / 28 | 23.0 |
+
+No tet below 0.02. The worst tets in all three meshes are at x about -3.8 to
+-4.0 mm, |y| about 10.5 to 10.75 mm, z about 745 to 749 mm (just beyond the
+wedge apex), away from the reported hot spots. The smallest-volume tets
+(0.000499 mm^3 at 100 and 50 mm, near the 0.13 mm wedge base) are not among
+the worst by q. This also characterises the Stage 3 and 4 production mesh,
+which had only been checked for positive volume. The effect of the poorest tets
+was not tested.
+
+### Solves (CalculiX 2.23, watchdog limit 8 GB; all exit code 0, 0 warnings)
+
+| Job (100 mm, 4/8) | Wall time | Peak RSS |
+|---|---|---|
+| static, full | 134.2 s | 6.19 GB |
+| static, lift only / gravity only | 139.3 s / 136.3 s | 6.19 / 6.17 GB |
+| buckling (6 modes) | 325.6 s | 6.71 GB |
+
+Pre-solve load gates at 100 mm: scale factor 1.000055, root moment +0.0002%,
+sum(Fy x) +0.073%, centre of pressure 0.2499 to 0.2501 in every 100 mm bin,
+94.1% of the load on shell-only nodes, 88 elements with a downward force (46 at
+200 mm; the ratio 1.91 equals (2 x 11 - 1) / (2 x 6 - 1), consistent with the
+same trailing-edge closure facet cut into more strips; not separately
+diagnosed).
+
+### Results (scripts/collect_stage5_results.py; results/stage5_comparison.csv)
+
+| Quantity | 200 mm | 100 mm | Change |
+|---|---|---|---|
+| Solid mass / skin mass / total | 0.3575 / 1.2778 / 1.6352 kg | 0.4453 / 1.2778 / 1.7231 kg | +5.37% total |
+| Tip deflection full / lift only / gravity only [mm] | 4.197839 / 5.131732 / -0.933894 | 4.046027 / 4.994565 / -0.948538 | -3.62% / -2.67% / +1.57% |
+| Beam with rib-section inertia, full [mm] | 4.194180 | 4.129242 | |
+| FEA against that beam | +0.09% | -2.02% | |
+| Tip twist (nose-up) | 3.987e-4 rad = 0.0228 deg | 4.127e-4 rad = 0.0236 deg | +3.5% |
+| Skin p99 von Mises | 18.510 MPa | 18.592 MPa | +0.4% |
+| Skin TE-vertex maximum (excluded zone) | 229.5 MPa | 248.2 MPa (rib 700) | |
+| Design stress, dTE >= 3 mm (official) | 32.095 MPa | 37.718 MPa | +17.5% |
+| Design stress, dTE >= 15 mm | 32.095 MPa | 30.719 MPa | |
+| Variant z < 990 and dTE >= 6 (post hoc) | 24.380 MPa | 25.143 MPa | +3.1% |
+| Critical buckling factor | 3.1938 | 3.9123 | +22.5% |
+| Buckling modes 1 to 6 | 3.1938, 3.3658, 4.3522, 4.6241, 4.7899, 5.0939 | 3.9123, 4.3297, 5.2570, 5.4994, 5.6508, 5.9790 | +17 to +29% |
+
+- Superposition holds exactly (100 mm: 4.994565 - 0.948538 = 4.046027 mm; twist
+  at z = 200: 1.211e-4 + 0.325e-4 = 1.536e-4 rad).
+- The extractor beam reference (no rib inertia) moved from 4.218995 to 4.177824
+  mm (-0.98%); the FEA moved -3.62%.
+- scripts/beam_with_rib_inertia.py adds, over each rib's 1.5 mm, the second
+  moment of the filled airfoil outline (I_solid: root 550,634, mid 174,224, tip
+  34,415 mm^4; I_ring 115,081, 49,646, 15,372; I_spar at the root 17,577). Its
+  no-rib variant reproduces `beam_tip` exactly. With rib inertia the beam
+  changes by -0.587% (200 mm) and -1.162% (100 mm), i.e. -0.58% between the two
+  spacings, against -2.67% in the FEA lift response. At 200 mm the rib-aware
+  beam agrees with the FEA to +0.09% (full) and +0.17% (lift only); the earlier
+  -0.50% was mostly the rib sections. At 100 mm the FEA is 2.0% stiffer, in both
+  the lift and the gravity responses, so it is a structural stiffness effect.
+  Interpretation (not tested): closely spaced ribs suppress section distortion
+  and shear lag in the skin over the whole span.
+- Buckling modes at 100 mm: all upper skin aft of the spar, none within 20 mm of
+  the leading or trailing edge or within 3 mm of a rib plane. Mode 1 peaks at
+  (79.4, 14.5, 49.2) with hot nodes at z 29 to 73 (one lobe in the first bay);
+  mode 2 at z = 149.7 (hot region z 125 to 172); all six modes lie at z < 200
+  (at 200 mm mode 6 was in the 200 to 400 mm bay). The bay labels printed by
+  analyze_buckle_modes.py are fixed to the 200 mm stations and are wrong at 100
+  mm. In the plan-view figure the 200 mm mode shows two bright spots in the root
+  bay (peaks near z = 60 and 132); the cause of the +22.5% was not isolated.
+- Design stress: the top design nodes at 100 mm are at 3.0 to 3.5 mm from the
+  trailing-edge vertex at the ribs (z = 700.8, 899.2, 900.8, 699.2, 499.2, ...),
+  plus the tip leading-edge node (30.719 MPa). The dTE >= 3 mm metric is
+  mesh-sensitive (the Stage 3 refinement study showed the 3 to 6 mm ring rising
+  from 29.3 to 35.7 MPa; the 100 mm mesh is finer there, free-skin median edge
+  3.98 mm against 5.62 mm) and is not comparable across spacings. The
+  factor of safety against the assumed 290 MPa is at least 7.7 (official) or
+  about 11.5 (variant). The "|z-rib|" column of diag_stage4_design_nodes.py is
+  tied to the 200 mm stations and is meaningless at 100 mm.
+
+### Predictions written down before the runs, and what happened
+
+| Prediction | Outcome |
+|---|---|
+| 100 mm solid about 160,000 mm^3 / about 445 g | 160,188 / 445.32 g (hit) |
+| 100 mm piece count about 1,600 | 1,590 (hit by luck, see retraction 1) |
+| 50 mm solid about 223,500 / 621 g; pieces about 3,100 | 223,469 / 621.25 g; 3,098 (hit) |
+| 20 mm solid about 413,000 / 1.15 kg; pieces about 7,620 | 413,369 / 1.149 kg; 7,630 (hit) |
+| 20 mm imprint takes 7 to 20 minutes | 13 min 26 s |
+| 100 mm tets 55k to 90k | 68,050 (hit) |
+| 50 mm tets about 114k; equations 1.3 to 1.45 M | 112,518; 1.40 M (hit) |
+| 100 mm static 120 to 250 s, 6.0 to 6.3 GB | 134 s, 6.19 GB (hit) |
+| 100 mm buckling about 6.6 GB, about 315 s | 6.71 GB, 326 s (hit) |
+| Weight of the 100 mm solid at n = 3.8: 17.2 N | 16.60 N (arithmetic error) |
+| Tip deflection about 4.15 mm (-1%) | 4.046 mm (-3.6%) (**miss**) |
+| Buckling factor 3.1 to 3.5 | 3.91 (**miss**) |
+| Skin p99 and design stress within a few % | p99 +0.4% (hit); official design stress +17.5% (**miss**) |
+| Rib-section inertia explains -0.5 to -1% | -0.58% between the spacings (hit, low end) |
+| Mode peaks near z = 60 and 49 mm | 60.2 and 49.2 mm (hit) |
+| Tet quality: median 0.7 to 0.8; worst tets near x -4, z 700 | median 0.82 to 0.83; worst at z 745 to 749 (partial miss) |
+
+### Retractions and corrections (chronological)
+
+1. The 100 mm piece-count 'pattern' used 78 x 21 = 1,614; the product is 1,638.
+   The two-point linear structure found afterwards (free = 77.6 (n - 1), shared =
+   73.6 (n - 1) + 78) is only an extrapolation device, accurate to 0.13% at 50
+   and 20 mm.
+2. I said the builder took about four minutes; that came from file timestamps
+   that include human time. Measured: 19.7 s (50 mm), 82.5 s (20 mm).
+3. The 2,400 s Netgen timeout was too generous (41 minutes lost); later runs used
+   short limits, `python3 -u` and size-guarded logs.
+4. My `grep -v '^[[:space:]]'` filter hid the ERROR line of the unbuffered run.
+5. The volume-mesher misreading (above).
+6. The unverified `e.start.p` API in the first `edges` mode (above).
+7. The 17.2 N weight prediction was an arithmetic error (16.60 N).
+8. The Stage 3 plate-theory expectation that ribs help only below about 93 mm
+   spacing, and my prediction for this run, were wrong at 100 mm.
+9. The README sentence that a 6 mm skin at 100 mm 'would exceed the memory
+   ceiling' was unsupported: the extrapolation gives about 1.09 M equations
+   (below the ceiling), about 7.7 GB static and about 8.2 GB for buckling, at or
+   above the 8 GB watchdog limit; it was not tried. Corrected in the README.
+10. The official design-stress metric (dTE >= 3 mm) is mesh-sensitive and not
+    comparable across spacings; the +17.5% is not a physical stress increase.
+11. My guess for the worst-tet location (z about 700) was off; the apex is at z
+    about 742 and the worst tets are at 745 to 749.
+
+### Findings
+
+- Halving the rib spacing adds 5.4% mass and raises the critical buckling factor
+  by 22.5% (3.19 to 3.91; all six modes rise) and lowers the tip deflection by
+  3.6%, leaves the field stress unchanged (p99 +0.4%) and raises the twist
+  slightly (+3.5%). At t = 1.0 mm the buckling requirement was already met by
+  +109%, so this margin is not needed at this thickness; thinner skins with
+  denser ribs were not studied.
+- About a fifth of the extra bending stiffness is the rib sections themselves;
+  about 2% remains unexplained (suspected section-distortion restraint).
+- The Stage 3 and 4 tip deflection agrees with a rib-aware beam to 0.1 to 0.2%.
+- With two spacings there is no trend and no optimum can be named.
+
+### Figures
+
+figures/stage5_comparison.png (scripts/plot_stage5_figures.py) and
+figures/stage5_buckling_mode1.png (scripts/render_stage5_modes.py, plan view of
+buckling mode 1 for both spacings with rib lines).
+
+### Limitations and open items
+
+- Only two spacings; 50 and 20 mm not run (RAM). 50 mm needs about 9 GB (extrapolated)
+  and `NETGEN_KW="closeedgefac=None"`; 20 mm needs a mesh strategy (its element
+  count extrapolates above the ceiling) and attention to the sliver pieces.
+- No skin-size or solid-size convergence at 100 mm (a 6 mm skin is estimated at
+  about 7.7 GB static / 8.2 GB buckling, not tried).
+- About 2% of the 100 mm bending stiffness, the small twist increase and the
+  +22.5% buckling change are not traced to a mechanism.
+- The dTE >= 3 mm design-stress metric is mesh-sensitive.
+- Tet-quality tail at the wedge apex in all meshes; effect not tested. The
+  inherited trailing-edge closure facet and the wedge pieces remain.
+- The load is the analytic placeholder; 20 kg and 290 MPa are assumptions; the
+  ribs are solid without lightening holes.
+- Why Netgen's default close-edge refinement fails on the 50 mm geometry is not
+  known; why the 100 mm solves ran slower than in Stage 3 is not known either.
+
+### Reproducibility (commands as run; `ccx223` = conda env with scipy)
+RIB_SPACING=100 /usr/bin/python3 scripts/build_stage3_solid.py ribs
+RIB_SPACING=100 /usr/bin/python3 scripts/build_stage3_skin_geom.py
+RIB_SPACING=100 NETGEN_KW="closeedgefac=None" /usr/bin/python3 -u scripts/mesh_stage3_skin_raw.py 4.0 8.0 # identical to the default mesh at 100 and 200 mm
+python3 scripts/build_stage3_skin_inp.py mesh/stage3_skin/raw_s4_k8_rs100.npz 1.0 372.78 3.8 # ccx223
+/usr/bin/python3 scripts/apply_stage4_pressure_load.py simulation/stage3_skin_s4_k8_rs100_t1_n3p8.inp simulation/stage4_s4_k8_rs100_t1_n3p8.inp full # also lift, grav
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/stage4_s4_k8_rs100_t1_n3p8 8 # also _lift, _grav
+python3 scripts/make_buckle_inp.py simulation/stage4_s4_k8_rs100_t1_n3p8.inp simulation/stage4_s4_k8_rs100_t1_n3p8_buckle.inp 6 # ccx223
+/usr/bin/python3 scripts/run_ccx_watchdog.py simulation/stage4_s4_k8_rs100_t1_n3p8_buckle 8
+RIB_SPACING=100 /usr/bin/python3 scripts/extract_stage3_skin.py simulation/stage4_s4_k8_rs100_t1_n3p8 # also _lift, _grav; refuses without RIB_SPACING
+RIB_SPACING=100 /usr/bin/python3 scripts/extract_stage3_buckle.py simulation/stage4_s4_k8_rs100_t1_n3p8_buckle
+/usr/bin/python3 scripts/extract_stage4_twist.py simulation/stage4_s4_k8_rs100_t1_n3p8 simulation/stage4_s4_k8_rs100_t1_n3p8_lift simulation/stage4_s4_k8_rs100_t1_n3p8_grav simulation/stage4_s4_k8_t1_n3p8
+/usr/bin/python3 scripts/compare_stage4_stress.py simulation/stage4_s4_k8_t1_n3p8 simulation/stage4_s4_k8_rs100_t1_n3p8
+/usr/bin/python3 scripts/diag_stage4_design_nodes.py simulation/stage4_s4_k8_rs100_t1_n3p8
+RIB_SPACING=100 /usr/bin/python3 scripts/beam_with_rib_inertia.py # and without RIB_SPACING for 200 mm
+/usr/bin/python3 scripts/check_tet_quality.py mesh/stage3_skin/raw_s4_k8.npz mesh/stage3_skin/raw_s4_k8_rs100.npz mesh/stage3_skin/raw_s4_k8_rs50_closeedgefacnone.npz
+/usr/bin/python3 scripts/compare_raw_meshes.py mesh/stage3_skin/raw_s4_k8.npz mesh/stage3_skin/raw_s4_k8_closeedgefacnone.npz
+/usr/bin/python3 scripts/collect_stage5_results.py
+python3 scripts/plot_stage5_figures.py; python3 scripts/render_stage5_modes.py # ccx223
+# 50 mm (not solved): RIB_SPACING=50 on the build scripts and NETGEN_KW="closeedgefac=None" on the mesh script;
+# Netgen diagnostics: scripts/diag_netgen_faces.py, parse_netgen_face_log.py, diag_rs_slivers.py, diag_short_edges.py
+# extension after a RAM upgrade: repeat the 100 mm chain with RIB_SPACING=50 (then 20, after a mesh strategy for it)
+
 ## Status Log
 
 - Specification defined and approved
@@ -1165,7 +1470,8 @@ python3 scripts/plot_stage4_figures.py # ccx223
   entry; committed locally (8e27d78)
 - Stage 4 (load distributed over the skin as an analytic placeholder pressure): complete and
   documented in this entry; committed locally (see git log)
-- Stage 5 / Phase A (rib spacing): not started
+- Stage 5 / Phase A (rib spacing): complete in a reduced scope (200 mm against 100 mm; 50 and 20 mm
+  not run: RAM limit); documented in this entry; committed locally (see git log)
 - Phase B (rib placement search): not started
-- Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 committed locally (see git log);
+- Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 and Stage 5 committed locally (see git log);
   nothing pushed

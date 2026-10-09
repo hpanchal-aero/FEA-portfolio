@@ -24,8 +24,11 @@ import time
 import numpy as np
 from netgen.occ import OCCGeometry
 
-STEP = "mesh/stage3_skin/stage3_skin_geom.step"
-PIECES = "mesh/stage3_skin/stage3_skin_faces.json"
+import os as _os_rs
+_RS = float(_os_rs.environ.get("RIB_SPACING", "200"))
+RS_SUFFIX = "" if _RS == 200.0 else "_rs%g" % _RS
+STEP = "mesh/stage3_skin/stage3_skin_geom" + RS_SUFFIX + ".step"
+PIECES = "mesh/stage3_skin/stage3_skin_faces" + RS_SUFFIX + ".json"
 
 
 def xyz(c):
@@ -43,8 +46,14 @@ def main():
     te_h = float(sys.argv[3]) if len(sys.argv) > 3 else None
     te_z = float(sys.argv[4]) if len(sys.argv) > 4 else 800.0
     te_mode = os.environ.get("TE_MODE", "edge")
-    tag = f"raw_s{solid_h:g}_k{skin_h:g}".replace(".", "p")
+    tag = f"raw_s{solid_h:g}_k{skin_h:g}".replace(".", "p") + RS_SUFFIX
     gen_kwargs = {}
+    for _it in os.environ.get("NETGEN_KW", "").split():
+        _k, _v = _it.split("=", 1)
+        gen_kwargs[_k] = None if _v == "None" else ((_v == "True") if _v in ("True", "False") else float(_v))
+        tag += "_" + _k + _v.replace(".", "p").lower()
+    if gen_kwargs:
+        print(f"extra GenerateMesh keywords from NETGEN_KW: {gen_kwargs}")
     xte = 0.7 * (300.0 - 0.15 * te_z)
     if te_h is not None:
         tag += f"_te{te_h:g}_z{te_z:g}".replace(".", "p")
@@ -85,8 +94,13 @@ def main():
             f.maxh = solid_h; n_non += 1
     print(f"Faces: {len(faces)} (free skin {n_free} -> maxh {skin_h}; "
           f"shared skin {n_shared} + non-skin {n_non} -> maxh {solid_h})")
-    if n_free != 388 or n_shared != 446 or n_non != 72:
-        print("ERROR: face classification does not match 388/446/72 -- STOP."); sys.exit(1)
+    exp_free = int(np.sum(jshared == 0))
+    exp_shared = int(np.sum(jshared != 0))
+    exp_non = 72 if RS_SUFFIX == "" else None   # not predicted for other spacings, reported only
+    print(f"Expected from the imprint JSON: free {exp_free}, shared {exp_shared}, "
+          f"non-skin {exp_non if exp_non is not None else 'not predicted'}")
+    if n_free != exp_free or n_shared != exp_shared or (exp_non is not None and n_non != exp_non):
+        print("ERROR: face classification does not match the imprint JSON -- STOP."); sys.exit(1)
     for s in shape.solids:
         s.maxh = solid_h
 

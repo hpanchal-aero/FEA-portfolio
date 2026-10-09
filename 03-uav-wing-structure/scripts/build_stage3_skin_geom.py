@@ -30,10 +30,26 @@ import gmsh
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_stage3_solid as b
 
-STEP_IN = "mesh/stage3_solid/stage3_spar_ribs_v2.step"
+import os as _os_rs
+_RS = float(_os_rs.environ.get("RIB_SPACING", "200"))
+RS_SUFFIX = "" if _RS == 200.0 else "_rs%g" % _RS
+STEP_IN = "mesh/stage3_solid/stage3_spar_ribs_v2" + RS_SUFFIX + ".step"
 OUT_DIR = "mesh/stage3_skin"
 os.makedirs(OUT_DIR, exist_ok=True)
-VOL_EXPECTED = 128582.1216
+def _expected_volume():
+    if RS_SUFFIX == "":
+        return 128582.1216
+    v = 0.0
+    for i, zs in enumerate(b.RIB_STATIONS):
+        v += b.simpson(b.env_area, zs - b.RIB_T / 2.0, zs + b.RIB_T / 2.0, 2)
+        if i + 1 < len(b.RIB_STATIONS):
+            v += b.simpson(b.spar_area, zs + b.RIB_T / 2.0,
+                           b.RIB_STATIONS[i + 1] - b.RIB_T / 2.0, 100)
+    return v
+
+
+VOL_EXPECTED = _expected_volume()
+VOL_TOL = 0.01 if RS_SUFFIX == "" else 1e-7 * VOL_EXPECTED
 AREA_TOL_PCT = 0.1
 SPAN = b.SPAN
 RIB_T = b.RIB_T
@@ -103,7 +119,7 @@ def main():
     occ.synchronize()
     v0 = occ.getMass(3, solids[0])
     print(f"Imported solid volume: {v0:.4f} mm^3 (expect {VOL_EXPECTED})")
-    if abs(v0 - VOL_EXPECTED) > 0.01:
+    if abs(v0 - VOL_EXPECTED) > VOL_TOL:
         fail("imported solid volume mismatch")
 
     # envelope (same construction as build_stage3_solid.py)
@@ -203,10 +219,13 @@ def main():
     print(f"OVERALL VALIDATION: {'PASS' if all_ok else 'FAIL'}")
     print("=" * 70)
     if all_ok:
-        gmsh.write(os.path.join(OUT_DIR, "stage3_skin_geom.brep"))
-        gmsh.write(os.path.join(OUT_DIR, "stage3_skin_geom.step"))
-        with open(os.path.join(OUT_DIR, "stage3_skin_faces.json"), "w") as f:
+        gmsh.write(os.path.join(OUT_DIR, "stage3_skin_geom" + RS_SUFFIX + ".brep"))
+        gmsh.write(os.path.join(OUT_DIR, "stage3_skin_geom" + RS_SUFFIX + ".step"))
+        with open(os.path.join(OUT_DIR, "stage3_skin_faces" + RS_SUFFIX + ".json"), "w") as f:
             json.dump(faces_json, f, indent=1)
+        if RS_SUFFIX:
+            with open(os.path.join(OUT_DIR, "stage3_solid_volume" + RS_SUFFIX + ".txt"), "w") as fv:
+                fv.write("%.6f\n" % VOL_EXPECTED)
         print(f"Saved geometry and {len(faces_json)}-piece face list to {OUT_DIR}/")
     else:
         print("Geometry NOT saved -- validation failed.")

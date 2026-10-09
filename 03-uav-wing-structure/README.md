@@ -19,8 +19,9 @@ thickness?
 **Stages 1 (spar alone), 2 (spar + ribs), 3 (spar + ribs + skin,
 skin thickness selected) and 4 (lift distributed over the skin as an
 analytic placeholder pressure) complete.** Skin thickness is locked at
-**1.0 mm**. Stages 5-6 (rib studies) not started; the project is not
-complete.
+**1.0 mm**. Stage 5 (rib spacing) is complete in a reduced scope, 200 mm
+against 100 mm; the 50 and 20 mm cases were not run (RAM limit, see Stage 5).
+Stage 6 (rib placement) not started; the project is not complete.
 
 ## Approach
 
@@ -278,6 +279,105 @@ the twist by -0.3%, the design stress by -0.02% and the buckling factor by
 -0.5% (two mesh levels only).
 
 
+## Findings — Stage 5 (rib spacing, reduced scope: 200 mm against 100 mm)
+
+The study was specified for uniform rib spacings of 100, 50 and 20 mm against
+the 200 mm baseline. On this machine (11 GB RAM) only 200 mm and 100 mm could
+be solved at the validated mesh (solid 4 mm / skin 8 mm), so Stage 5 compares
+those two. **The 50 mm and 20 mm cases were not run.**
+
+- **50 mm (21 ribs):** geometry and mesh were built (112,518 tets + 65,800
+  shells = 178,318 elements, 77.5% of the 230,000-element ceiling), but the
+  equation estimate is 1.40 million, 118.7% of the 1.18 million ceiling that
+  was set after a host crash in Project 01. A rough extrapolation from the
+  Stage 3 solves gives about 9 GB for a static solve. Never solved.
+- **20 mm (51 ribs):** geometry built, not meshed: the tets alone extrapolate
+  to about 246,000 (three data points), above the element ceiling. The
+  imprint also contains four sliver pieces (two of 0.0037 mm^2).
+- The study will be extended after a RAM upgrade. The tooling is in place
+  (`RIB_SPACING` environment variable in the geometry, imprint, mesh and
+  input scripts). The 50 mm mesh needs `NETGEN_KW="closeedgefac=None"`: with
+  Netgen's default close-edge refinement the 2D surface mesher fails and then
+  spins on that geometry; at 200 mm and 100 mm the option gives
+  array-for-array identical meshes.
+
+Same load, thickness, material and ribs as before: the Stage 4 analytic
+placeholder pressure at limit load (372.78 N per half-wing, n = 3.8; 20 kg
+aircraft mass and 290 MPa yield assumed), skin 1.0 mm, solid ribs 1.5 mm thick
+without lightening holes (uniform spacing, including the root and tip ribs).
+
+| Quantity | 200 mm (6 ribs) | 100 mm (11 ribs) | Change |
+|---|---|---|---|
+| Total mass (solid + skin) | 1.635 kg | 1.723 kg | +5.4% |
+| Tip deflection, full [mm] | 4.198 | 4.046 | -3.6% |
+| Tip deflection, lift only / gravity only [mm] | 5.132 / -0.934 | 4.995 / -0.949 | -2.7% / +1.6% |
+| Beam reference with rib-section inertia, full [mm] | 4.194 | 4.129 | |
+| FEA against that beam | +0.09% | -2.0% | |
+| Tip twist | 0.0228 deg | 0.0236 deg | +3.5% |
+| Skin p99 von Mises | 18.5 MPa | 18.6 MPa | +0.4% |
+| Design stress (dTE >= 3 mm)* | 32.1 MPa | 37.7 MPa | +17.5% |
+| Variant (z < 990 mm, dTE >= 6 mm)** | 24.4 MPa | 25.1 MPa | +3.1% |
+| **Critical buckling factor (>= 1.5)** | **3.19** | **3.91** | **+22.5%** |
+| Buckling modes 1-6 | 3.19, 3.37, 4.35, 4.62, 4.79, 5.09 | 3.91, 4.33, 5.26, 5.50, 5.65, 5.98 | +17 to +29% |
+| Elements (C3D10 + S6) / equation estimate | 79,597 / 660k | 114,078 / 921k | |
+| Solve time, peak memory (static / buckling) | 93 s, 4.35 GB / 214 s, 4.73 GB | 134 s, 6.19 GB / 326 s, 6.71 GB | |
+
+*Same definition as Stages 3 and 4; **mesh-sensitive, see below.
+**chosen after inspecting the data (sensitivity probe, not a pre-set rule).
+
+![Stage 5 comparison](figures/stage5_comparison.png)
+
+![Critical buckling mode, 200 mm and 100 mm](figures/stage5_buckling_mode1.png)
+
+*Critical buckling mode (upper skin, plan view, span to the right, black lines
+are rib planes): at 200 mm it fills the root bay; at 100 mm it is confined to
+one bay.*
+
+**Buckling.** The critical factor rises 22.5% (3.19 to 3.91), and every one of
+the six computed modes rises (+17 to +29%). All modes remain local out-of-plane
+buckles of the upper skin aft of the spar, none at the edges or at the rib
+planes; at 100 mm all six lie in the first two bays (z < 200 mm). **This
+contradicts my Stage 3 expectation**, a plate-theory estimate that denser ribs
+would help only below about 93 mm spacing (and my prediction for this run of
+3.1 to 3.5). The cause of the +22.5% was not isolated.
+
+**Bending.** Of the -3.6% tip-deflection change, the lift-only solution
+carries -2.7% and the gravity-only solution +1.6% in magnitude (a consistency
+check: lift-only plus gravity-only reproduces the full case to a nanometre).
+A beam reference that includes the rib-section inertia (the filled airfoil over
+each rib's 1.5 mm) explains -0.6% of the lift response. At 200 mm that beam
+agrees with the FEA to 0.1 to 0.2%; at 100 mm the FEA is 2% stiffer than it.
+My interpretation (not tested) is that ribs 100 mm apart suppress section
+distortion and shear lag in the skin, which a beam does not represent.
+
+**Stress.** The field stress is unchanged (skin p99 +0.4%). The official
+design-stress metric rises 17.5%, but its maximum sits at 3.1 mm from the
+trailing-edge vertex at a rib (the edge of the exclusion band), where the
+Stage 3 study showed a mesh-dependent singularity; the 100 mm mesh is finer
+there and has more rib stations. The metric is therefore not comparable across
+spacings, and the +17.5% is not a physical stress increase. The less
+mesh-sensitive variant rises 3.1%. The factor of safety against the assumed
+yield is at least 7.7 (official metric) or about 11.5 (variant), against a
+requirement of 1.5: stress does not govern.
+
+**Twist** rises slightly (+3.5%), which is the opposite of what more ribs would
+suggest for torsion; not investigated.
+
+**Cost against benefit.** The 87.9 g of extra ribs (+5.4% mass) buy +22.5%
+buckling factor and -3.6% tip deflection. At t = 1.0 mm the buckling
+requirement was already met by +109% at 200 mm, so the extra margin is not
+needed at this thickness; whether denser ribs would allow a thinner skin was not
+studied (the thickness stays at the locked 1.0 mm).
+
+**What was and was not shown.** Shown: exact superposition of the solutions,
+the pre-solve load gates, 0 warnings in all solves, a beam cross-check, and
+mesh-quality statistics (median tet quality 0.82; at most 7 tets below 0.05 in
+each mesh, all near the apex of the wedge feature at z of about 745 to 749 mm,
+away from the reported hot spots). Not shown: any trend beyond two spacings (no
+optimum can be named), skin-size or solid-size convergence at 100 mm (a 6 mm
+skin is extrapolated to need about 7.7 GB for the static and about 8.2 GB for the buckling solve, at
+or above the 8 GB watchdog limit; not tried), or the effect of the poorest tets.
+
 ## Limitations
 
 - **Unsourced inputs:** aircraft mass (20 kg, my assumption), yield
@@ -306,6 +406,19 @@ the twist by -0.3%, the design stress by -0.02% and the buckling factor by
 - The inherited asymmetric trailing-edge closure produces 46 skin
   elements (0.04% of the area, 4/8 mm mesh) whose outward normal points
   downward and which are treated as upper skin; their load is negligible.
+- Stage 5 covers only two rib spacings (200 and 100 mm); the 50 and 20 mm
+  cases were not run because of the RAM limit, so no trend or optimum can be
+  stated. No skin-size or solid-size convergence was done at 100 mm.
+- About 2% of the 100 mm bending stiffness beyond a rib-aware beam, and the
+  small twist increase, are unexplained; the +22.5% buckling change was not
+  traced to a mechanism.
+- The "design stress (dTE >= 3 mm)" metric is mesh-sensitive (trailing-edge
+  singularity tail) and is not comparable across spacings.
+- Tet-quality tail (worst 0.03 on the mean-ratio metric, at most 7 tets below
+  0.05) at the apex of the wedge feature (x of about -4 mm, z of about 745 to
+  749 mm) in all meshes; its effect was not tested.
+- The solid ribs have no lightening holes, which inflates the mass cost of
+  extra ribs relative to a real wing.
 - Shell rotations at shared nodes are not coupled to the solid (solid
   nodes have no rotational DOF): the skin is effectively hinged to the
   caps and rib rims. Expected to be conservative for buckling; not
@@ -348,3 +461,10 @@ design skin stress by -2.3% and the critical buckling factor by +1.75%
 The 1.0 mm thickness lock is unchanged. These results describe the
 placeholder load, not aerodynamic loading; aerodynamic pressure belongs to
 Project 04.
+
+Stage 5 compared uniform rib spacings of 200 and 100 mm (50 and 20 mm were not
+run: RAM). Halving the spacing adds 5.4% mass and raises the critical buckling
+factor by 22.5% (3.19 to 3.91), against a requirement that was already met at
+1.0 mm; it lowers the tip deflection by 3.6%, leaves the field stress
+unchanged, and raises the twist slightly. These results again describe the
+placeholder load, and with two spacings they show no trend.

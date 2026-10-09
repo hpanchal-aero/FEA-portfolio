@@ -28,3 +28,7 @@ mesh/stage3_skin/*.npz
 mesh/stage3_skin/*.msz
 mesh/stage3_skin/stage3_skin_geom.step
 mesh/stage3_skin/stage3_skin_geom.brep
+
+# regenerable rib-spacing study geometry (RIB_SPACING != 200): rebuild with the scripts, see development-log
+mesh/stage3_solid/*_rs*
+mesh/stage3_skin/*_rs*

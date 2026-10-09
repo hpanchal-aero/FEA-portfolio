@@ -45,7 +45,12 @@ TOL = 1e-3            # mm, bbox tolerance after booleans
 SPAN = 1000.0
 ROOT_CHORD, TIP_CHORD = 300.0, 150.0
 SPAR_CHORD_FRAC = 0.30
-RIB_STATIONS = [0.0, 200.0, 400.0, 600.0, 800.0, 1000.0]
+import os as _os_rs
+RIB_SPACING = float(_os_rs.environ.get("RIB_SPACING", "200"))
+if abs(SPAN / RIB_SPACING - round(SPAN / RIB_SPACING)) > 1e-9:
+    raise SystemExit("RIB_SPACING=%g must divide the %g mm span" % (RIB_SPACING, SPAN))
+RIB_STATIONS = [i * RIB_SPACING for i in range(int(round(SPAN / RIB_SPACING)) + 1)]
+RS_SUFFIX = "" if RIB_SPACING == 200.0 else "_rs%g" % RIB_SPACING
 RIB_T = 1.5
 N_AIRFOIL_PTS = 40
 
@@ -336,7 +341,7 @@ def main():
     print("=" * 70)
 
     if all_ok:
-        name = "stage3_spar_v2" if mode == "spar" else "stage3_spar_ribs_v2"
+        name = "stage3_spar_v2" if mode == "spar" else "stage3_spar_ribs_v2" + RS_SUFFIX
         brep_path = os.path.join(OUT_DIR, name + ".brep")
         step_path = os.path.join(OUT_DIR, name + ".step")
         gmsh.write(brep_path)

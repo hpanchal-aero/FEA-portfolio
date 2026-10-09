@@ -41,7 +41,17 @@ WELD = 1e-6
 EQ_CEILING, ELEM_CEILING = 1_180_000, 230_000
 SOLID_VOL = 128582.1216
 Z_LO, Z_HI = -RIB_T / 2.0, SPAN + RIB_T / 2.0
-PIECES = "mesh/stage3_skin/stage3_skin_faces.json"
+import re as _re_rs
+import sys as _sys_rs
+_m_rs = _re_rs.search(r"_rs(\d+)(?:_|\.)", _sys_rs.argv[1]) if len(_sys_rs.argv) > 1 else None
+RS_SUFFIX = ("_rs" + _m_rs.group(1)) if _m_rs else ""
+PIECES = "mesh/stage3_skin/stage3_skin_faces" + RS_SUFFIX + ".json"
+if RS_SUFFIX:
+    try:
+        SOLID_VOL = float(open("mesh/stage3_skin/stage3_solid_volume" + RS_SUFFIX + ".txt").read())
+    except OSError:
+        raise SystemExit("missing mesh/stage3_skin/stage3_solid_volume" + RS_SUFFIX +
+                         ".txt (run build_stage3_skin_geom.py with RIB_SPACING set)")
 
 
 def die(msg):

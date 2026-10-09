@@ -175,6 +175,11 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: extract_stage3_skin.py <job>"); sys.exit(1)
     job = sys.argv[1]
+    import re as _re_rs
+    _m_rs = _re_rs.search(r"_rs(\d+)(?:_|$)", os.path.basename(job))
+    _want_rs = float(_m_rs.group(1)) if _m_rs else 200.0
+    if b.RIB_SPACING != _want_rs:
+        print(f"ERROR: job name implies RIB_SPACING={_want_rs:g} but the environment gives {b.RIB_SPACING:g}; set RIB_SPACING={_want_rs:g} -- STOP."); sys.exit(1)
     inp, frd = job + ".inp", job + ".frd"
     lift, ng = read_loadcase(inp)
     xyz, solid, shell, root, cload, t_skin = parse_inp(inp)
