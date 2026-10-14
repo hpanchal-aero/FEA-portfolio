@@ -3,7 +3,7 @@
 Stage 6: final tier 2 selection. Front 1 (strict non-dominated sorting, no tolerance) in full, then the
 remainder of the 20 from front 2 by NSGA-II crowding distance computed within front 2 on objectives
 normalised to 0-1 over front 2 (ties: lower layout id). L000 is added as a reference if not selected.
-Reads results/stage6_fronts.csv (from select_top20.py run with default tolerances).
+Reads results/stage6_fronts.csv (from select_top20.py --first-pass with default tolerances).
 Writes results/stage6_tier2_selection.csv.
 """
 import csv
