@@ -50,3 +50,4 @@ results/stage6/render_cases/
 results/stage6_results.csv.pre_skin
 results/stage4_s*_k8_L*_results.json
 figures/3d/*.glb
+*.bak_hash

@@ -1570,6 +1570,6 @@ nohup /usr/bin/python3 scripts/run_layout_study.py --stage pass2 --layouts <ids>
   not run: RAM limit); documented in this entry; committed locally (see git log)
 - Stage 6 (rib placement, rib count, rib thickness, skin gauge): runs, analysis and documentation complete
   (this entry, section "Stage 6"); 121 layouts solved at 1.5 mm ribs, 63 thin-rib runs, 12 skin-gauge runs;
-  finer-mesh check of the top layouts not run; local commit to follow, nothing pushed
-- Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 and Stage 5 committed locally (see git log);
+  finer-mesh check of the top layouts not run; committed locally (9684c45), nothing pushed
+- Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 and Stage 5 committed locally (see git log); Stage 6 committed locally (9684c45);
   nothing pushed
