@@ -1,0 +1,20 @@
+{
+  "id": "L000",
+  "key": "L000_rt0p5",
+  "family": "uniform baseline",
+  "stations": "0,200,400,600,800,1000",
+  "rib_t": 0.5,
+  "tag": "_L000_rt0p5",
+  "steps": {
+    "geom": {
+      "wall_s": 6.2,
+      "status": "failed",
+      "reason": "rc=1 timed_out=False has_PASS=False has_FAIL=True step_file=False; see results/stage6/logs/L000_rt0p5_geom.log",
+      "step_wall_s": 6.2
+    }
+  },
+  "metrics": {},
+  "failed_step": "geom",
+  "failed_reason": "rc=1 timed_out=False has_PASS=False has_FAIL=True step_file=False; see results/stage6/logs/L000_rt0p5_geom.log",
+  "complete": false
+}

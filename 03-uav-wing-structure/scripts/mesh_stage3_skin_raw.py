@@ -24,9 +24,8 @@ import time
 import numpy as np
 from netgen.occ import OCCGeometry
 
-import os as _os_rs
-_RS = float(_os_rs.environ.get("RIB_SPACING", "200"))
-RS_SUFFIX = "" if _RS == 200.0 else "_rs%g" % _RS
+import variant_tag as _vt
+RS_SUFFIX = _vt.configuration(1000.0)[3]
 STEP = "mesh/stage3_skin/stage3_skin_geom" + RS_SUFFIX + ".step"
 PIECES = "mesh/stage3_skin/stage3_skin_faces" + RS_SUFFIX + ".json"
 

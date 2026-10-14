@@ -1,0 +1,34 @@
+{
+  "id": "L029",
+  "key": "L029",
+  "family": "random",
+  "stations": "0,134.1,509.3,585.4,708.1,1000",
+  "rib_t": 1.5,
+  "tag": "_L029",
+  "steps": {
+    "geom": {
+      "wall_s": 2.8,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 2.8
+    },
+    "imprint": {
+      "wall_s": 15.8,
+      "pieces": 838,
+      "shared": 448,
+      "free": 390,
+      "volume": 129060.4694,
+      "volume_expected": 129060.46833273099,
+      "min_free_area": 1.7775923858344125,
+      "min_shared_area": 1.1434138867158175,
+      "n_json": 838,
+      "status": "failed",
+      "reason": "sliver gate: smallest free piece 1.7776 mm2 < 5.0 at cz=719.99 cx=-4.04",
+      "step_wall_s": 15.8
+    }
+  },
+  "metrics": {},
+  "failed_step": "imprint",
+  "failed_reason": "sliver gate: smallest free piece 1.7776 mm2 < 5.0 at cz=719.99 cx=-4.04",
+  "complete": false
+}

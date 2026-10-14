@@ -1,0 +1,48 @@
+
+=== results/stage6_results.csv : 133 rows, status {'complete': 121, 'failed': 12}
+  best buckling  L151  buck 4.8778 tip 4.0779 mass 1.7160 rib_t 1.5 stations 0,60,130,200,400,520,640,760,880,1000
+  lowest tip     L149  buck 3.6841 tip 4.0777 mass 1.7055 rib_t 1.5 stations 0,111.1,222.2,333.3,444.4,555.6,666.7,777.8,888.9,1000
+  lowest mass    L100  buck 3.0720 tip 4.3374 mass 1.5658 rib_t 1.5 stations 0,1000
+  best buck/kg   L151  buck 4.8778 tip 4.0779 mass 1.7160 rib_t 1.5 stations 0,60,130,200,400,520,640,760,880,1000
+  L000 baseline  L000  buck 3.1938 tip 4.1978 mass 1.6352 rib_t 1.5 stations 0,200,400,600,800,1000
+
+=== results/stage6_results_rt0p5.csv : 77 rows, status {'failed': 1, 'pending': 76}
+
+=== results/stage6_results_rt0p8.csv : 77 rows, status {'complete': 21, 'pending': 56}
+  best buckling  L008  buck 4.0956 tip 4.2576 mass 1.6026 rib_t 0.8 stations 0,50,100,150,300,1000
+  lowest tip     L050  buck 3.2457 tip 4.2093 mass 1.5763 rib_t 0.8 stations 0,168.4,798.7,847.8,927.1,1000
+  lowest mass    L033  buck 3.1279 tip 4.2221 mass 1.5725 rib_t 0.8 stations 0,553.4,643.9,852.4,948.1,1000
+  best buck/kg   L008  buck 4.0956 tip 4.2576 mass 1.6026 rib_t 0.8 stations 0,50,100,150,300,1000
+  L000 baseline  L000  buck 3.1682 tip 4.2362 mass 1.5841 rib_t 0.8 stations 0,200,400,600,800,1000
+
+=== results/stage6_results_rt1.csv : 77 rows, status {'complete': 21, 'pending': 56}
+  best buckling  L006  buck 4.5178 tip 4.2464 mass 1.6184 rib_t 1.0 stations 0,60,130,200,400,1000
+  lowest tip     L050  buck 3.2774 tip 4.1976 mass 1.5889 rib_t 1.0 stations 0,168.4,798.7,847.8,927.1,1000
+  lowest mass    L033  buck 3.1362 tip 4.2077 mass 1.5842 rib_t 1.0 stations 0,553.4,643.9,852.4,948.1,1000
+  best buck/kg   L006  buck 4.5178 tip 4.2464 mass 1.6184 rib_t 1.0 stations 0,60,130,200,400,1000
+  L000 baseline  L000  buck 3.1761 tip 4.2254 mass 1.5987 rib_t 1.0 stations 0,200,400,600,800,1000
+
+=== results/stage6_results_rt1p2.csv : 77 rows, status {'complete': 21, 'pending': 56}
+  best buckling  L006  buck 4.6916 tip 4.2374 mass 1.6370 rib_t 1.2 stations 0,60,130,200,400,1000
+  lowest tip     L050  buck 3.2975 tip 4.1843 mass 1.6016 rib_t 1.2 stations 0,168.4,798.7,847.8,927.1,1000
+  lowest mass    L033  buck 3.1386 tip 4.1933 mass 1.5959 rib_t 1.2 stations 0,553.4,643.9,852.4,948.1,1000
+  best buck/kg   L006  buck 4.6916 tip 4.2374 mass 1.6370 rib_t 1.2 stations 0,60,130,200,400,1000
+  L000 baseline  L000  buck 3.1834 tip 4.2142 mass 1.6133 rib_t 1.2 stations 0,200,400,600,800,1000
+
+=== results/stage6_scores.csv : 132 rows ; header + first 6:
+   run,id,rib_t,stations,family,buckling,tip_mm,mass_kg,headline,rank_headline,composite,rank_composite,first_of_35,top5_of_35
+   L006@1,L006,1.0,0,60,130,200,400,1000,handcrafted,4.5178,4.246406763636364,1.6184392308643762,1.4292,3,0.6051,1,11,25
+   L006@1.2,L006,1.2,0,60,130,200,400,1000,handcrafted,4.6916,4.237442538461538,1.6369694105719557,1.4674,1,0.5772,2,10,19
+   L006@0.8,L006,0.8,0,60,130,200,400,1000,handcrafted,4.0782,4.2538622,1.5999090517701202,1.3051,11,0.5685,3,1,16
+   L010@0.8,L010,0.8,0,100,220,780,900,1000,handcrafted,3.5667,4.219392323529412,1.5852833880024995,1.1519,38,0.5615,4,3,19
+   L008@0.8,L008,0.8,0,50,100,150,300,1000,handcrafted,4.0956,4.257626246056782,1.6026237448702239,1.3084,10,0.5544,5,0,14
+   L074@0.8,L074,0.8,0,75.7,221.3,814,877.8,1000,random (replacement),3.504,4.2169600607902735,1.5855118652251563,1.1315,47,0.5484,6,0,7
+
+=== results/stage6_tier2_selection.csv : 21 rows ; header + first 6:
+   id,stations,source,buckling,tip_mm,mass_kg
+   L006,0,60,130,200,400,1000,front1,4.7174,4.22588285106383,1.6647646815531296
+   L007,0,80,160,240,420,1000,front1,4.5165,4.227168166666667,1.6617424023176512
+   L062,0,75,163.7,325.1,392,1000,front1,4.2521,4.225445404255319,1.6602300481977585
+   L065,0,86.5,165.2,257.4,675.9,1000,front1,4.2368,4.213228461538462,1.6552521408764675
+   L009,0,100,200,300,600,1000,front1,3.808,4.217620515021459,1.654346453661005
+   L010,0,100,220,780,900,1000,front1,3.7459,4.182619102564103,1.6373415619889853

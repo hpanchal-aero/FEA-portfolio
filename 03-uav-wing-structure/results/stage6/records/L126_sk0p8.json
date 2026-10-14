@@ -1,0 +1,100 @@
+{
+  "id": "L126",
+  "key": "L126_sk0p8",
+  "family": "5 ribs",
+  "stations": "0,60,130,200,1000",
+  "rib_t": 1.5,
+  "tag": "_L126",
+  "skin_t": 0.8,
+  "steps": {
+    "inp": {
+      "wall_s": 0.9,
+      "matched": 686,
+      "matched_of": 686,
+      "tets": 43561,
+      "tet_min_volume": 0.011665,
+      "tets_bad": 0,
+      "c3d10": 43561,
+      "s6": 33912,
+      "elements": 77473,
+      "elem_pct": 33.7,
+      "eq_estimate": 646779,
+      "eq_pct": 54.8,
+      "root_z": -0.75,
+      "load_nodes_not_solid": 0,
+      "load_moment_err_pct": -0.0089,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.9
+    },
+    "load": {
+      "wall_s": 4.7,
+      "scale": 1.000028,
+      "root_moment_err_pct": 0.0018,
+      "torque_err_pct": 0.039,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 4.7
+    },
+    "static_solve": {
+      "wall_s": 50.8,
+      "warnings": 0,
+      "peak_line": "Exit code: 0   wall time: 50.6 s   peak RSS: 4328 MB (4.23 GB)",
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 50.8
+    },
+    "static_extract": {
+      "wall_s": 2.0,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 3.4
+    },
+    "buckle_solve": {
+      "wall_s": 125.1,
+      "warnings": 0,
+      "peak_line": "Exit code: 0   wall time: 124.9 s   peak RSS: 4719 MB (4.61 GB)",
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 125.3
+    },
+    "buckle_extract": {
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.0
+    },
+    "cleanup": {
+      "removed": 10,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.0
+    }
+  },
+  "metrics": {
+    "tip_mm": 5.388570251046025,
+    "mass_kg": 1.3898848883479058,
+    "solid_mass_kg": 0.3676840428647714,
+    "skin_mass_kg": 1.0222008454831344,
+    "vm_skin_max_MPa": 212.22219210650428,
+    "vm_solid_only_max_MPa": 39.766070289445096,
+    "vm_skin_max_z_gt_10_MPa": 212.22219210650428,
+    "bracket_lo_mm": 31.821649898552028,
+    "bracket_hi_mm": 5.379051076967337,
+    "skin_p99": 23.925545625863162,
+    "skin_p99_9": 28.976104881387073,
+    "skin_max_dTE_ge3": 35.51361034125985,
+    "solid_only_max": 39.766070289445096,
+    "buckling_crit": 2.8163,
+    "buckling_factors": [
+      2.8163,
+      2.9535,
+      2.9883,
+      3.3543,
+      3.4382,
+      3.6277
+    ]
+  },
+  "failed_step": null,
+  "failed_reason": null,
+  "complete": true
+}

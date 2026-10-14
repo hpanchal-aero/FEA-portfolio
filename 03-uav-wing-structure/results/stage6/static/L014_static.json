@@ -1,0 +1,16 @@
+{
+  "job": "simulation/stage4_s4_k8_L014_closeedgefacnone_t1_n3p8",
+  "lift_N": 372.78,
+  "n": 3.8,
+  "t_skin_mm": 1.0,
+  "W_solid_N": 13.321908193733828,
+  "W_skin_N": 47.632003897400175,
+  "uy_spar_axis_mm": 4.1974816309012875,
+  "bracket_lo_mm": 30.545846370325076,
+  "bracket_hi_mm": 4.218920298701404,
+  "skin_effectiveness_fraction": 1.0008143247617207,
+  "vm_skin_max_MPa": 223.1744112843054,
+  "vm_skin_max_z_gt_10_MPa": 223.1744112843054,
+  "vm_solid_only_max_MPa": 65.68947399348087,
+  "vm_solid_only_max_z_gt_10_MPa": 65.68947399348087
+}

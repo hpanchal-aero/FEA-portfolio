@@ -21,7 +21,10 @@ skin thickness selected) and 4 (lift distributed over the skin as an
 analytic placeholder pressure) complete.** Skin thickness is locked at
 **1.0 mm**. Stage 5 (rib spacing) is complete in a reduced scope, 200 mm
 against 100 mm; the 50 and 20 mm cases were not run (RAM limit, see Stage 5).
-Stage 6 (rib placement) not started; the project is not complete.
+Stage 6 (rib layout, rib count, rib thickness and skin-gauge sensitivity) is complete as a
+computational study: verification only, no validation, and no finer-mesh convergence check on
+the Stage 6 layouts yet. The project is not yet marked complete (open items are listed under
+Limitations of Stage 6).
 
 ## Approach
 
@@ -377,6 +380,113 @@ away from the reported hot spots). Not shown: any trend beyond two spacings (no
 optimum can be named), skin-size or solid-size convergence at 100 mm (a 6 mm
 skin is extrapolated to need about 7.7 GB for the static and about 8.2 GB for the buckling solve, at
 or above the 8 GB watchdog limit; not tried), or the effect of the poorest tets.
+
+## Findings — Stage 6 (rib layout, rib count, rib thickness and skin gauge)
+
+**Question.** With spar v2 and the 1.0 mm skin fixed, how do rib placement, rib count, rib thickness and skin gauge change the buckling margin, tip deflection and structural mass of the wing under the n = 3.8 limit load (Stage 4 placeholder pressure)?
+
+**Method.** A parametric driver (`scripts/run_layout_study.py`) runs every case through the same chain: geometry → imprint of the skin faces → Netgen mesh (C3D10 solid, S6 skin) → CalculiX static solve → CalculiX buckling solve → Python extraction. Each layout is a list of rib stations from root (0) to tip (1000 mm). The baseline layout L000 (uniform 200 mm ribs) reproduces the Stage 4 results, and every layout re-run in the later checks reproduced its stored result exactly (relative difference 0). Metrics: critical buckling factor (multiplier on the whole limit load), tip deflection on the spar axis, structural mass, and the p99 skin von Mises stress. Layouts whose imprint produced a sliver face smaller than the gate (free piece below 5 mm², shared piece below 0.5 mm²) were rejected rather than meshed; the gate threshold is a provisional engineering choice, not a validated one.
+
+### 1. Rib placement at six ribs (1.5 mm ribs, 1.0 mm skin)
+
+77 layouts were defined, 69 solved and 8 rejected by the gate.
+
+| Layout | Rib stations [mm] | Buckling | Tip [mm] | Mass [kg] |
+|---|---|---|---|---|
+| L000 (uniform) | 0, 200, 400, 600, 800, 1000 | 3.194 | 4.198 | 1.635 |
+| L006 (best buckling) | 0, 60, 130, 200, 400, 1000 | **4.717** | 4.226 | 1.665 |
+| L050 (lowest tip) | 0, 168.4, 798.7, 847.8, 927.1, 1000 | 3.317 | **4.162** | 1.621 |
+
+Close root spacing raises buckling by 48% over the uniform layout for +1.8% mass; ribs clustered near the tip lower the tip deflection by 0.9% and also lower the mass. These directions are the expected ones. What the study adds is the size of the effects and where they saturate.
+
+![Stage 6 layout comparison](figures/stage6_comparison.png)
+
+### 2. Rib count (2 to 10 ribs, 1.5 mm ribs, 1.0 mm skin)
+
+121 layouts are solved in total. The number of layouts per rib count is unequal (69 at six ribs, 1 to 15 at the others), so the "best of n" values below are biased towards the counts with more samples.
+
+| Ribs | Layouts | Best buckling | (layout) | Mass [kg] | Tip [mm] | Best tip [mm] |
+|---|---|---|---|---|---|---|
+| 2 | 1 | 3.072 | L100 | 1.566 | 4.337 | 4.337 |
+| 3 | 9 | 3.569 | L101 | 1.593 | 4.291 | 4.291 |
+| 4 | 15 | 4.159 | L112 | 1.620 | 4.268 | 4.263 |
+| 5 | 13 | 4.652 | L126 | 1.645 | 4.249 | 4.234 |
+| 6 | 69 | 4.717 | L006 | 1.665 | 4.226 | 4.162 |
+| 7 | 4 | 4.758 | L152 | 1.678 | 4.189 | 4.166 |
+| 8 | 4 | 4.798 | L145 | 1.690 | 4.150 | 4.140 |
+| 9 | 3 | 4.838 | L155 | 1.704 | 4.114 | 4.109 |
+| 10 | 3 | 4.878 | L151 | 1.716 | 4.078 | 4.078 |
+
+Buckling rises by about 0.5 per rib up to five ribs and by about 0.04 per rib beyond that, so the knee is at about five ribs. Tip deflection falls steadily with rib count: 6.0% lower at ten ribs than at two, for 9.6% more mass. All 121 layouts exceed the buckling requirement of 1.5 (minimum 3.07). Compared with the Stage 5 uniform 100 mm layout (11 ribs, buckling 3.91, 1.723 kg; value from the Stage 5 results), L151 gives +24.8% buckling at −0.4% mass, assuming the same rib thickness and mesh settings.
+
+![Rib count study](figures/stage6b_rib_count.png)
+
+### 3. Why buckling saturates (mode-shape check)
+
+The critical mode was located from the buckling `.frd` files (`scripts/modal_span_distribution.py`, mode-displacement energy per 100 mm span bin; the first result block of each file is the preload state and is excluded, which was checked against the printed buckling factors).
+
+| Layout | Critical factor | Where the critical mode lives |
+|---|---|---|
+| L100 (2 ribs) | 3.072 | 91% of the displacement energy at z < 200 mm, peak at z ≈ 59 mm |
+| L126 (ribs at 60, 130, 200) | 4.652 | 98.5% at z < 400 mm, 84% in the 200–300 mm bin |
+| L006 (adds a rib at 400) | 4.717 | 98.2% at z < 400 mm, 85% in the 200–300 mm bin |
+
+In all three the peak is about 90–115 mm ahead of the trailing edge, an aft skin panel, and the mode is short in span. A root cluster of ribs moves the critical location outboard to the first unsupported length just beyond the last close rib; ribs further out cannot restrain a short local buckle there, which is why buckling saturates. This is an interpretation from the location of the displacement energy; the wavelength and the skin-panel versus web character of the mode were not measured.
+
+### 4. Rib thickness (tier 2: 20 selected layouts plus L000 at 1.2, 1.0 and 0.8 mm)
+
+| Rib thickness | L000 buckling / mass [kg] | L006 buckling / tip [mm] / mass [kg] |
+|---|---|---|
+| 1.5 mm | 3.194 / 1.635 | 4.717 / 4.226 / 1.665 |
+| 1.2 mm | 3.183 / 1.613 | 4.692 / 4.237 / 1.637 |
+| 1.0 mm | 3.176 / 1.599 | 4.518 / 4.246 / 1.618 |
+| 0.8 mm | 3.168 / 1.584 | 4.078 / 4.254 / 1.600 |
+
+For the uniform layout, rib thickness barely changes buckling (−0.8% from 1.5 to 0.8 mm) while mass falls by 3.1% (51 g). For L006 the root ribs matter: 1.2 mm costs 0.55% of the buckling for 28 g, but 1.0 mm costs 4.2% and 0.8 mm costs 13.5%. A 0.5 mm rib was not run: the geometry builder's own cleanliness check treats faces below 0.5 mm² as slivers and rejected it. Two scores rank the solved runs (`scripts/score_layouts.py`): buckling per unit mass relative to L000 favours L006 at 1.2 mm ribs, and a weighted composite (mass 0.45, buckling 0.40, tip 0.15; the weights are a judgement, not derived) favours L006 at 1.0 mm ribs.
+
+### 5. Skin gauge sensitivity (four layouts at 1.0, 0.8 and 0.6 mm skin)
+
+Buckling / tip [mm] (solver results):
+
+| Skin | L100 (2 ribs) | L126 (5 ribs) | L006 (6 ribs) | L151 (10 ribs) |
+|---|---|---|---|---|
+| 1.0 mm | 3.072 / 4.337 | 4.652 / 4.249 | 4.717 / 4.226 | 4.878 / 4.078 |
+| 0.8 mm | 1.876 / 5.507 | 2.816 / 5.389 | 2.856 / 5.364 | 2.932 / 5.220 |
+| 0.6 mm | **1.022** / 7.275 | **1.470** / 7.111 | **1.483** / 7.084 | 1.507 / 6.946 |
+
+Buckling scales as t^2.1–2.3 and tip deflection as t^−1.0, and the skin contributes about 1.28 kg per mm, which is 74–82% of the structural mass depending on the layout. At 0.6 mm only the 10-rib layout meets the buckling requirement of 1.5, and then by 0.5%; the relative benefit of ribs (1.44–1.59 times the 2-rib buckling) is nearly independent of skin gauge.
+
+A fit of ln(buckling) and ln(tip) against ln(t) (quadratic through the three points; mass linear in t) estimates the skin gauge that lands exactly on the requirement:
+
+| Layout | Skin t* for buckling 1.5 | Mass [kg] | Tip [mm] |
+|---|---|---|---|
+| L100 | 0.721 mm | 1.209 | 6.11 |
+| L126 | 0.605 mm | 1.141 | 7.05 |
+| L006 | 0.603 mm | 1.158 | 7.05 |
+| L151 | 0.599 mm (extrapolated by 0.001 mm) | 1.203 | 6.96 |
+
+Two further solves tested the fit between the data points: L100 at 0.721 mm gave buckling 1.5015, tip 6.112 mm and mass 1.2093 kg (fit: 1.50, 6.114, 1.2092), and L126 at 0.7 mm gave 2.106, 6.152 mm and 1.2621 kg (fit: 2.08, about 6.15, 1.262). At the requirement the five-rib layout is the lightest of those tested, about 5.6% lighter than the two-rib layout; the two-rib layout with its thicker skin has 13% lower tip deflection. Mass and tip pull in opposite directions, so there is no single best layout. The L126 versus L006 mass difference (1.4%) is inside the interpolation uncertainty.
+
+![Skin gauge sensitivity](figures/stage6c_skin_sensitivity.png)
+
+### Engineering interpretation
+
+1. In this model the skin gauge, not the rib layout, sets the mass, the stiffness and the buckling margin; ribs matter as a second-order lever and become decisive only once the skin is thin enough for the margin to approach the requirement.
+2. About five ribs, with a close cluster at the root, capture most of the available buckling gain; beyond that each rib buys about 1% buckling for about 12 g.
+3. Stress is not binding: the p99 skin stress stays below 32 MPa and the largest solid-only stress below 69 MPa at every point, against an assumed yield of 290 MPa.
+
+### Limitations of Stage 6
+
+- The aircraft mass (20 kg), the yield stress (290 MPa) and the Stage 4 analytic pressure distribution are assumptions; no wind-tunnel or CFD pressure has been used yet.
+- Ribs also carry out-of-plane skin loads, give load introduction and shape retention, and support control surfaces; the model captures only their in-plane stiffening effect on the skin, so the two-rib result must not be read as a design recommendation.
+- The skin gauge was locked at 1.0 mm for the baseline; the 0.8, 0.7, 0.721 and 0.6 mm cases are a sensitivity study.
+- The sliver-gate thresholds are provisional; layouts with a rib at 688–722 mm were rejected and some counts have only three or four layouts.
+- Netgen failed intermittently on about 7–10% of layouts and always succeeded on retry; the cause was not identified and the retried mesh was not compared with the first.
+- The composite score weights are a judgement; the p99 skin stress is the primary stress metric and the dTE ≥ 3 mm design stress is mesh-sensitive.
+- Only verification was performed (baseline and repeat reproduction, fit check). There is no validation against experiment.
+
+**Reproduce:** `scripts/run_layout_study.py --stage pass1|pass2|skin [--layouts ... --rib-t ... --skin-t ...]`, then `scripts/analyse_rib_count.py`, `scripts/analyse_skin_sensitivity.py`, `scripts/modal_span_distribution.py`, `scripts/score_layouts.py`.
+
 
 ## Limitations
 

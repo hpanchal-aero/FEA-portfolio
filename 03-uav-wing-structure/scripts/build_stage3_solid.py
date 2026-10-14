@@ -45,13 +45,8 @@ TOL = 1e-3            # mm, bbox tolerance after booleans
 SPAN = 1000.0
 ROOT_CHORD, TIP_CHORD = 300.0, 150.0
 SPAR_CHORD_FRAC = 0.30
-import os as _os_rs
-RIB_SPACING = float(_os_rs.environ.get("RIB_SPACING", "200"))
-if abs(SPAN / RIB_SPACING - round(SPAN / RIB_SPACING)) > 1e-9:
-    raise SystemExit("RIB_SPACING=%g must divide the %g mm span" % (RIB_SPACING, SPAN))
-RIB_STATIONS = [i * RIB_SPACING for i in range(int(round(SPAN / RIB_SPACING)) + 1)]
-RS_SUFFIX = "" if RIB_SPACING == 200.0 else "_rs%g" % RIB_SPACING
-RIB_T = 1.5
+import variant_tag as _vt
+RIB_SPACING, RIB_STATIONS, RIB_T, RS_SUFFIX = _vt.configuration(SPAN)
 N_AIRFOIL_PTS = 40
 
 WEB_T = 2.0

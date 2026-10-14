@@ -1,0 +1,34 @@
+{
+  "id": "L148",
+  "key": "L148",
+  "family": "9 ribs L006 + outboard (nudged out of band)",
+  "stations": "0,60,130,200,400,550,690,850,1000",
+  "rib_t": 1.5,
+  "tag": "_L148",
+  "steps": {
+    "geom": {
+      "wall_s": 4.2,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 4.2
+    },
+    "imprint": {
+      "wall_s": 26.0,
+      "pieces": 1290,
+      "shared": 668,
+      "free": 622,
+      "volume": 153086.035,
+      "volume_expected": 153086.03393751176,
+      "min_free_area": 4.22325462734092,
+      "min_shared_area": 1.1434138867158175,
+      "n_json": 1290,
+      "status": "failed",
+      "reason": "sliver gate: smallest free piece 4.2233 mm2 < 5.0 at cz=707.93 cx=-4.05",
+      "step_wall_s": 26.0
+    }
+  },
+  "metrics": {},
+  "failed_step": "imprint",
+  "failed_reason": "sliver gate: smallest free piece 4.2233 mm2 < 5.0 at cz=707.93 cx=-4.05",
+  "complete": false
+}

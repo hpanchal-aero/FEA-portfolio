@@ -33,7 +33,13 @@ ROOT_CHORD, TIP_CHORD = 300.0, 150.0
 SPAR_CHORD_FRAC = 0.30
 N_AIRFOIL_PTS = 40
 CAP_W = 8.0
-RIB_T = 1.5
+import re as _re_rs
+import sys as _sys_rs
+_base_rs = _sys_rs.argv[1].split("/")[-1] if len(_sys_rs.argv) > 1 else ""
+_m_tag = _re_rs.search(r"((?:_rs\d+|_L[0-9A-Za-z]+)(?:_rt\d+(?:p\d+)?)?|_rt\d+(?:p\d+)?)", _base_rs)
+RS_SUFFIX = _m_tag.group(1) if _m_tag else ""
+_m_rt = _re_rs.search(r"_rt(\d+)(?:p(\d+))?", RS_SUFFIX)
+RIB_T = float(_m_rt.group(1) + ("." + _m_rt.group(2) if _m_rt.group(2) else "")) if _m_rt else 1.5
 E_MOD, NU, RHO, G = 73100.0, 0.33, 2780e-12, 9810.0
 TOTAL_LIFT_N = 24.5            # PLACEHOLDER
 TOL = 1e-3
@@ -41,10 +47,6 @@ WELD = 1e-6
 EQ_CEILING, ELEM_CEILING = 1_180_000, 230_000
 SOLID_VOL = 128582.1216
 Z_LO, Z_HI = -RIB_T / 2.0, SPAN + RIB_T / 2.0
-import re as _re_rs
-import sys as _sys_rs
-_m_rs = _re_rs.search(r"_rs(\d+)(?:_|\.)", _sys_rs.argv[1]) if len(_sys_rs.argv) > 1 else None
-RS_SUFFIX = ("_rs" + _m_rs.group(1)) if _m_rs else ""
 PIECES = "mesh/stage3_skin/stage3_skin_faces" + RS_SUFFIX + ".json"
 if RS_SUFFIX:
     try:

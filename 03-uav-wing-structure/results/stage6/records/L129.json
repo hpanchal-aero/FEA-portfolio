@@ -1,0 +1,139 @@
+{
+  "id": "L129",
+  "key": "L129",
+  "family": "5 ribs",
+  "stations": "0,60,130,400,1000",
+  "rib_t": 1.5,
+  "tag": "_L129",
+  "steps": {
+    "geom": {
+      "wall_s": 2.1,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 2.1
+    },
+    "imprint": {
+      "wall_s": 11.9,
+      "pieces": 686,
+      "shared": 374,
+      "free": 312,
+      "volume": 130387.087,
+      "volume_expected": 130387.08597184985,
+      "min_free_area": 87.8484889163713,
+      "min_shared_area": 1.1434138867158175,
+      "n_json": 686,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 11.9
+    },
+    "mesh": {
+      "attempts": [
+        {
+          "rc": 0,
+          "timed_out": false,
+          "error_line": false,
+          "wall_s": 11.4
+        }
+      ],
+      "points": 43627,
+      "tets": 43701,
+      "tris": 61511,
+      "tet_faces_without_tri": 0,
+      "faces_free": 312,
+      "faces_shared": 374,
+      "faces_nonskin": 58,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 11.4
+    },
+    "inp": {
+      "wall_s": 0.8,
+      "matched": 686,
+      "matched_of": 686,
+      "tets": 43701,
+      "tet_min_volume": 0.011395,
+      "tets_bad": 0,
+      "c3d10": 43701,
+      "s6": 34432,
+      "elements": 78133,
+      "elem_pct": 34.0,
+      "eq_estimate": 651264,
+      "eq_pct": 55.2,
+      "root_z": -0.75,
+      "load_nodes_not_solid": 0,
+      "load_moment_err_pct": -0.0146,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.8
+    },
+    "load": {
+      "wall_s": 1.8,
+      "scale": 1.000026,
+      "root_moment_err_pct": 0.0013,
+      "torque_err_pct": 0.035,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 1.8
+    },
+    "static_solve": {
+      "wall_s": 54.1,
+      "warnings": 0,
+      "peak_line": "Exit code: 0   wall time: 53.9 s   peak RSS: 4415 MB (4.31 GB)",
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 54.1
+    },
+    "static_extract": {
+      "wall_s": 1.9,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 3.4
+    },
+    "buckle_solve": {
+      "wall_s": 129.5,
+      "warnings": 0,
+      "peak_line": "Exit code: 0   wall time: 129.3 s   peak RSS: 4794 MB (4.68 GB)",
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 129.7
+    },
+    "buckle_extract": {
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.0
+    },
+    "cleanup": {
+      "removed": 10,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 0.0
+    }
+  },
+  "metrics": {
+    "tip_mm": 4.2405573191489365,
+    "mass_kg": 1.6402271588390778,
+    "solid_mass_kg": 0.3624761019851525,
+    "skin_mass_kg": 1.2777510568539254,
+    "vm_skin_max_MPa": 192.88614431897383,
+    "vm_solid_only_max_MPa": 49.16347222349853,
+    "vm_skin_max_z_gt_10_MPa": 192.88614431897383,
+    "bracket_lo_mm": 30.73537933887517,
+    "bracket_hi_mm": 4.245151654875809,
+    "skin_p99": 18.995935946049197,
+    "skin_p99_9": 26.30837854876472,
+    "skin_max_dTE_ge3": 32.476805151380084,
+    "solid_only_max": 49.16347222349853,
+    "buckling_crit": 3.8908,
+    "buckling_factors": [
+      3.8908,
+      4.1036,
+      5.0647,
+      5.2255,
+      5.4905,
+      6.2535
+    ]
+  },
+  "failed_step": null,
+  "failed_reason": null,
+  "complete": true
+}

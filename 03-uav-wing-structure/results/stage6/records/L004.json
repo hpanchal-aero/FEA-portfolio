@@ -1,0 +1,34 @@
+{
+  "id": "L004",
+  "key": "L004",
+  "family": "power-law p=1.6",
+  "stations": "0,76.1,230.8,441.6,699.8,1000",
+  "rib_t": 1.5,
+  "tag": "_L004",
+  "steps": {
+    "geom": {
+      "wall_s": 2.8,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 2.8
+    },
+    "imprint": {
+      "wall_s": 15.2,
+      "pieces": 838,
+      "shared": 448,
+      "free": 390,
+      "volume": 133402.9008,
+      "volume_expected": 133402.8997343779,
+      "min_free_area": 2.7697325089798004,
+      "min_shared_area": 1.1434138867158175,
+      "n_json": 838,
+      "status": "failed",
+      "reason": "sliver gate: smallest free piece 2.7697 mm2 < 5.0 at cz=714.46 cx=-4.04",
+      "step_wall_s": 15.2
+    }
+  },
+  "metrics": {},
+  "failed_step": "imprint",
+  "failed_reason": "sliver gate: smallest free piece 2.7697 mm2 < 5.0 at cz=714.46 cx=-4.04",
+  "complete": false
+}

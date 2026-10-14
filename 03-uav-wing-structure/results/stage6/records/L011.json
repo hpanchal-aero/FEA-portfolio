@@ -1,0 +1,34 @@
+{
+  "id": "L011",
+  "key": "L011",
+  "family": "handcrafted",
+  "stations": "0,150,300,700,850,1000",
+  "rib_t": 1.5,
+  "tag": "_L011",
+  "steps": {
+    "geom": {
+      "wall_s": 2.7,
+      "status": "ok",
+      "reason": "",
+      "step_wall_s": 2.7
+    },
+    "imprint": {
+      "wall_s": 15.3,
+      "pieces": 834,
+      "shared": 446,
+      "free": 388,
+      "volume": 128928.4818,
+      "volume_expected": 128928.48068219237,
+      "min_free_area": 2.74324930422379,
+      "min_shared_area": 1.1434138867158175,
+      "n_json": 834,
+      "status": "failed",
+      "reason": "sliver gate: smallest free piece 2.7432 mm2 < 5.0 at cz=714.59 cx=-4.04",
+      "step_wall_s": 15.3
+    }
+  },
+  "metrics": {},
+  "failed_step": "imprint",
+  "failed_reason": "sliver gate: smallest free piece 2.7432 mm2 < 5.0 at cz=714.59 cx=-4.04",
+  "complete": false
+}

@@ -1457,6 +1457,102 @@ python3 scripts/plot_stage5_figures.py; python3 scripts/render_stage5_modes.py #
 # Netgen diagnostics: scripts/diag_netgen_faces.py, parse_netgen_face_log.py, diag_rs_slivers.py, diag_short_edges.py
 # extension after a RAM upgrade: repeat the 100 mm chain with RIB_SPACING=50 (then 20, after a mesh strategy for it)
 
+## Stage 6: rib layout, rib count, rib thickness and skin gauge
+
+Question: how do rib placement, rib count, rib thickness and skin gauge affect buckling margin, tip deflection and structural mass (spar v2 and 1.0 mm skin as baseline, n = 3.8 limit load, Stage 4 placeholder pressure)? Result tables and figures are in the README; this section records how the study was run, what went wrong, and what the predictions got right and wrong.
+
+### Decisions (locked by the user)
+
+- Tier 1: six ribs fixed, objectives buckling (up), tip deflection (down) and mass (down), ranked by non-dominated sorting; root-biased layouts added (option B); sliver-rejected layouts replaced by new ones (option C); the top 20 chosen by crowding distance (option A) for the tier-2 thin-rib runs; the 0.5 mm rib dropped (option B).
+- Skin stress is not shown in the 3D renders (solid-only stress, decision A); renders for L000, L006 and L050.
+- Rib-count study (option B), extended from six to ten ribs in total.
+- Skin-gauge sensitivity (option B) on four layouts at 0.8 and 0.6 mm; the baseline skin stays 1.0 mm.
+- Assumptions that are mine to flag, not measured: 20 kg aircraft mass (lift 372.78 N per half wing at n = 3.8), 290 MPa yield, analytic Stage 4 pressure, composite score weights (mass 0.45, buckling 0.40, tip 0.15).
+
+### Pipeline changes (guarded patches; anchors had to occur exactly once, backups kept)
+
+- `scripts/variant_tag.py`: layout identity (`RIB_STATIONS`, `LAYOUT_ID`, `RIB_T`) gives file tags such as `_L006` and `_L006_rt0p8`; patches to the Stage 3 solid, skin-geometry, mesh, input and extract scripts and to `.gitignore` (`_L*`, `_rt*` geometry files).
+- `scripts/run_layout_study.py`: a two-pass driver (`pass1` = geometry, imprint, mesh, input, load; `pass2` = static solve, extract, buckling solve, extract, cleanup) with an RSS watchdog (8 GB), a wait for 7 GB of free memory, a retry of failed Netgen meshes, per-layout JSON records, live log and a stop after three consecutive failures. Added later: a cleanup step that removes the large solver files after extraction, skin p99 / p99.9 / design / solid-only stress metrics stored before cleanup (`scripts/stress_metrics_cli.py`, checked on L000: p99 18.5097 MPa and design stress 32.0953 MPa against the Stage 4 values 18.510 and 32.095), and `--skin-t` with `--stage skin` (default 1.0 mm behaviour verified unchanged by a byte-identical `diff` of the summary CSV).
+- Imprint sliver gate (provisional, unvalidated): the smallest free piece must be at least 5 mm² and the smallest shared piece at least 0.5 mm². Layouts with a rib at about 688–722 mm failed it (ribs at 680, 685, 745 and 750 mm passed); the failing region is the wedge apex near z = 742 mm. The shared-piece limit does not scale with rib thickness.
+
+### Runs and timings (wall clock as logged)
+
+- Tier 1: 77 layouts defined, 69 solved, 8 rejected by the gate; about 3.6 min per layout. Tier 2: 63 thin-rib runs (20 layouts plus L000 at 1.2, 1.0 and 0.8 mm; 0.5 mm blocked by the builder's cleanliness check, which counts faces below 0.5 mm² as slivers).
+- Rib-count study: 56 layouts defined (L100–L155), pass 1 for 52 took 33.5 min (48 ok, 4 rejected by the gate), replacements L152–L155 (rib moved from 688/690 to 680 mm) passed pass 1 in 3.5 min, pass 2 for all 52 took 160.5 min (3.1 min per layout).
+- Skin sensitivity: eight runs in 11.3 + 13.4 min after one 2.3 min run; verification solves 2.2 and 3.1 min.
+- A power cut shut the machine down during the tier-1 run; the per-layout records allowed the run to resume from the last complete step. `results/stage6/driver.log` contains NUL bytes from that event (read it with `grep -a`).
+- Disk: the WSL virtual disk reports about 1 TB, but the Windows drive had about 30 GB free; `free_disk_gb()` takes the minimum of the two. The Project 01 and 02 working files were cleared locally (their results had been pushed) to make room.
+
+### Predictions written down before the runs, and what happened
+
+| Prediction | Result | Verdict |
+|---|---|---|
+| Netgen mesh about 25 s | longer for the larger layouts | Wrong |
+| Wedge-area / smallest-piece estimate for the gate | gate failures at larger areas than estimated | Wrong |
+| Tier-1 time estimates | 3.6 min per layout, lower than estimated | Too high |
+| Best tier-1 buckling 3.9–4.1 | 4.72 (L006) | Wrong, too low |
+| One or two nudged ribs would fail the gate | all four at 688–690 mm failed | Wrong |
+| Thin-rib tet count would fall | it rose | Wrong |
+| Two-rib buckling 3.1–3.15 (could be lower) | 3.072 | Slightly low |
+| Two-rib mass about 1.566 kg | 1.5658 kg | Hit |
+| Two-rib tip 4.14–4.17 mm | 4.337 mm | Wrong (rib count lowers the tip more than assumed) |
+| Buckling saturates with rib count | flat beyond about five ribs | Hit |
+| L006 plus one or two outboard ribs gains under 2% | +0.9% (L152), +1.7% (L145); with three or four added ribs +2.5% and +3.4% | Hit for one or two ribs |
+| Rib-count pass 2 takes about 4 h | 2.7 h (160.5 min) | Wrong |
+| Critical mode of L100 in the root-to-mid region | 91% of energy at z < 200 mm | Partly right (root, not mid) |
+| Critical mode of L126 in the long outboard bay | in 200–400 mm, 98.5% of the energy, not across 200–1000 mm | Partly right |
+| L006 mode like L126 | 98.2% against 98.5% in z < 400 mm | Hit |
+| Skin 0.8 mm: L100 buckling 1.9–2.3, tip +0.5–2%, p99 within +25% | 1.876, tip +27.0%, p99 +25.5% | Buckling and p99 marginal misses, tip a large miss: the skin carries nearly all the stiffness |
+| Skin runs for the other layouts (L126 1.4–1.7 at 0.6 mm, L100 0.95–1.1, etc.) | all inside the stated ranges | Hits |
+| Interpolated fit at 0.721 mm (L100) and 0.7 mm (L126) | 1.5015 / 6.112 mm / 1.2093 kg and 2.106 / 6.152 mm / 1.2621 kg | Hits (buckling within about 1.3%) |
+
+### Retractions and corrections (chronological)
+
+1. The note on which Python runs the scripts was wrong: the `ccx223` conda environment supplies only the `ccx` binary, and the system `/usr/bin/python3` has numpy, scipy and pyvista. The driver was fixed (`CONDA_PY`).
+2. The fronts file `results/stage6_fronts.csv` was overwritten by a tolerance-based run of `select_top20.py`, giving a wrong selection; it was regenerated with the strict ranking. The script still writes both variants to the same file: separate output names are an open item.
+3. The 1 mm² sliver threshold was a guess and was replaced by the 5 mm² / 0.5 mm² gate; the new values are also unvalidated.
+4. Render bugs: a node-ID assertion for skin vertices (fixed by nearest-node mapping), a coordinate gate that was too tight (1e-4 changed to 1e-2 mm), and a wrong-sign colour range for the tip deflection; a malformed shell block with stray tags was re-issued as a manual edit. The root appeared deflected in the first stills while the MP4 was correct, which led to the nearest-node fix.
+5. A garbled sentence on rib thickness was corrected: reducing the uniform layout's ribs from 1.5 to 0.8 mm saves 51 g (3.1%).
+6. The mode-shape script first assumed the first result block of the buckling `.frd` was mode 1. The files hold seven displacement blocks, the first being the preload state with factor 0. The first printed output was therefore the static preload deflection, which I mis-read as a buckling mode until the block count and the factor lines (`100CL`) were checked. The script now asserts seven blocks with the first factor 0 and prints each mode's factor, which matched the stored values (3.0720, 4.6520, 4.7174). The L006 buckling-mode render reads the correct block (`blocks[1]`).
+7. A first patch of the driver for the skin option aborted on its own anchor check (the anchor assumed a line ending that did not exist) and was corrected before anything was changed.
+
+### Findings
+
+- Buckling saturates at about five ribs because the critical mode is a short local aft-skin buckle just outboard of the last close rib; the skin gauge sets about 82% of the mass and most of the stiffness (buckling ∝ t^2.2, tip ∝ t^−1.0); at the 1.5 requirement the five-rib layout is the lightest tested and the two-rib layout has the lowest tip; stress is not binding.
+- The interpolated skin gauges for the requirement were checked by two solves at intermediate gauges; the lightest-at-requirement ranking between L126 and L006 (1.4%) is inside the interpolation uncertainty.
+
+### Figures
+
+`figures/stage6_comparison.png`, `figures/stage6b_rib_count.png`, `figures/stage6c_skin_sensitivity.png`, and `figures/3d/` (stress and tip-deflection stills, MP4 and GLB for L000, L006 and L050, and the L006 buckling mode still).
+
+### Limitations and open items
+
+- No Stage 6 mesh-convergence check has been run. A finer-mesh check on the top layouts was agreed (decision A) but is not done; the baseline mesh is the Stage 3–5 mesh (solid 4 mm, skin 8 mm, Netgen).
+- The sliver-gate thresholds are provisional; Netgen failed intermittently (about 7–10% of layouts, always recovered on retry; cause unknown, the retried mesh was not compared with the first).
+- `select_top20.py` should write its tolerance variant to a separate file.
+- The 3D renders show solid stress only (no skin stress); the GLB colours have not been verified in a viewer.
+- The mode-shape check covers three layouts at 1.0 mm skin; wavelength and mode character (skin panel or web) were not measured, and the thinner-skin cases were not checked for mode changes.
+- The 0.5 mm rib case was never run.
+
+### Reproducibility (commands as run)
+
+```
+# pass 1 / pass 2 at 1.5 mm ribs, 1.0 mm skin (system python; ccx223 supplies ccx only)
+nohup /usr/bin/python3 scripts/run_layout_study.py --stage pass1 --layouts <ids> > <log> 2>&1 &
+nohup /usr/bin/python3 scripts/run_layout_study.py --stage pass2 --layouts <ids> > <log> 2>&1 &
+# thin ribs
+/usr/bin/python3 scripts/run_layout_study.py --stage pass1 --rib-t 1.2 --layouts <ids>   # likewise 1.0, 0.8
+# skin sensitivity (reuses geometry and mesh)
+/usr/bin/python3 scripts/run_layout_study.py --stage skin --skin-t 0.8 --layouts L100,L126,L006,L151
+/usr/bin/python3 scripts/run_layout_study.py --stage skin --skin-t 0.6 --layouts L100,L126,L006,L151
+# analysis
+/usr/bin/python3 scripts/analyse_rib_count.py
+/usr/bin/python3 scripts/analyse_skin_sensitivity.py
+/usr/bin/python3 scripts/modal_span_distribution.py L100 L126 L006
+/usr/bin/python3 scripts/score_layouts.py
+```
+
+
 ## Status Log
 
 - Specification defined and approved
@@ -1472,6 +1568,8 @@ python3 scripts/plot_stage5_figures.py; python3 scripts/render_stage5_modes.py #
   documented in this entry; committed locally (see git log)
 - Stage 5 / Phase A (rib spacing): complete in a reduced scope (200 mm against 100 mm; 50 and 20 mm
   not run: RAM limit); documented in this entry; committed locally (see git log)
-- Phase B (rib placement search): not started
+- Stage 6 (rib placement, rib count, rib thickness, skin gauge): runs, analysis and documentation complete
+  (this entry, section "Stage 6"); 121 layouts solved at 1.5 mm ribs, 63 thin-rib runs, 12 skin-gauge runs;
+  finer-mesh check of the top layouts not run; local commit to follow, nothing pushed
 - Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 and Stage 5 committed locally (see git log);
   nothing pushed

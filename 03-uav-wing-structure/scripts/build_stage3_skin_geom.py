@@ -30,9 +30,7 @@ import gmsh
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build_stage3_solid as b
 
-import os as _os_rs
-_RS = float(_os_rs.environ.get("RIB_SPACING", "200"))
-RS_SUFFIX = "" if _RS == 200.0 else "_rs%g" % _RS
+RS_SUFFIX = b.RS_SUFFIX
 STEP_IN = "mesh/stage3_solid/stage3_spar_ribs_v2" + RS_SUFFIX + ".step"
 OUT_DIR = "mesh/stage3_skin"
 os.makedirs(OUT_DIR, exist_ok=True)

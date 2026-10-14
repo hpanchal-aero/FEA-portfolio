@@ -1,0 +1,33 @@
+
+=== L100: 176110 nodes, 7 DISP blocks, factors [0.0, 3.072034538, 3.157303933, 3.794965186, 3.923139677, 4.533741764, 4.701419126] ===
+ mode 1 (factor 3.0720): peak |u| at x=89.7 y=13.1 z=59.3 (114 mm ahead of TE) ; centroid z = 146 mm
+   energy %% per 100 mm bin (z=0..1000): 42.6 48.3  3.0  0.2  0.3  0.4  0.6  0.8  1.1  2.2
+   cumulative z<200: 90.9 %   z<400: 94.1 %
+ mode 2 (factor 3.1573): peak |u| at x=93.4 y=12.4 z=95.1 (107 mm ahead of TE) ; centroid z = 119 mm
+   energy %% per 100 mm bin (z=0..1000): 49.7 47.1  2.3  0.2  0.1  0.1  0.1  0.1  0.1  0.2
+   cumulative z<200: 96.8 %   z<400: 99.2 %
+ mode 3 (factor 3.7950): peak |u| at x=93.1 y=11.3 z=202.5 (96 mm ahead of TE) ; centroid z = 194 mm
+   energy %% per 100 mm bin (z=0..1000): 28.7 34.2 30.7  0.8  0.3  0.4  0.6  0.8  1.0  2.1
+   cumulative z<200: 62.9 %   z<400: 94.4 %
+
+=== L126: 246391 nodes, 7 DISP blocks, factors [0.0, 4.651973401, 4.912210233, 5.238830052, 5.969790111, 6.115045179, 6.249896269] ===
+ mode 1 (factor 4.6520): peak |u| at x=85.3 y=11.3 z=260.4 (97 mm ahead of TE) ; centroid z = 277 mm
+   energy %% per 100 mm bin (z=0..1000):  0.0  0.3 83.9 14.2  0.3  0.1  0.1  0.2  0.2  0.5
+   cumulative z<200: 0.3 %   z<400: 98.5 %
+ mode 2 (factor 4.9122): peak |u| at x=88.4 y=10.7 z=293.4 (91 mm ahead of TE) ; centroid z = 307 mm
+   energy %% per 100 mm bin (z=0..1000):  0.0  0.6 61.0 35.9  0.3  0.2  0.2  0.3  0.4  0.9
+   cumulative z<200: 0.6 %   z<400: 97.6 %
+ mode 3 (factor 5.2388): peak |u| at x=67.3 y=15.0 z=94.4 (133 mm ahead of TE) ; centroid z = 97 mm
+   energy %% per 100 mm bin (z=0..1000): 66.9 32.3  0.2  0.3  0.1  0.0  0.0  0.0  0.0  0.1
+   cumulative z<200: 99.2 %   z<400: 99.7 %
+
+=== L006: 269266 nodes, 7 DISP blocks, factors [0.0, 4.717381394, 5.038519573, 5.267393136, 6.020183014, 6.279392066, 6.556003863] ===
+ mode 1 (factor 4.7174): peak |u| at x=85.3 y=11.3 z=260.2 (97 mm ahead of TE) ; centroid z = 276 mm
+   energy %% per 100 mm bin (z=0..1000):  0.0  0.3 85.0 12.9  0.3  0.2  0.2  0.2  0.3  0.6
+   cumulative z<200: 0.3 %   z<400: 98.2 %
+ mode 2 (factor 5.0385): peak |u| at x=88.4 y=10.7 z=292.9 (91 mm ahead of TE) ; centroid z = 306 mm
+   energy %% per 100 mm bin (z=0..1000):  0.1  0.9 64.3 31.8  0.2  0.2  0.3  0.4  0.5  1.2
+   cumulative z<200: 0.9 %   z<400: 97.1 %
+ mode 3 (factor 5.2674): peak |u| at x=67.3 y=15.0 z=94.4 (133 mm ahead of TE) ; centroid z = 97 mm
+   energy %% per 100 mm bin (z=0..1000): 66.7 31.9  0.8  0.4  0.0  0.0  0.0  0.0  0.0  0.0
+   cumulative z<200: 98.7 %   z<400: 99.9 %
