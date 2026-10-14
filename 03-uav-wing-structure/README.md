@@ -22,8 +22,8 @@ analytic placeholder pressure) complete.** Skin thickness is locked at
 **1.0 mm**. Stage 5 (rib spacing) is complete in a reduced scope, 200 mm
 against 100 mm; the 50 and 20 mm cases were not run (RAM limit, see Stage 5).
 Stage 6 (rib layout, rib count, rib thickness and skin-gauge sensitivity) is complete as a
-computational study: verification only, no validation, and no finer-mesh convergence check on
-the Stage 6 layouts yet. The project is not yet marked complete (open items are listed under
+computational study: verification only, no validation, and only a limited skin-mesh sensitivity check on
+three layouts (section 6 of the Stage 6 findings; not a convergence study). The project is not yet marked complete (open items are listed under
 Limitations of Stage 6).
 
 ## Approach
@@ -454,7 +454,7 @@ Buckling / tip [mm] (solver results):
 | 0.8 mm | 1.876 / 5.507 | 2.816 / 5.389 | 2.856 / 5.364 | 2.932 / 5.220 |
 | 0.6 mm | **1.022** / 7.275 | **1.470** / 7.111 | **1.483** / 7.084 | 1.507 / 6.946 |
 
-Buckling scales as t^2.1–2.3 and tip deflection as t^−1.0, and the skin contributes about 1.28 kg per mm, which is 74–82% of the structural mass depending on the layout. At 0.6 mm only the 10-rib layout meets the buckling requirement of 1.5, and then by 0.5%; the relative benefit of ribs (1.44–1.59 times the 2-rib buckling) is nearly independent of skin gauge.
+Buckling scales as t^2.1–2.3 and tip deflection as t^−1.0, and the skin contributes about 1.28 kg per mm, which is 74–82% of the structural mass depending on the layout. At 0.6 mm and the 8 mm skin mesh only the 10-rib layout meets the buckling requirement of 1.5, and then by 0.5% (smaller than the skin-mesh effect, see section 6, so this pass is not robust); the relative benefit of ribs (1.44–1.59 times the 2-rib buckling) is nearly independent of skin gauge.
 
 A fit of ln(buckling) and ln(tip) against ln(t) (quadratic through the three points; mass linear in t) estimates the skin gauge that lands exactly on the requirement:
 
@@ -468,6 +468,28 @@ A fit of ln(buckling) and ln(tip) against ln(t) (quadratic through the three poi
 Two further solves tested the fit between the data points: L100 at 0.721 mm gave buckling 1.5015, tip 6.112 mm and mass 1.2093 kg (fit: 1.50, 6.114, 1.2092), and L126 at 0.7 mm gave 2.106, 6.152 mm and 1.2621 kg (fit: 2.08, about 6.15, 1.262). At the requirement the five-rib layout is the lightest of those tested, about 5.6% lighter than the two-rib layout; the two-rib layout with its thicker skin has 13% lower tip deflection. Mass and tip pull in opposite directions, so there is no single best layout. The L126 versus L006 mass difference (1.4%) is inside the interpolation uncertainty.
 
 ![Skin gauge sensitivity](figures/stage6c_skin_sensitivity.png)
+
+### 6. Skin mesh sensitivity (solid mesh 4 mm; skin mesh 10, 8, 6 and 5 mm)
+
+The Stage 3–5 mesh (skin 8 mm) was used for all Stage 6 layouts. Because buckling is a local aft-skin phenomenon, a limited check was made by re-meshing selected cases with a different skin mesh size (solid mesh unchanged) and comparing with the 8 mm baseline of the same case. Change in critical buckling factor relative to 8 mm (solver results):
+
+| Layout | Skin | 10 mm | 8 mm (baseline) | 6 mm | 5 mm | Max tip change |
+|---|---|---|---|---|---|---|
+| L006 | 0.6 mm | +0.94% | +0.00% | -1.48% | not run | 0.0050% |
+| L006 | 1 mm | +0.38% | +0.00% | -0.77% | not run | 0.0076% |
+| L100 | 1 mm | +0.44% | +0.00% | -0.51% | -0.56% | 0.0100% |
+| L126 | 0.6 mm | +0.94% | +0.00% | -1.50% | not run | 0.0048% |
+| L126 | 1 mm | +0.35% | +0.00% | -0.83% | not run | 0.0076% |
+
+- **Tip deflection and mass are mesh-insensitive**: the largest tip change over all 16 runs is 0.0100%.
+- **Buckling is mesh-sensitive at the 0.5–1.5% level and the 8 mm baseline is slightly unconservative.** Refining 8 → 6 mm lowers buckling by 0.51% to 0.83% at 1.0 mm skin and by 1.48% to 1.50% at 0.6 mm; coarsening to 10 mm raises it by 0.35% to 0.44% (1.0 mm) and about 0.94% (0.6 mm). The thinner skin is about twice as sensitive.
+- **Convergence is not demonstrated.** For L126 and L006 only three levels (10, 8, 6 mm) could be run, and the change per step grows toward the finer mesh. L100 was also run at 5 mm: 6 → 5 mm changes buckling by only -0.04% (against -0.51% for 8 → 6 mm), which suggests flattening on that layout, but it is a single 1 mm step on a single layout and is not proof of an asymptote. L126 at 5 mm exceeds the equation-count ceiling, and 4 mm skin meshes are infeasible for all layouts. No Richardson extrapolation or grid-convergence index is claimed.
+- **p99 skin stress is not converged**: it changes by -3.55% to +2.14% across the runs and keeps drifting with refinement, so it is quoted to about ±4%. Stress is not binding, so no conclusion depends on it.
+- **What survives:** layout rankings (L006 exceeds L126 in buckling by 1.43%, 1.41% and 1.47% at 10, 8 and 6 mm skin mesh with 1.0 mm skin, and by 0.86%, 0.86% and 0.87% with 0.6 mm skin, i.e. an essentially constant gap), all tip comparisons, and the lightest-at-requirement ordering. Applying the 6 mm shift at 0.6 mm skin with a local exponent of 2.2 moves the skin gauge for buckling 1.5 from 0.605 to about 0.609 mm (L126) and from 0.603 to about 0.607 mm (L006), a shift of about 1% (estimate from the shift, not a re-solve).
+- **What does not survive as stated:** the pass of L151 at 0.6 mm (1.507, 0.5% above the requirement at the 8 mm mesh). The mesh shift at 0.6 mm is about -1.5%, which would put it near 1.48 (estimate; L151 was not re-solved), so that pass is within the mesh uncertainty and should not be treated as established.
+- **The sign of the skin-mesh effect is not consistent between cases:** the Stage 3 check on its baseline layout (8 → 6 mm, development log) gave buckling −0.5% at t = 1.0 mm and +2.2% at t = 0.5 mm (0.9122 → 0.9325), whereas the Stage 6 layouts at 0.6 mm give about −1.5%, and the solid mesh change 2.5 → 4 mm gave a tip change of −0.02%. The sign of the thin-skin effect therefore depends on the case, which is a further reason to treat about ±1.5% as the uncertainty on buckling at 0.6 mm skin rather than as a correction.
+
+![Skin mesh sensitivity](figures/stage6d_mesh_sensitivity.png)
 
 ### Engineering interpretation
 
@@ -483,9 +505,10 @@ Two further solves tested the fit between the data points: L100 at 0.721 mm gave
 - The sliver-gate thresholds are provisional; layouts with a rib at 688–722 mm were rejected and some counts have only three or four layouts.
 - Netgen failed intermittently on about 7–10% of layouts and always succeeded on retry; the cause was not identified and the retried mesh was not compared with the first.
 - The composite score weights are a judgement; the p99 skin stress is the primary stress metric and the dTE ≥ 3 mm design stress is mesh-sensitive.
-- Only verification was performed (baseline and repeat reproduction, fit check). There is no validation against experiment.
+- Skin-mesh sensitivity was checked on three layouts only (section 6): buckling at the 8 mm baseline is about 0.5–1.5% unconservative, asymptotic convergence is not shown, and the p99 stress is not converged. The solid mesh was checked only in Stage 3.
+- Only verification was performed (baseline and repeat reproduction, fit check, limited mesh sensitivity). There is no validation against experiment.
 
-**Reproduce:** `scripts/run_layout_study.py --stage pass1|pass2|skin [--layouts ... --rib-t ... --skin-t ...]`, then `scripts/analyse_rib_count.py`, `scripts/analyse_skin_sensitivity.py`, `scripts/modal_span_distribution.py`, `scripts/score_layouts.py`.
+**Reproduce:** `scripts/run_layout_study.py --stage pass1|pass2|skin [--layouts ... --rib-t ... --skin-t ...]`, then `scripts/analyse_rib_count.py`, `scripts/analyse_skin_sensitivity.py`, `scripts/analyse_mesh_sensitivity.py` (after `--stage conv --mesh SOLID,SKIN`), `scripts/modal_span_distribution.py`, `scripts/score_layouts.py`.
 
 
 ## Limitations

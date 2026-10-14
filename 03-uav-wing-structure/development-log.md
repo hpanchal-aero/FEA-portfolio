@@ -1527,7 +1527,7 @@ Question: how do rib placement, rib count, rib thickness and skin gauge affect b
 
 ### Limitations and open items
 
-- No Stage 6 mesh-convergence check has been run. A finer-mesh check on the top layouts was agreed (decision A) but is not done; the baseline mesh is the Stage 3–5 mesh (solid 4 mm, skin 8 mm, Netgen).
+- Mesh: only a limited skin-mesh sensitivity check was run (subsection "Mesh-sensitivity check" below): three layouts, skin mesh 10/8/6 mm (L100 also 5 mm); asymptotic convergence is not shown, the baseline mesh (solid 4 mm, skin 8 mm, Netgen) is about 0.5–1.5% unconservative for buckling, and p99 stress is not converged.
 - The sliver-gate thresholds are provisional; Netgen failed intermittently (about 7–10% of layouts, always recovered on retry; cause unknown, the retried mesh was not compared with the first).
 - `select_top20.py` should write its tolerance variant to a separate file.
 - The 3D renders show solid stress only (no skin stress); the GLB colours have not been verified in a viewer.
@@ -1553,6 +1553,42 @@ nohup /usr/bin/python3 scripts/run_layout_study.py --stage pass2 --layouts <ids>
 ```
 
 
+### Mesh-sensitivity check (added after the Stage 6 commit)
+
+**Decision (user, "decision A"):** check the top layouts against a finer skin mesh. Solid mesh fixed at 4 mm; skin mesh 10, 8 (baseline), 6 and 5 mm; L100, L126 and L006 at 1.0 mm skin and L126 and L006 at 0.6 mm skin. L151 was not run (74.8% of the equation ceiling already at 8 mm). L126 at 5 mm would exceed the equation gate and was not attempted.
+
+**Pipeline change:** `scripts/patch_driver_mesh.py` (17 guarded edits) added `--mesh SOLID,SKIN` and `--stage conv` to `scripts/run_layout_study.py`; records are keyed with a `_s4_k<skin>` suffix and reuse the baseline imprint. My first conv guard was over-strict and was relaxed; the relaxed guard requires the base record complete and the step, json and vol files present. The default (no `--mesh`) path was regression-tested as unchanged earlier.
+
+**Results** (`results/stage6d_mesh_sensitivity.csv`, `scripts/analyse_mesh_sensitivity.py`; buckling change against the 8 mm baseline of the same case):
+
+| Layout | Skin | 10 mm | 8 mm (baseline) | 6 mm | 5 mm | Max tip change |
+|---|---|---|---|---|---|---|
+| L006 | 0.6 mm | +0.94% | +0.00% | -1.48% | not run | 0.0050% |
+| L006 | 1 mm | +0.38% | +0.00% | -0.77% | not run | 0.0076% |
+| L100 | 1 mm | +0.44% | +0.00% | -0.51% | -0.56% | 0.0100% |
+| L126 | 0.6 mm | +0.94% | +0.00% | -1.50% | not run | 0.0048% |
+| L126 | 1 mm | +0.35% | +0.00% | -0.83% | not run | 0.0076% |
+
+**Predictions (written before the runs) and outcome:**
+
+| Quantity | Predicted | Observed | Result |
+|---|---|---|---|
+| 0.6 mm skin, 8 → 6 mm buckling | +0.5% to +3% | -1.49% (mean of L126, L006) | wrong sign |
+| 0.6 mm skin, 10 mm buckling | −1% to −4% | +0.94% | wrong sign |
+| L100 1.0 mm, 5 mm buckling | −1.0% to −0.8% (continued decline) | -0.557% | missed; flatter |
+| L100 1.0 mm, 5 mm tip | within about ±0.01% | +0.0100% | hit (at the edge) |
+| L100 1.0 mm, 5 mm p99 | −3% to −4% | −3.55% | hit |
+
+Only predictions whose numbers are recorded in this log are tabulated; the sign error at 0.6 mm is the important miss, since it means the skin-mesh effect on buckling cannot be predicted from the 1.0 mm behaviour.
+
+**Retractions:** (1) my first reading of the L126/L006 sequences over 10/8/6 mm as "not converging" was revised after L100 at 5 mm; (2) the interim statement that L100 buckling is "converged to about 0.04%" overstated a single 1 mm step and is not made in the README, which says "suggests flattening".
+
+**Netgen:** two more intermittent failures (L126 at 10 mm, a 150 s timeout; L006 at 0.6 mm and 10 mm, a failed first attempt); both succeeded on retry, cause still unknown.
+
+**Findings:** tip converged to 0.0100% maximum change; buckling baseline about 0.5–1.5% unconservative; rankings and tip conclusions robust; the L151 pass at 0.6 mm (+0.5% at the 8 mm mesh) is not robust; p99 stress drifts by -3.55% to +2.14%. Limits: asymptotic convergence not shown (L126 and L006 stop at 6 mm), no GCI, thin-skin sign differs from the Stage 3 L000 check.
+
+**Reproduce:** `scripts/run_layout_study.py --stage conv --mesh 4,10 --layouts L100,L126,L006` (likewise `4,6`; `4,5 --layouts L100`; add `--skin-t 0.6` for the thin skin), then `scripts/analyse_mesh_sensitivity.py`. Figure: `figures/stage6d_mesh_sensitivity.png`.
+
 ## Status Log
 
 - Specification defined and approved
@@ -1570,6 +1606,6 @@ nohup /usr/bin/python3 scripts/run_layout_study.py --stage pass2 --layouts <ids>
   not run: RAM limit); documented in this entry; committed locally (see git log)
 - Stage 6 (rib placement, rib count, rib thickness, skin gauge): runs, analysis and documentation complete
   (this entry, section "Stage 6"); 121 layouts solved at 1.5 mm ribs, 63 thin-rib runs, 12 skin-gauge runs;
-  finer-mesh check of the top layouts not run; committed locally (9684c45), nothing pushed
+  committed locally (9684c45) before the limited skin-mesh sensitivity check, which is documented afterwards in the Stage 6 entry; nothing pushed
 - Git: Stage 1 (1f64068), Stage 2 (7b67903) and Stage 3 (8e27d78) committed locally; Stage 4 and Stage 5 committed locally (see git log); Stage 6 committed locally (9684c45);
   nothing pushed

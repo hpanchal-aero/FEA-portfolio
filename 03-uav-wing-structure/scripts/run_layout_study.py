@@ -68,6 +68,14 @@ SKIN_SUFFIX = ""     # "" at 1.0 mm, "_sk0p8" otherwise (record keys, summary na
 
 def skin_p():
     return ("%g" % SKIN_T).replace(".", "p")
+
+
+MESH_S, MESH_K = 4.0, 8.0     # solid / skin maxh [mm]; changed by --mesh (stage "conv" only)
+MESH_SUFFIX = ""              # "" at 4,8 mm, "_s4_k6" otherwise (record keys, summary names)
+
+
+def mesh_p():
+    return ("s%g_k%g" % (MESH_S, MESH_K)).replace(".", "p")
 TIMEOUT = dict(geom=600, imprint=900, mesh=150, inp=600, load=900, solve=1200, buckle=1800, extract=600, small=300)
 
 BASE_TIP = 4.197838931623932         # Stage 4 baseline, mm
@@ -219,10 +227,10 @@ def names(tag):
     n["step"] = "mesh/stage3_solid/stage3_spar_ribs_v2%s.step" % tag
     n["json"] = "mesh/stage3_skin/stage3_skin_faces%s.json" % tag
     n["vol"] = "mesh/stage3_skin/stage3_solid_volume%s.txt" % tag
-    n["raw"] = "mesh/stage3_skin/raw_s4_k8%s_closeedgefacnone.npz" % tag
-    n["static_job"] = "simulation/stage3_skin_s4_k8%s_closeedgefacnone_t%s_n3p8" % (tag, skin_p())
-    n["job"] = "simulation/stage4_s4_k8%s_closeedgefacnone_t%s_n3p8" % (tag, skin_p())
-    n["viewer"] = "mesh/stage3_skin/stage3_skin_s4_k8%s_closeedgefacnone_t%s_n3p8_viewer.npz" % (tag, skin_p())
+    n["raw"] = "mesh/stage3_skin/raw_%s%s_closeedgefacnone.npz" % (mesh_p(), tag)
+    n["static_job"] = "simulation/stage3_skin_%s%s_closeedgefacnone_t%s_n3p8" % (mesh_p(), tag, skin_p())
+    n["job"] = "simulation/stage4_%s%s_closeedgefacnone_t%s_n3p8" % (mesh_p(), tag, skin_p())
+    n["viewer"] = "mesh/stage3_skin/stage3_skin_%s%s_closeedgefacnone_t%s_n3p8_viewer.npz" % (mesh_p(), tag, skin_p())
     n["static_inp"] = n["static_job"] + ".inp"
     n["job_inp"] = n["job"] + ".inp"
     return n
@@ -233,7 +241,7 @@ class Ctx:
         self.L = L
         self.rib_t = rib_t
         self.tag = compute_tag(L, rib_t)
-        self.key = self.tag.lstrip("_") + SKIN_SUFFIX
+        self.key = self.tag.lstrip("_") + SKIN_SUFFIX + MESH_SUFFIX
         self.env = layout_env(L, rib_t)
         self.N = names(self.tag)
         self.rec = None
@@ -315,7 +323,7 @@ def step_mesh(c):
             os.remove(c.N["raw"])
         env = dict(c.env)
         env["NETGEN_KW"] = "closeedgefac=None"
-        r = run([SYS_PY, "-u", "scripts/mesh_stage3_skin_raw.py", "4.0", "8.0"], "mesh-try%d" % attempt, c,
+        r = run([SYS_PY, "-u", "scripts/mesh_stage3_skin_raw.py", "%g" % MESH_S, "%g" % MESH_K], "mesh-try%d" % attempt, c,
                 TIMEOUT["mesh"], env=env)
         txt = r["text"]
         has_err = "ERROR" in txt
@@ -522,6 +530,7 @@ def step_cleanup(c):
 PASS1 = [("geom", step_geom), ("imprint", step_imprint), ("mesh", step_mesh), ("inp", step_inp), ("load", step_load)]
 PASS2 = [("static_solve", step_static_solve), ("static_extract", step_static_extract),
          ("buckle_solve", step_buckle_solve), ("buckle_extract", step_buckle_extract), ("cleanup", step_cleanup)]
+CONV_STEPS = PASS1[2:] + PASS2      # mesh, inp, load, then all of pass 2 (geometry and imprint are reused)
 SKIN_STEPS = PASS1[3:] + PASS2      # inp, load, then all of pass 2 (mesh/imprint/geometry are reused)
 
 
@@ -582,7 +591,7 @@ def process(c, steps, retry_failed):
             save_rec(c)
             LOG.say("[%s] *** FAILED at %s: %s" % (c.key, name, reason))
             return "failed"
-    if steps is PASS2 or steps is SKIN_STEPS:
+    if steps is PASS2 or steps is SKIN_STEPS or steps is CONV_STEPS:
         c.rec["complete"] = True
         save_rec(c)
     return "ok"
@@ -597,6 +606,8 @@ def write_summary(rows_layouts, rib_t):
     out = "results/stage6_results.csv" if rib_t == DEFAULT_RIB_T else "results/stage6_results_rt%s.csv" % ("%g" % rib_t).replace(".", "p")
     if SKIN_T != 1.0:
         out = out.replace(".csv", "_sk%s.csv" % skin_p())
+    if MESH_SUFFIX:
+        out = out.replace(".csv", "%s.csv" % MESH_SUFFIX)
     counts = {}
     with open(out, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=fields)
@@ -607,7 +618,7 @@ def write_summary(rows_layouts, rib_t):
             except SystemExit as e:
                 w.writerow(dict(id=L["id"], family=L["family"], stations=L["stations"], rib_t=rib_t, status="rejected: %s" % e))
                 continue
-            key = tag.lstrip("_") + SKIN_SUFFIX
+            key = tag.lstrip("_") + SKIN_SUFFIX + MESH_SUFFIX
             row = dict(id=L["id"], key=key, family=L["family"], stations=L["stations"], rib_t=rib_t,
                        est_rib_mass_g=L["est_rib_mass_g"], status="pending")
             p = rec_path(key)
@@ -678,12 +689,13 @@ def do_check(layouts, rib_t):
 
 
 def main():
-    global LOG, SKIN_T, SKIN_SUFFIX
+    global LOG, SKIN_T, SKIN_SUFFIX, MESH_S, MESH_K, MESH_SUFFIX
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", required=True, choices=["check", "pass1", "pass2", "summary", "skin"])
+    ap.add_argument("--stage", required=True, choices=["check", "pass1", "pass2", "summary", "skin", "conv"])
     ap.add_argument("--layouts", default="all")
     ap.add_argument("--rib-t", type=float, default=DEFAULT_RIB_T)
     ap.add_argument("--skin-t", type=float, default=1.0)
+    ap.add_argument("--mesh", default="4,8", help="solid,skin maxh [mm]; only for --stage conv (or summary)")
     ap.add_argument("--retry-failed", action="store_true")
     ap.add_argument("--max-consecutive-fail", type=int, default=3)
     a = ap.parse_args()
@@ -695,6 +707,15 @@ def main():
         sys.exit("ERROR: --skin-t must be positive.")
     SKIN_T = a.skin_t
     SKIN_SUFFIX = "" if SKIN_T == 1.0 else "_sk" + skin_p()
+    try:
+        MESH_S, MESH_K = [float(x) for x in a.mesh.split(",")]
+    except ValueError:
+        sys.exit("ERROR: --mesh must look like 4,6")
+    if (MESH_S, MESH_K) != (4.0, 8.0) and a.stage in ("pass1", "pass2", "skin"):
+        sys.exit("ERROR: --mesh other than 4,8 is only for --stage conv (or summary).")
+    if a.stage == "conv" and (MESH_S, MESH_K) == (4.0, 8.0):
+        sys.exit("ERROR: --stage conv needs --mesh other than 4,8.")
+    MESH_SUFFIX = "" if (MESH_S, MESH_K) == (4.0, 8.0) else "_" + mesh_p()
     os.makedirs(RES, exist_ok=True)
     lock = open(RES + "/driver.lock", "w")
     try:
@@ -721,7 +742,8 @@ def main():
     free = free_disk_gb()
     if free < (10.0 if a.stage == "pass1" else 8.0):
         sys.exit("ERROR: only %.1f GB free disk -- STOP." % free)
-    steps = PASS1 if a.stage == "pass1" else (SKIN_STEPS if a.stage == "skin" else PASS2)
+    steps = (PASS1 if a.stage == "pass1" else SKIN_STEPS if a.stage == "skin"
+             else CONV_STEPS if a.stage == "conv" else PASS2)
     t_start = time.time()
     done, consecutive, results = 0, 0, {}
     try:
@@ -736,6 +758,20 @@ def main():
                 miss = [k for k in ("raw", "json", "vol") if not os.path.exists(c.N[k])]
                 if miss:
                     LOG.say("[%s] skin stage skipped: missing reusable files %s" % (c.key, miss))
+                    continue
+            if a.stage == "conv":
+                bp = rec_path(c.tag.lstrip("_"))
+                if not os.path.exists(bp):
+                    LOG.say("[%s] conv stage skipped: base record %s is missing" % (c.key, bp))
+                    continue
+                base = json.load(open(bp))
+                if not base.get("complete") or "imprint" not in base.get("steps", {}):
+                    LOG.say("[%s] conv stage skipped: base record is not complete" % c.key)
+                    continue
+                c.rec["steps"].setdefault("imprint", base["steps"]["imprint"])
+                miss = [k for k in ("step", "json", "vol") if not os.path.exists(c.N[k])]
+                if miss:
+                    LOG.say("[%s] conv stage skipped: missing reusable files %s" % (c.key, miss))
                     continue
             if a.stage == "pass2" and not step_done(c, "load"):
                 LOG.say("[%s] pass 2 skipped: pass 1 not complete for this layout" % c.key)
