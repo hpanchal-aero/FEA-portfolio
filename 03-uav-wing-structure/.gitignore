@@ -53,3 +53,5 @@ figures/3d/*.glb
 *.bak_hash
 *.bak_mesh
 *.bak_conv2
+figures/3d/L006_buckling_mode1.png
+figures/3d/L006_buckling_mode1_zoom.png
