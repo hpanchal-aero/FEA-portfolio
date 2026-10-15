@@ -1,3 +1,5 @@
+> **Working notes.** This is the chronological engineering log of Project 03, kept for traceability: decisions, predictions written before runs, retractions and unresolved items. It is not the project report; see [../README.md](../README.md).
+
 # Project 03 — UAV Wing Structural Analysis — Development Log
 
 ## Specification (locked)
