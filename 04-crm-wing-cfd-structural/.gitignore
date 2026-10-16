@@ -1,0 +1,16 @@
+# Third-party data (licence not stated): downloaded by script, never committed
+data/*
+!data/README.md
+
+# Generated artefacts
+mesh/*.msh
+mesh/*.vtk
+simulation/**/processor*/
+cfd/**/processor*/
+cfd/**/[0-9]*/
+!cfd/**/0/
+*.log
+*.bak
+simulation/orientation_test/
+__pycache__/
+*.pyc

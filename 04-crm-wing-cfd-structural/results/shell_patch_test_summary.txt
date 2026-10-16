@@ -1,0 +1,11 @@
+ccx: /home/harsh/miniconda3/envs/ccx223/bin/ccx | This is Version 2.23
+
+rotation of material axis from global x: 55.0 deg
+entry   analytic [GPa]    CalculiX [GPa]   diff / Q11
+Q11          51.1308          51.1308   -4.33e-08
+Q22          60.0310          60.0310   +6.57e-08
+Q66          22.6574          22.6574   +1.88e-08
+Q12          20.2555          20.2555   +3.32e-08
+Q16           4.0177           4.0177   -8.47e-08
+Q26           8.2088           8.2088   -2.27e-08
+OVERALL: PASS

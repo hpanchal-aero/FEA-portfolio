@@ -1,0 +1,12 @@
+ccx binary: /home/harsh/miniconda3/envs/ccx223/bin/ccx
+This is Version 2.23
+strip L=2.0 m, W=0.5 m, t=0.01 m, F=500.0 N, E1=70 GPa, E2=30 GPa
+
+phi90_u    load along u: delta = 2.9150e-06 m   predicted 2.8571e-06 m   ratio 1.020   |off-axis| = 4.44e-17 m
+phi90_v    load along v: delta = 6.7495e-06 m   predicted 6.6667e-06 m   ratio 1.012   |off-axis| = 1.45e-15 m
+phi35_u    load along u: delta = 2.9150e-06 m   predicted 2.8571e-06 m   ratio 1.020   |off-axis| = 4.94e-11 m
+phi35_v    load along v: delta = 6.7495e-06 m   predicted 6.6667e-06 m   ratio 1.012   |off-axis| = 4.35e-12 m
+
+phi=  90: delta_v/delta_u = 2.315  -> PASS
+phi=  35: delta_v/delta_u = 2.315  -> PASS
+OVERALL: PASS
