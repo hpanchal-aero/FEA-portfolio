@@ -14,3 +14,5 @@ cfd/**/[0-9]*/
 simulation/orientation_test/
 __pycache__/
 *.pyc
+simulation/static_v1/
+simulation/static_v2/

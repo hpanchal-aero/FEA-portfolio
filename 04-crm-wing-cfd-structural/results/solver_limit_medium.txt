@@ -1,0 +1,28 @@
+uCRM-9 structural model: CalculiX solver limit on the medium mesh
+=================================================================
+Environment: CalculiX 2.23 (conda env ccx223), SPOOLES serial solver, 16 cores, 11 GiB RAM, 2 GiB swap.
+Deck: static_v2 (aero + gravity + engine, LE/TE and fuel masses), S4 shells.
+
+Problem size
+  level    nodes   S4 elements   CalculiX equations   stored nonzeros   NASTRAN FEM DOF (xlsx)
+  coarse   23,738        25,055              367,149        10,338,441                  142,428
+  medium   59,388        61,451              904,782        25,085,849                  356,328
+
+Results
+  coarse : solves (about 10 s). Tip uz 2.3368 m (mean of tip nodes), reference 2.5239 m.
+  medium : segmentation fault (exit code 139) in the SPOOLES factorization stage.
+           Four runs, identical peak resident memory of 3795 MiB each:
+             1. default stack (8192 kB)
+             2. stack unlimited
+             3. CCX_NPROC_EQUATION_SOLVER=16 (variable not read by this binary; SPOOLES stayed at 1 cpu)
+             4. OMP_NUM_THREADS=16 and CCX_NPROC_EQUATION_SOLVER=16 (assembly used 16 cpus, SPOOLES 1 cpu)
+           Not an out-of-memory kill (exit code 139, not 137; 3.8 GiB used of 11 GiB, swap unused).
+  PARDISO: "*ERROR in linstatic: the PARDISO library is not linked" (assembly-only peak 2629 MiB).
+
+Not determined
+  The root cause of the crash. A 32-bit size or index overflow inside SPOOLES is a hypothesis; it was not verified.
+
+Decision (user, 2026-10-18)
+  The structural mesh study is restricted to the coarse mesh. No CalculiX rebuild for now.
+  Consequences: no CalculiX mesh-convergence comparison against the NASTRAN medium/fine references;
+  modal comparison against the coarse NASTRAN reference only. Recorded as a limitation.
