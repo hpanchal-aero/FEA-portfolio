@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
-"""Post-process a CalculiX static run of a uCRM deck: equilibrium and displacement summary.
-
-Reaction rule: the printed RF is K*u at every node of the print set. At a loaded free DOF it equals the
-applied load; at a constrained DOF it equals (support reaction + applied load). The support reaction is
-therefore: printed total - applied load on free DOFs of NSPC nodes - applied load on constrained DOFs.
+"""Post-process a CalculiX static run of a uCRM deck: displacement summary and comparison with a reference tip deflection.
 
 Usage: post_static.py /path/to/jobname [reference_tip_uz_in_m]      (without extension)
 
-Note on reactions: CalculiX prints, at an UNCONSTRAINED but loaded DOF of a node in the print set,
-an "RF" equal to the applied load. The deck's print set NSPC contains nodes that are constrained in
-only some DOFs (rib at y = 3.1 m: z only) and also loaded in x and y, so the printed total is
-corrected below by the applied load on the free DOFs of NSPC nodes. (Verified on uCRM-9 coarse v1:
-the correction closes the x and y residuals to the printed precision.)
+Force balance is NOT evaluated here. The printed RF at the print set NSPC is K*u, i.e. support reaction plus the external load
+at those nodes (CLOAD, gravity of the shell elements, point-mass weight transferred through *EQUATION). A balance that ignores
+gravity therefore does not close. Use check_equilibrium.py for the force balance (uCRM-9 coarse: closes to 2.5 N of 6.3e5 N).
 """
 import sys
 from pathlib import Path
@@ -21,46 +15,23 @@ import numpy as np
 base = Path(sys.argv[1]).resolve()
 inp, dat = base.with_suffix(".inp"), base.with_suffix(".dat")
 
-coords, cloads, nspc, cons = {}, [], set(), {}
-kw, cur_set = None, None
+coords, kw = {}, None
 for ln in inp.read_text().splitlines():
     s = ln.strip()
+    if not s or s.startswith("**"):
+        continue
     if s.startswith("*"):
         kw = s.split(",")[0].upper()
-        cur_set = s.upper().split("NSET=")[1].split(",")[0].strip() if (kw == "*NSET" and "NSET=" in s.upper()) else None
         continue
-    if not s:
-        continue
-    t = [x.strip() for x in s.split(",") if x.strip()]
     if kw == "*NODE":
+        t = [x.strip() for x in s.split(",") if x.strip()]
         coords[int(t[0])] = np.array([float(t[1]), float(t[2]), float(t[3])])
-    elif kw == "*NSET" and cur_set == "NSPC":
-        nspc.update(int(x) for x in t)
-    elif kw == "*CLOAD":
-        cloads.append((int(t[0]), int(t[1]), float(t[2])))
-    elif kw == "*BOUNDARY":
-        d1 = int(t[1])
-        d2 = int(t[2]) if len(t) > 2 else d1
-        cons.setdefault(int(t[0]), set()).update(range(d1, d2 + 1))
 
-load = np.zeros(3)
-load_on_cons = np.zeros(3)
-load_free_nspc = np.zeros(3)
-for n, d, v in cloads:
-    load[d - 1] += v
-    if d in cons.get(n, set()):
-        load_on_cons[d - 1] += v
-    elif n in nspc:
-        load_free_nspc[d - 1] += v
-
-disp, rf_tot, mode = {}, None, None
+disp, mode = {}, None
 for ln in dat.read_text().splitlines():
     s = ln.strip()
-    if s.startswith("displacements"):
-        mode = "U"
-        continue
-    if s.startswith("total force"):
-        mode = "RFT"
+    if s and s[0].isalpha():
+        mode = "U" if s.startswith("displacements") else None
         continue
     tok = ln.split()
     if mode == "U" and len(tok) == 4:
@@ -68,26 +39,11 @@ for ln in dat.read_text().splitlines():
             disp[int(tok[0])] = np.array([float(x) for x in tok[1:]])
         except ValueError:
             pass
-    elif mode == "RFT" and len(tok) == 3:
-        rf_tot = np.array([float(x) for x in tok])
-        mode = None
 
-if not disp or rf_tot is None:
-    sys.exit(f"ABORT: parsed {len(disp)} displacement nodes, reaction total {rf_tot}")
+if not disp:
+    sys.exit("ABORT: no displacements parsed from the .dat file")
 
-print(f"deck nodes {len(coords)}   displacement nodes parsed {len(disp)}   NSPC {len(nspc)}")
-print("\nEQUILIBRIUM")
-rf_corr = rf_tot - load_free_nspc - load_on_cons
-print(f"  applied load                  : Fx={load[0]:+.4e}  Fy={load[1]:+.4e}  Fz={load[2]:+.4e} N")
-print(f"  reaction total (printed)      : Fx={rf_tot[0]:+.4e}  Fy={rf_tot[1]:+.4e}  Fz={rf_tot[2]:+.4e} N")
-print(f"  load on free DOFs of NSPC nodes: Fx={load_free_nspc[0]:+.4e}  Fy={load_free_nspc[1]:+.4e}  Fz={load_free_nspc[2]:+.4e} N")
-print(f"  reaction total (corrected)    : Fx={rf_corr[0]:+.4e}  Fy={rf_corr[1]:+.4e}  Fz={rf_corr[2]:+.4e} N")
-res = load + rf_corr
-print(f"  load + corrected reaction     : Fx={res[0]:+.3e}  Fy={res[1]:+.3e}  Fz={res[2]:+.3e} N   "
-      f"(max |residual| = {np.abs(res).max():.3e} N = {100 * np.abs(res).max() / abs(load[2]):.2e} % of |Fz|)")
-print(f"  load applied on constrained DOFs: Fx={load_on_cons[0]:+.4e}  Fy={load_on_cons[1]:+.4e}  "
-      f"Fz={load_on_cons[2]:+.4e} N  (subtracted above)")
-
+print(f"deck nodes {len(coords)}   displacement nodes parsed {len(disp)}")
 ids = np.array(sorted(disp))
 U = np.array([disp[i] for i in ids])
 X = np.array([coords[i] for i in ids])

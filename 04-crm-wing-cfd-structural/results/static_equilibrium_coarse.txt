@@ -1,0 +1,23 @@
+static_v3/coarse_tr_f2 (point masses as T3D2 pairs, E = 1e9, unit area)
+deck: 23886 nodes, 25129 elements, 444 equations, 1389 NSPC nodes
+shell mass in deck     :     11958.49 kg   (spreadsheet 11958.5 kg, ratio 1.0000)
+truss (point) masses   :     22170.00 kg
+CLOAD sum A            : Fx=-6.1860e+03 Fy=-4.0821e+04 Fz=+9.6701e+05 N
+gravity sum W (after equation transfer): Fx=-2.6048e-09 Fy=+4.9477e-10 Fz=-3.3480e+05 N
+  of which on NSPC nodes (all DOFs): Fz=-2.1589e+04 N   CLOAD on NSPC nodes: Fz=+0.0000e+00 N
+printed RF total       : Fx=+6.5896e+03 Fy=+3.8985e+04 Fz=-6.5380e+05 N
+reaction at NSPC       : Fx=+6.1860e+03 Fy=+4.0821e+04 Fz=-6.3221e+05 N
+closure R + A + W      : Fx=-7.663e-05 Fy=+4.417e-03 Fz=-2.495e+00 N
+net vertical load |A + W| = 6.3221e+05 N;  |Fz closure| = 2.495e+00 N = 0.000 % of it
+
+static_v3/coarse_trall (point masses as T3D2 pairs, E = 1, default mode)
+deck: 23886 nodes, 25129 elements, 444 equations, 1389 NSPC nodes
+shell mass in deck     :     11958.49 kg   (spreadsheet 11958.5 kg, ratio 1.0000)
+truss (point) masses   :     22170.00 kg
+CLOAD sum A            : Fx=-6.1860e+03 Fy=-4.0821e+04 Fz=+9.6701e+05 N
+gravity sum W (after equation transfer): Fx=-2.6048e-09 Fy=+4.9477e-10 Fz=-3.3480e+05 N
+  of which on NSPC nodes (all DOFs): Fz=-2.1589e+04 N   CLOAD on NSPC nodes: Fz=+0.0000e+00 N
+printed RF total       : Fx=+6.5896e+03 Fy=+3.8985e+04 Fz=-6.5380e+05 N
+reaction at NSPC       : Fx=+6.1860e+03 Fy=+4.0821e+04 Fz=-6.3221e+05 N
+closure R + A + W      : Fx=-7.663e-05 Fy=+4.417e-03 Fz=-2.495e+00 N
+net vertical load |A + W| = 6.3221e+05 N;  |Fz closure| = 2.495e+00 N = 0.000 % of it
