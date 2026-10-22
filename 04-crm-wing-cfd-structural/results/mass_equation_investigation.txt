@@ -1,0 +1,23 @@
+POINT MASSES TIED THROUGH *EQUATION IN CALCULIX 2.23 (uCRM-9 coarse)
+---------------------------------------------------------------------
+Context: the NASTRAN model attaches 74 CONM2 point masses to the wing by RBE3/RBE2. In the CalculiX deck each mass node
+is tied to wing nodes by 3 *EQUATION entries (222 equations in total, add_masses.py).
+
+Symptom: a node carrying a MASS element that is the dependent (first) term of a multi-term *EQUATION makes CalculiX stop with
+  add_sm_st: coefficient should be 0
+Rule observed: the first term of an *EQUATION is the dependent DOF. With a wing DOF as the first term the same deck runs
+(scripts/diagnostics/reorder_equations.py).
+
+Adopted workaround (scripts/variant_truss_mass.py --unit-area, E = 1e9 Pa): each point mass is replaced by a T3D2 element
+between the mass node and a partner node 1 m away, tied rigidly to it, with rho = M [kg/m3] and A = 1 m2. A regular element on
+the mass node avoids the failure.
+  - Truss Young's modulus: with E = 1 Pa the elements add spurious soft modes (eigenvalue ~ E/(rho*A)); with E = 1e9 they do
+    not appear. Modal frequencies for E = 1e9 and E = 1e11 differ by at most 0.022 %.
+  - Static result independent of the representation: tip-section mean uz 2.3368 m for the E = 1 default-mode deck and for the
+    E = 1e9 unit-area deck, identical printed reactions (results/static_equilibrium_coarse.txt).
+  - Total point mass 22,170.0 kg in both; shell mass 11,958.49 kg (= spreadsheet).
+
+Scripts (scripts/diagnostics/, each documents its usage in its docstring): check_equations.py and diag_modes.py (read-only audits),
+variant_features.py, variant_masses.py, variant_ties.py, variant_eqspec.py, variant_eqsubset.py, variant_eq_tol.py (deck bisection),
+reorder_equations.py, variant_cload.py (static weight as nodal loads).
+Not established: why CalculiX 2.23 rejects the MASS-on-dependent-node case beyond the rule above.
