@@ -1,0 +1,65 @@
+level coarse: 242 properties, 25055 elements, FLOOR 0.001, TOL 0.001
+largest neglected 13/23 term relative to its 11/22 scale: 1.24e-33
+
+=== N = 15 plies: feasible 107/242 properties, 57.4 % of elements
+  H/T      median 4.24  p90 7.66  max 9.33
+  Q11 ply contrast (max/min)  median 11.8  max 45.1
+  min ply (Q11 Q22 - Q12^2)/(Q11 Q22)  worst 2e-06
+  binding component at best H over 135 infeasible properties: {'22': 134, '12': 1}
+  INFEASIBLE pid  238 (  700 el): best H/T 15.78, worst err 0.368 in 22; errors 11=6.2e-16 22=0.37 66=0.24 12=1.1e-14
+      pass intervals H/T  11:[10.6,25.0]  22:[1.0,8.7]  66:[1.0,11.4]  12:[15.8,25.0]
+  INFEASIBLE pid   94 (  687 el): best H/T 14.78, worst err 0.366 in 22; errors 11=1.1e-15 22=0.37 66=0.16 12=4.8e-15
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,8.2]  66:[1.0,12.1]  12:[14.8,25.0]
+  INFEASIBLE pid   95 (  653 el): best H/T 13.84, worst err 0.332 in 22; errors 11=4.4e-16 22=0.33 66=0.12 12=2.3e-14
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,8.2]  66:[1.0,12.1]  12:[13.8,25.0]
+  INFEASIBLE pid   96 (  608 el): best H/T 12.14, worst err 0.236 in 22; errors 11=1.1e-15 22=0.24 66=0.048 12=0.017
+      pass intervals H/T  11:[8.2,25.0]  22:[1.0,8.7]  66:[1.0,11.4]  12:[13.0,25.0]
+  INFEASIBLE pid  100 (  419 el): best H/T 14.78, worst err 0.331 in 22; errors 11=2.2e-16 22=0.33 66=0.22 12=8.9e-15
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,8.7]  66:[1.0,11.4]  12:[14.8,25.0]
+  INFEASIBLE pid  101 (  399 el): best H/T 14.78, worst err 0.334 in 22; errors 11=4.4e-16 22=0.33 66=0.21 12=8.5e-15
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,8.7]  66:[1.0,11.4]  12:[14.8,25.0]
+  pid   1: infeasible, best H/T 5.89, worst 0.003 in 22  pass 11:[4.2,25.0]  22:[1.0,5.5]  66:[1.0,13.8]  12:[5.9,25.0]
+  pid  94: infeasible, best H/T 14.78, worst 0.366 in 22  pass 11:[10.0,25.0]  22:[1.0,8.2]  66:[1.0,12.1]  12:[14.8,25.0]
+  pid  95: infeasible, best H/T 13.84, worst 0.332 in 22  pass 11:[9.3,25.0]  22:[1.0,8.2]  66:[1.0,12.1]  12:[13.8,25.0]
+
+=== N = 25 plies: feasible 112/242 properties, 59.2 % of elements
+  H/T      median 4.24  p90 8.13  max 11.37
+  Q11 ply contrast (max/min)  median 12.1  max 60.2
+  min ply (Q11 Q22 - Q12^2)/(Q11 Q22)  worst 2e-06
+  binding component at best H over 130 infeasible properties: {'22': 130}
+  INFEASIBLE pid  238 (  700 el): best H/T 19.22, worst err 0.141 in 22; errors 11=4.6e-16 22=0.14 66=0.057 12=6.7e-15
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,13.0]  66:[1.0,16.9]  12:[19.2,25.0]
+  INFEASIBLE pid   94 (  687 el): best H/T 18.00, worst err 0.14 in 22; errors 11=8.9e-16 22=0.14 66=5.3e-14 12=1.9e-14
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,12.1]  66:[1.0,18.0]  12:[18.0,25.0]
+  INFEASIBLE pid   95 (  653 el): best H/T 16.86, worst err 0.117 in 22; errors 11=4.2e-16 22=0.12 66=5e-14 12=6e-15
+      pass intervals H/T  11:[8.7,25.0]  22:[1.0,12.1]  66:[1.0,16.9]  12:[16.9,25.0]
+  INFEASIBLE pid   96 (  608 el): best H/T 15.78, worst err 0.0779 in 22; errors 11=6.9e-16 22=0.078 66=4.6e-14 12=1.3e-14
+      pass intervals H/T  11:[8.2,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[15.8,25.0]
+  INFEASIBLE pid  100 (  419 el): best H/T 18.00, worst err 0.116 in 22; errors 11=3.4e-16 22=0.12 66=0.039 12=2.3e-14
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[18.0,25.0]
+  INFEASIBLE pid  101 (  399 el): best H/T 18.00, worst err 0.118 in 22; errors 11=8.9e-16 22=0.12 66=0.036 12=3.1e-15
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[18.0,25.0]
+  pid   1: FEASIBLE H/T 5.89  contrast 13.2  pass 11:[4.2,25.0]  22:[1.0,8.2]  66:[1.0,20.5]  12:[5.9,25.0]
+  pid  94: infeasible, best H/T 18.00, worst 0.14 in 22  pass 11:[10.0,25.0]  22:[1.0,12.1]  66:[1.0,18.0]  12:[18.0,25.0]
+  pid  95: infeasible, best H/T 16.86, worst 0.117 in 22  pass 11:[8.7,25.0]  22:[1.0,12.1]  66:[1.0,16.9]  12:[16.9,25.0]
+
+=== N = 50 plies: feasible 112/242 properties, 59.2 % of elements
+  H/T      median 4.24  p90 8.13  max 11.37
+  Q11 ply contrast (max/min)  median 12.5  max 65.8
+  min ply (Q11 Q22 - Q12^2)/(Q11 Q22)  worst 2e-06
+  binding component at best H over 130 infeasible properties: {'22': 129, '12': 1}
+  INFEASIBLE pid  238 (  700 el): best H/T 19.22, worst err 0.141 in 22; errors 11=2e-15 22=0.14 66=0.057 12=2.2e-15
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,13.0]  66:[1.0,16.9]  12:[19.2,25.0]
+  INFEASIBLE pid   94 (  687 el): best H/T 18.00, worst err 0.14 in 22; errors 11=8.4e-16 22=0.14 66=1.1e-15 12=1.7e-14
+      pass intervals H/T  11:[10.0,25.0]  22:[1.0,12.1]  66:[1.0,18.0]  12:[18.0,25.0]
+  INFEASIBLE pid   95 (  653 el): best H/T 16.86, worst err 0.117 in 22; errors 11=1.1e-15 22=0.12 66=6.9e-16 12=6.8e-15
+      pass intervals H/T  11:[8.7,25.0]  22:[1.0,12.1]  66:[1.0,16.9]  12:[16.9,25.0]
+  INFEASIBLE pid   96 (  608 el): best H/T 15.78, worst err 0.0779 in 22; errors 11=6.6e-16 22=0.078 66=4.3e-16 12=3.3e-16
+      pass intervals H/T  11:[7.7,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[15.8,25.0]
+  INFEASIBLE pid  100 (  419 el): best H/T 18.00, worst err 0.116 in 22; errors 11=1.6e-15 22=0.12 66=0.039 12=3.7e-15
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[18.0,25.0]
+  INFEASIBLE pid  101 (  399 el): best H/T 18.00, worst err 0.118 in 22; errors 11=1.1e-15 22=0.12 66=0.036 12=5.3e-15
+      pass intervals H/T  11:[9.3,25.0]  22:[1.0,13.0]  66:[1.0,15.8]  12:[18.0,25.0]
+  pid   1: FEASIBLE H/T 5.89  contrast 13.5  pass 11:[4.0,25.0]  22:[1.0,8.2]  66:[1.0,20.5]  12:[5.9,25.0]
+  pid  94: infeasible, best H/T 18.00, worst 0.14 in 22  pass 11:[10.0,25.0]  22:[1.0,12.1]  66:[1.0,18.0]  12:[18.0,25.0]
+  pid  95: infeasible, best H/T 16.86, worst 0.117 in 22  pass 11:[8.7,25.0]  22:[1.0,12.1]  66:[1.0,16.9]  12:[16.9,25.0]

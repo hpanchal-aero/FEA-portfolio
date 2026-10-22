@@ -1,0 +1,12 @@
+wrote /home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/layered_v1/layered_abd_coarse.npz  (242 properties, N = 25, FLOOR 0.001)
+strict (all rows of component 12 within TOL): 112/242 properties, 59.2 % of elements
+  H/T used                                     median      5.89  p90      9.97  max      11.4
+  ply contrast Q11 max/min                     median      24.5  p90  1.63e+04  max  1.98e+04
+  worst ply (1 - Q12^2/(Q11 Q22)): 2e-06
+element-weighted errors of the fitted membrane law (fit vs NASTRAN):
+  A12 error / sqrt(A11 A22)                    median  1.03e-16  p90     0.228  max     0.232
+  effective E1 (1/S11 of plane-stress inverse) median  9.99e-16  p90    0.0651  max    0.0697
+  effective E2 (1/S22)                         median  5.55e-16  p90    0.0651  max    0.0697
+  pid   1: strict True  H/T 5.89  A12 err 4.2e-17  E1 err 0  E2 err 3.33e-16
+  pid  94: strict False  H/T 9.97  A12 err 0.219  E1 err 0.0612  E2 err 0.0612
+  pid  95: strict False  H/T 8.74  A12 err 0.223  E1 err 0.0626  E2 err 0.0626

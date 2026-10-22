@@ -1,0 +1,12 @@
+level coarse: 242 properties, 25055 elements, FLOOR 0.001, TOL 0.001
+
+=== N = 25 plies ===
+  strict feasible 112/242 properties,  59.2 % of elements   H/T median 4.24 p90 8.13 max 11.37
+  R1     feasible 114/242 properties,  60.0 % of elements   H/T median 4.39 p90 8.18 max 12.14
+  R2     feasible 242/242 properties, 100.0 % of elements   H/T median 8.18 p90 9.97 max 9.97
+  R1 residuals  D12 error/sqrt(D11 D22): median 3.11e-16 max 0.483;  B12 error/(sqrt(A11 A22) H/2): median 3.01e-17 max 0.079
+  at the thinnest H where 11, 22, 66 pass: component-12 row that fails worst (elements): {'D': 18894, 'A': 6036, 'B': 125}
+  pid   1: strict=H/T 5.89 R1=H/T 5.52 R2=H/T 4.24  12-row errors at H/T 4.24: A 0.877 B 0.633 D 3.14
+  pid  94: strict=infeasible R1=infeasible R2=H/T 9.97  12-row errors at H/T 9.97: A 0.909 B 0.476 D 3.17
+  pid  95: strict=infeasible R1=infeasible R2=H/T 8.74  12-row errors at H/T 8.74: A 0.915 B 0.418 D 2.76
+  properties infeasible even under R2: 0

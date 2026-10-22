@@ -1,0 +1,15 @@
+level coarse: 25055 elements, 242 properties
+
+median [min, max] over elements
+group                           n                       D1/Dhom1                       D2/Dhom2                     12I/T3
+non-rib (skins, spars)      15178      23.1 [     5.02,       250]     0.431 [    0.175,     0.647]     0.693 [    0.423,      1.03]
+ribs: all                    9877       257 [     2.09,       270]     0.439 [    0.254,     0.552]       0.6 [    0.424,      1.11]
+ribs: y 0.70-0.85             687       257 [      257,       257]     0.389 [    0.389,     0.389]     0.672 [    0.672,     0.672]
+ribs: y 1.45-1.65             653       204 [      204,       204]     0.406 [    0.406,     0.406]     0.643 [    0.643,     0.643]
+degenerate                      0
+
+properties in ribs: y 0.70-0.85 (pid, elements, t [mm], 12I/T3, D1/Dhom1, D2/Dhom2, B1^2/(A1 D1))
+     94   687    4.905    0.672        257      0.389    0.304
+
+properties in ribs: y 1.45-1.65 (pid, elements, t [mm], 12I/T3, D1/Dhom1, D2/Dhom2, B1^2/(A1 D1))
+     95   653    5.402    0.643        204      0.406    0.292

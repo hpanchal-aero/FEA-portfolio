@@ -16,3 +16,7 @@ __pycache__/
 *.pyc
 simulation/static_v1/
 simulation/static_v2/
+simulation/static_v2_*/
+simulation/static_v3/
+simulation/modal_v1/
+simulation/layered_v1/

@@ -1,0 +1,21 @@
+properties 242: ABD not positive semi-definite for 0; ill-conditioned 0
+elements used 15178 of 25055; skipped {'rib (normal mostly spanwise)': 9877}
+free variant vs v1 formulation: max relative difference 1.09e-14
+a_F/a_M median 0.9187 [0.8677, 0.9770]   a_R/a_M median 1.0000 [1.0000, 1.0000]
+element normals pointing into the box: 0 of 15178 (0.0 %)
+loads: sum Fz = 6.3221e+05 N; beam root y = 0.001 m, tip y = 29.382 m
+
+stations 80, usable 80, cuts with an unexpected crossing count 0
+
+beam tip deflection, model M (CalculiX deck): 1.5989 m  (CalculiX v2 coarse: 2.3368 m)
+variant                                   EI_X/EI_M median [min, max]  delta_M/delta_X
+free        1: a only                  0.9130 [0.8920, 0.9312]           0.9079
+free        2: + eccentricity b        0.9138 [0.8928, 0.9314]           0.9089
+free        3: + intrinsic d (= v1)    0.9138 [0.8928, 0.9314]           0.9089
+restrained  1: a only                  1.0000 [1.0000, 1.0000]           1.0000
+restrained  2: + eccentricity b        1.0285 [1.0084, 1.0524]           1.0255
+restrained  3: + intrinsic d           1.0306 [1.0086, 1.0625]           1.0276
+
+prediction (written before the run): free stage 3 reproduces 0.9089 (v1); normals > 95 % inward; restrained stage 3 about 0.95 to 0.98
+observed CalculiX / NASTRAN tip ratio: 0.926 (tip-section mean) to 0.937 (tip max)
+caveat: plane sections, no shear lag or shear deformation, uniaxial stress, root at the clamped nodes; the absolute beam deflection is not trusted
