@@ -32,9 +32,15 @@ ap = argparse.ArgumentParser()
 ap.add_argument("level", choices=["coarse", "medium", "fine"])
 ap.add_argument("--all-loads", action="store_true")
 ap.add_argument("--fuel", choices=["20", "full"], default="20")
+ap.add_argument("--e3-factor", type=float, default=1.0, help="sensitivity: E3 = factor * E2 (default 1)")
+ap.add_argument("--nu3", type=float, default=0.3, help="sensitivity: nu13 = nu23 (default 0.3)")
+ap.add_argument("--gshear-scale", type=float, default=1.0, help="sensitivity: scale of G13 and G23 (default 1)")
+ap.add_argument("--tag", default="", help="suffix for the output directory and job name")
 args = ap.parse_args()
 level, all_loads = args.level, args.all_loads
 tag = "v2" if all_loads else "v1"
+if args.tag:
+    tag = f"{tag}_{args.tag}"
 
 fem = HERE.parent / "data" / "ucrm9" / "uCRM9" / "Mesh" / level.capitalize() / "FEM"
 out_dir = HERE.parent / "simulation" / f"static_{tag}" / level
@@ -213,8 +219,9 @@ for pid in sorted(pshell):
     S = np.linalg.inv(G)
     E1, E2, nu12 = 1.0 / S[0, 0], 1.0 / S[1, 1], -S[0, 1] / S[0, 0]
     L += [f"*MATERIAL, NAME=M{pid}", "*ELASTIC, TYPE=ENGINEERING CONSTANTS",
-          f"{E1:.9e}, {E2:.9e}, {E2:.9e}, {nu12:.6f}, 0.3, 0.3, {m1['g33']:.9e}, {m3['g11']:.9e}",
-          f"{m3['g22']:.9e}, 0.", "*DENSITY", f"{m1['rho']:.6f}"]
+          f"{E1:.9e}, {E2:.9e}, {args.e3_factor * E2:.9e}, {nu12:.6f}, {args.nu3:.6f}, {args.nu3:.6f}, "
+          f"{m1['g33']:.9e}, {args.gshear_scale * m3['g11']:.9e}",
+          f"{args.gshear_scale * m3['g22']:.9e}, 0.", "*DENSITY", f"{m1['rho']:.6f}"]
 if n_bad:
     sys.exit(f"ABORT: {n_bad} properties with invalid material matrices")
 
@@ -254,6 +261,7 @@ L += ["*NODE FILE", "U", "*NODE PRINT, NSET=NALL", "U",
 
 out_path.write_text("\n".join(L) + "\n")
 print(f"wrote {out_path}")
+print(f"settings: E3 factor {args.e3_factor}, nu13 = nu23 = {args.nu3}, shear scale {args.gshear_scale}")
 print(f"nodes {len(grids)}  S4 elements {len(quads)}  properties {len(pshell)}  orientations {len(orient_axes)}")
 print(f"constrained nodes {len(spc_nodes)}  fully clamped {sum(1 for g in spc_nodes if len(dofs[g]) == 6)}")
 a_tot = sum(aero.values(), np.zeros(3))

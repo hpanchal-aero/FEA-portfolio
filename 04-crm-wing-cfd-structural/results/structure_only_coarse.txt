@@ -1,0 +1,36 @@
+uCRM-9 coarse, structure-only verification against the NASTRAN reference (all loads: aero + gravity + engine + LE/TE + fuel)
+Decks: scripts/build_structure_decks.sh (RUN=1). CalculiX 2.23, orthotropic S4 shells, point masses as T3D2 pairs, E = 1e9, unit area.
+
+STATIC (tolerance: tip uz within 2 %)
+deck nodes 23886   displacement nodes parsed 23738
+
+DISPLACEMENTS [m]
+  max |u| = 2.3666 at node 3791  x=(46.867,29.382,4.051)
+  max uz  = 2.3643 at node 3792  y=29.382
+  tip section (y >= ymax-0.001):   21 nodes   uz mean 2.3368   min 2.3093   max 2.3643
+  tip section (y >= ymax-0.05):   21 nodes   uz mean 2.3368   min 2.3093   max 2.3643
+  ymax = 29.382 m
+
+  NASTRAN reference (ALL loads: aero + gravity + engine + LE/TE + fuel): coarse 2.5239 m (2.5244 / 2.5247 for medium / fine: column order assumed from the xlsx, verify)
+  tip-section mean uz  2.3368 m   vs 2.5239 m : -7.41 %
+  tip-section max uz   2.3643 m   vs 2.5239 m : -6.32 %
+  global max uz        2.3643 m   vs 2.5239 m : -6.32 %
+  (a deck without gravity and masses, e.g. v1, is NOT comparable)
+Verdict: tip mean -7.41 % -> FAIL against 2 %. Documented limitation (decision D10); force balance and mass verified separately (static_equilibrium_coarse.txt).
+
+MODAL (tolerance: first 5 modes within 5 %)
+NOTE: rows 6-10 pair modes by index only. CalculiX modes 6, 8, 9 are local rib-web panel modes (PID 94/95) with no NASTRAN counterpart in this list;
+the global modes at 8.251 and 10.674 Hz correspond to NASTRAN 8.112 and 10.594 Hz (+1.7 %, +0.8 %). Only rows 1-5 enter the criterion.
+mode   eigenvalue  f_ccx [Hz]  f_nastran   ratio   err %  flag
+   1  1.10823e+02     1.67546    1.62928  1.0283   +2.83  
+   2  2.63226e+02     2.58217    2.63176  0.9812   -1.88  
+   3  5.90370e+02     3.86707    3.81603  1.0134   +1.34  
+   4  8.94648e+02     4.76043    4.68377  1.0164   +1.64  
+   5  1.58573e+03     6.33775    6.31501  1.0036   +0.36  
+   6  2.44060e+03     7.86264    8.11214  0.9692   -3.08  
+   7  2.68734e+03     8.25052   10.59417  0.7788  -22.12  
+   8  3.82626e+03     9.84482   12.84292  0.7666  -23.34  
+   9  3.95375e+03    10.00748   13.97464  0.7161  -28.39  
+  10  4.49794e+03    10.67400   18.96142  0.5629  -43.71  
+
+RESULT: PASS - worst error over first 5 modes 2.83 % (tolerance 5.0 %)
