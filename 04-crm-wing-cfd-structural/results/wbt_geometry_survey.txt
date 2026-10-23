@@ -1,0 +1,182 @@
+uCRM-9 geometry survey (scripts/inspect_geometry.py, list_faces.py, check_wbt_registration.py)
+Scale convention: wbt IGES as imported by Gmsh/OpenCASCADE: metres = model units / 25.4 (header says IN; verified by the registration test below).
+Wingbox IGES: metres = model units / 1000. Gmsh Python module 4.15.2 (/usr/bin/python3).
+
+== wbt: overall survey, model units
+[32;1mTotal number of loaded entities 414.
+[0m
+
+file: data/ucrm9/uCRM9/Geometry/uCRM_9_wbt.igs
+import + synchronize: 1.4 s
+imported top-level entities by dimension: {0: 0, 1: 0, 2: 30, 3: 0}
+model entities by dimension: {0: 130, 1: 134, 2: 30, 3: 0}
+
+model bounding box (model units):  x 59.6773 .. 1695.1731   y -0.0000 .. 748.9926   z 58.6725 .. 221.4020
+extent: dx 1635.4958  dy 748.9926  dz 162.7295
+ratio ymax / 29.382 m = 25.4915     ratio (ymax - ymin) / 29.382 m = 25.4915
+  (1 -> metres, ~39.37 -> inches, ~1000 -> millimetres, ~2 -> full span in metres)
+surfaces: 30   total area 6.7629e+05 (model units^2)
+surfaces touching y <= ymin + 1% of dy: 10
+
+12 largest surfaces by area:
+  tag      area        xmin      xmax      ymin      ymax      zmin      zmax
+    7   9.6195e+04  1092.846  1653.470    -0.000    78.721    63.956   221.380
+   13   9.4396e+04    59.677   516.757    -0.000    78.732    63.947   221.402
+    9   6.3483e+04   586.558  1039.327    -0.000    78.713   102.344   221.380
+   16   6.0777e+04   790.610  1215.240   276.308   747.406   105.230   122.021
+   18   6.0519e+04   790.608  1215.232   276.176   747.068   102.121   114.469
+   12   4.9940e+04   640.523   974.855    77.315   276.707    77.322   114.476
+   11   4.9578e+04   640.536   974.867    76.558   276.890    90.661   124.521
+    1   3.8086e+04   553.875  1068.169    12.346    78.028    58.709   132.336
+    5   2.6657e+04   585.834   941.060    -0.000    77.607    61.435   113.439
+   26   2.5733e+04   585.871   941.086    -0.000    77.615    72.803   125.072
+   25   2.5405e+04  1423.344  1694.125    20.401   270.967   154.793   195.991
+   17   2.5303e+04  1423.343  1694.131    20.404   270.967   161.401   197.966
+
+surface-centre y: bin edge | surfaces | area share
+      19.952 ..    110.958 |    14 |  59.7 %
+     110.958 ..    201.965 |     6 |  22.2 %
+     201.965 ..    292.972 |     4 |   0.0 %
+     292.972 ..    383.978 |     0 |   0.0 %
+     383.978 ..    474.985 |     0 |   0.0 %
+     474.985 ..    565.992 |     3 |  18.0 %
+     565.992 ..    656.998 |     0 |   0.0 %
+     656.998 ..    748.005 |     3 |   0.1 %
+
+surface-centre x: bin edge | surfaces | area share
+     288.217 ..    462.045 |     1 |  14.0 %
+     462.045 ..    635.873 |     3 |   2.8 %
+     635.873 ..    809.701 |     6 |  26.2 %
+     809.701 ..    983.529 |     3 |  15.0 %
+     983.529 ..   1157.356 |     6 |  20.2 %
+    1157.356 ..   1331.184 |     3 |   0.1 %
+    1331.184 ..   1505.012 |     1 |  14.2 %
+    1505.012 ..   1678.840 |     7 |   7.5 %
+
+surface-centre z: bin edge | surfaces | area share
+      64.035 ..     80.635 |     3 |   3.6 %
+      80.635 ..     97.235 |     4 |  17.2 %
+      97.235 ..    113.834 |    11 |  30.6 %
+     113.834 ..    130.434 |     0 |   0.0 %
+     130.434 ..    147.033 |     2 |  28.2 %
+     147.033 ..    163.633 |     2 |  11.0 %
+     163.633 ..    180.233 |     3 |   9.3 %
+     180.233 ..    196.832 |     5 |   0.1 %
+
+peak resident memory 191 MiB
+
+== wbt: face table in metres
+[32;1mTotal number of loaded entities 414.
+[0m
+data/ucrm9/uCRM9/Geometry/uCRM_9_wbt.igs: 30 faces, scale 0.039370 m per model unit
+ tag type                     xmin     xmax     ymin     ymax     zmin     zmax   area[m2]  curves
+   1 BSpline surface      21.806   42.054    0.486    3.072    2.311    5.210     59.033      5
+   2 BSpline surface      40.918   43.525    1.788    2.661    3.086    4.029      2.457      4
+   3 BSpline surface      65.477   66.712   10.668   10.722    7.610    7.705      0.095      4
+   4 BSpline surface      19.789   23.093   -0.000    3.101    4.627    8.716     19.412      4
+   5 BSpline surface      23.064   37.050   -0.000    3.055    2.419    4.466     41.319      4
+   6 BSpline surface      40.918   43.525   -0.000    3.102    4.029    8.716     17.031      4
+   7 BSpline surface      43.025   65.097   -0.000    3.099    2.518    8.716    149.103      9
+   8 BSpline surface      22.617   41.089   -0.000    1.571    2.310    2.732     26.040      4
+   9 BSpline surface      23.093   40.918   -0.000    3.099    4.029    8.716     98.399      4
+  10 BSpline surface      64.440   65.522   10.668   10.722    7.610    7.718      0.109      4
+  11 BSpline surface      25.218   38.381    3.014   10.901    3.569    4.902     76.846      4
+  12 BSpline surface      25.217   38.380    3.044   10.894    3.044    4.507     77.408      4
+  13 BSpline surface       2.349   20.345   -0.000    3.100    2.518    8.717    146.314      6
+  14 BSpline surface      37.050   38.381    3.055   10.894    3.556    4.276      0.102      4
+  15 BSpline surface      62.199   66.739    0.862   10.757    6.559    7.693      0.142      5
+  16 BSpline surface      31.126   47.844   10.878   29.425    4.143    4.804     94.205      4
+  17 BSpline surface      56.037   66.698    0.803   10.668    6.354    7.794     39.220      5
+  18 BSpline surface      31.126   47.844   10.873   29.412    4.021    4.507     93.805      4
+  19 BSpline surface      19.789   23.093    2.489    2.936    3.772    4.627      2.393      4
+  20 BSpline surface      38.380   47.844   10.893   29.414    4.130    4.361      0.271      4
+  21 BSpline surface      65.480   66.712   10.668   10.722    7.680    7.786      0.088      4
+  22 BSpline surface      45.122   47.866   29.410   29.488    4.136    4.277      0.301      4
+  23 BSpline surface      19.789   23.343   -0.000    2.489    2.518    3.772      7.765      5
+  24 BSpline surface      45.122   47.866   29.389   29.485    4.021    4.206      0.324      4
+  25 BSpline surface      56.037   66.698    0.803   10.668    6.094    7.716     39.378      5
+  26 BSpline surface      23.066   37.051   -0.000    3.056    2.866    4.924     39.886      4
+  27 BSpline surface      47.844   47.866   29.412   29.455    4.129    4.143      0.001      4
+  28 BSpline surface      64.440   65.522   10.668   10.722    7.705    7.794      0.100      4
+  29 BSpline surface      40.860   43.525   -0.000    1.788    2.518    3.086      3.843      6
+  30 BSpline surface      25.217   37.052    3.014    3.056    3.044    4.902     12.871      4
+total area 1048.26 m2
+
+== registration of the CalculiX wingbox nodes on the wbt surface (factor 25.4)
+[32;1mTotal number of loaded entities 414.
+[0m
+deck nodes 23738; with y >= 3.5 m: 17118
+faces in data/ucrm9/uCRM9/Geometry/uCRM_9_wbt.igs: 30;  factor 25.4
+deck nodes vs aerodynamic surface: n=200  pct5/25/50/75/95 [m] = 0.0000 / 0.0000 / 0.0001 / 0.1258 / 0.3685   max 0.6741
+    fraction within     5 mm:  67.5 %
+    fraction within    20 mm:  67.5 %
+    fraction within   100 mm:  69.5 %
+  elapsed 15 s
+control: same nodes shifted +0.5 m in z: n=60  pct5/25/50/75/95 [m] = 0.0471 / 0.1967 / 0.3419 / 0.4977 / 0.4999   max 0.5474
+    fraction within     5 mm:   1.7 %
+    fraction within    20 mm:   1.7 %
+    fraction within   100 mm:   8.3 %
+total elapsed 19 s
+
+== wingbox IGES: overall survey, model units
+[32;1mTotal number of loaded entities 3205.
+[0m
+
+file: data/ucrm9/uCRM9/Geometry/uCRM-9_wingbox.igs
+import + synchronize: 0.9 s
+imported top-level entities by dimension: {0: 0, 1: 0, 2: 245, 3: 0}
+model entities by dimension: {0: 990, 1: 990, 2: 245, 3: 0}
+
+model bounding box (model units):  x 25891.7440 .. 46892.3983   y -6.7584 .. 29389.1489   z 2415.8676 .. 4922.7215
+extent: dx 21000.6543  dy 29395.9073  dz 2506.8538
+ratio ymax / 29.382 m = 1000.2433     ratio (ymax - ymin) / 29.382 m = 1000.4733
+  (1 -> metres, ~39.37 -> inches, ~1000 -> millimetres, ~2 -> full span in metres)
+surfaces: 245   total area 3.7598e+08 (model units^2)
+surfaces touching y <= ymin + 1% of dy: 5
+
+12 largest surfaces by area:
+  tag      area        xmin      xmax      ymin      ymax      zmin      zmax
+  104   1.0935e+07 26401.065 32316.890     1.000     1.000  2415.868  4802.761
+  105   1.0524e+07 26401.065 32316.890   775.750   775.750  2575.381  4858.972
+  106   1.0035e+07 26401.065 32316.890  1550.500  1550.500  2736.909  4895.585
+  107   9.4599e+06 26401.065 32316.890  2325.250  2325.250  2892.240  4906.790
+  115   6.1984e+06 28199.635 32360.039  3185.887  5489.227  3155.921  4889.891
+  116   5.6208e+06 28649.278 32692.669  3847.976  6086.534  3314.846  4882.766
+  114   5.1518e+06 27749.993 30986.645  3100.000  4891.920  3062.368  4897.801
+  117   5.1134e+06 29098.920 33025.299  4510.065  6683.841  3437.944  4875.419
+    6   4.7713e+06 26401.065 32316.890  2325.250  3100.000  2896.293  3741.944
+  241   4.7540e+06 25891.744 32608.313  1538.566  2331.527  2736.526  3490.467
+  243   4.7403e+06 25909.047 32597.469   766.433  1553.614  2577.343  3245.156
+  245   4.7275e+06 25924.860 32587.828    -6.758   776.841  2417.306  3002.569
+
+surface-centre y: bin edge | surfaces | area share
+       1.000 ..   3673.563 |    30 |  26.8 %
+    3673.563 ..   7346.125 |    34 |  23.7 %
+    7346.125 ..  11018.688 |    33 |  15.2 %
+   11018.688 ..  14691.250 |    31 |  11.3 %
+   14691.250 ..  18363.813 |    28 |   8.0 %
+   18363.813 ..  22036.375 |    30 |   6.9 %
+   22036.375 ..  25708.938 |    30 |   4.9 %
+   25708.938 ..  29381.500 |    29 |   3.1 %
+
+surface-centre x: bin edge | surfaces | area share
+   26401.065 ..  28925.968 |    18 |   6.1 %
+   28925.968 ..  31450.872 |    34 |  38.3 %
+   31450.872 ..  33975.775 |    40 |  19.1 %
+   33975.775 ..  36500.679 |    30 |  11.9 %
+   36500.679 ..  39025.582 |    31 |   9.4 %
+   39025.582 ..  41550.486 |    32 |   7.3 %
+   41550.486 ..  44075.389 |    30 |   4.9 %
+   44075.389 ..  46600.293 |    30 |   3.1 %
+
+surface-centre z: bin edge | surfaces | area share
+    2709.937 ..   2981.473 |     2 |   2.5 %
+    2981.473 ..   3253.008 |     1 |   1.3 %
+    3253.008 ..   3524.543 |     6 |   3.7 %
+    3524.543 ..   3796.078 |    10 |  10.0 %
+    3796.078 ..   4067.613 |    20 |  16.5 %
+    4067.613 ..   4339.148 |    77 |  24.9 %
+    4339.148 ..   4610.683 |    98 |  22.8 %
+    4610.683 ..   4882.218 |    31 |  18.3 %
+
+peak resident memory 83 MiB
