@@ -1,0 +1,28 @@
+[32;1mTotal number of loaded entities 414.
+[0m
+phase A: sewn at 1.50 mm, kept wing faces [5, 11, 12, 14, 16, 18, 20, 22, 24, 26, 27], curves 24
+slit curves 2, 24; end-point mismatch same/flipped 6.3568 / 0.0303 m -> reversed order
+strip faces [12], area 0.0466 m2
+
+phase B: faces 12, curves 25
+free edges 3, edges shared by 3 or more faces 0
+  free curve    1 face      5 length  14.0052 m  x 23.064..36.526  y -0.0000..0.0000  z 2.419..4.423
+  free curve   23 face     26 length  13.8227 m  x 23.066..36.528  y -0.0000..0.0000  z 2.866..4.924
+  free curve   25 face STRIP? length   0.0170 m  x 36.526..36.528  y -0.0000..0.0000  z 2.849..2.866
+
+face(orig) | CAD-kernel area | mesh area (50 mm) | table area [m2] | triangles | neighbours
+     5             41.3188           41.3178           41.319      38594   ['12', '26', 'STRIP?']
+    12             77.4077           77.4014           77.408      72122   ['11', '14', '18', '5']
+    11             76.8460           76.8408           76.846      71809   ['12', '14', '16', '26']
+    14              0.1018            0.1018            0.102        322   ['11', '12', '20', 'STRIP?']
+    16             94.2045           94.1684           94.205      88707   ['11', '18', '20', '22']
+    18             93.8051           93.7702           93.805      88298   ['12', '16', '20', '24']
+    20              0.2714            0.2714            0.271        835   ['14', '16', '18', '27']
+    22              0.3015            0.2956            0.301        310   ['16', '24', '27']
+    24              0.3236            0.3198            0.324        329   ['18', '22', '27']
+    26             39.8865           39.8854           39.886      37226   ['11', '5', 'STRIP?']
+    27              0.0000            0.0004            0.001          4   ['20', '22', '24']
+STRIP?              0.0466            0.0466              n/a        130   ['14', '26', '5']
+total area: CAD kernel 424.514 m2, mesh 424.420 m2
+bounding box [m] x 23.064..47.866  y -0.0000..29.488  z 2.419..4.924
+wrote geometry/wing_alone.brep (2.11 MB, model units = metres x 25.4)

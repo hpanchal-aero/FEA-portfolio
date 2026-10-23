@@ -1,0 +1,68 @@
+[32;1mTotal number of loaded entities 414.
+[0m
+data/ucrm9/uCRM9/Geometry/uCRM_9_wbt.igs: faces [5, 26, 11, 12, 14, 16, 18, 20, 22, 24, 27, 30], 48 boundary curves, scale 0.039370
+curves rejected by the OpenCASCADE projection routine: [(27, 119, 'OpenCASCADE curve is null in projection'), (30, 132, 'OpenCASCADE curve is null in projection'), (30, 134, 'OpenCASCADE curve is null in projection')]
+
+face curve  length[m]     ymin     ymax | nearest face curve  d(A->B)[mm]  d(B->A)[mm]   class
+   5    18     14.005   -0.000    0.000 |      26   113    2071.9534    2071.9864   FREE/GAP
+   5    19      3.179    0.000    3.055 |      26   116      16.9749      16.4778   FREE/GAP
+   5    20     12.193    3.044    3.055 |      30   131       0.0012       2.0892   small gap<5mm
+   5    21      3.737    0.000    3.054 |      26   114       0.0000       0.0000   coincident
+  11    47     12.065    3.014    3.056 |      30   133       0.0010       1.2686   small gap<5mm
+  11    48      9.805    3.054   10.878 |      12    54       0.0220       0.0220   coincident
+  11    49      7.360   10.878   10.901 |      16    70       0.0027       0.0043   coincident
+  11    50      7.988    3.055   10.894 |      14    61       0.7646       0.7648   sewable<1mm
+  12    51     12.193    3.044    3.055 |      30   131       0.0012       2.0892   small gap<5mm
+  12    52      7.988    3.055   10.893 |      14    63       0.7455       0.7456   sewable<1mm
+  12    53      7.346   10.873   10.894 |      18    79       0.0048       0.0039   coincident
+  12    54      9.805    3.054   10.878 |      11    48       0.0220       0.0220   coincident
+  14    61      7.988    3.055   10.894 |      11    50       0.7648       0.7646   sewable<1mm
+  14    62      0.013   10.893   10.894 |      20    90       0.0000       0.0000   coincident
+  14    63      7.988    3.055   10.893 |      12    52       0.7456       0.7455   sewable<1mm
+  14    64      0.013    3.055    3.055 |      30   134       2.0892       1.1124   small gap<5mm
+  16    70      7.360   10.878   10.901 |      11    49       0.0043       0.0027   coincident
+  16    71     23.226   10.878   29.410 |      18    82       0.0012       0.0012   coincident
+  16    72      2.739   29.410   29.425 |      22    95       0.0012       0.0005   coincident
+  16    73     20.801   10.894   29.414 |      20    87       1.2035       1.2038   small gap<5mm
+  18    79      7.346   10.873   10.894 |      12    53       0.0039       0.0048   coincident
+  18    80     20.800   10.893   29.412 |      20    89       1.2152       1.2155   small gap<5mm
+  18    81      2.758   29.389   29.412 |      24   104       0.0021       0.0005   coincident
+  18    82     23.226   10.878   29.410 |      16    71       0.0012       0.0012   coincident
+  20    87     20.801   10.894   29.414 |      16    73       1.2038       1.2035   small gap<5mm
+  20    88      0.014   29.412   29.414 |      27   117       0.0000       0.0000   coincident
+  20    89     20.800   10.893   29.412 |      18    80       1.2155       1.2152   small gap<5mm
+  20    90      0.013   10.893   10.894 |      14    62       0.0000       0.0000   coincident
+  22    95      2.739   29.410   29.425 |      16    72       0.0005       0.0012   coincident
+  22    96      0.040   29.410   29.425 |      24   107       0.0019       0.0019   coincident
+  22    97      2.711   29.425   29.485 |      24   106       0.0001       0.0001   coincident
+  22    98      0.048   29.414   29.455 |      27   118       0.0000       0.0000   coincident
+  24   104      2.758   29.389   29.412 |      18    81       0.0005       0.0021   coincident
+  24   105      0.050   29.412   29.455 |      27   120       0.0000       0.0000   coincident
+  24   106      2.711   29.425   29.485 |      22    97       0.0001       0.0001   coincident
+  24   107      0.040   29.410   29.425 |      22    96       0.0019       0.0019   coincident
+  26   113     13.823   -0.000    0.000 |       5    18    2071.9864    2071.9534   FREE/GAP
+  26   114      3.737    0.000    3.054 |       5    21       0.0000       0.0000   coincident
+  26   115     12.065    3.014    3.056 |      30   133       0.0010       1.2686   small gap<5mm
+  26   116      3.178    0.000    3.055 |       5    19      16.4778      16.9749   FREE/GAP
+  27   117      0.014   29.412   29.414 |      20    88       0.0000       0.0000   coincident
+  27   118      0.048   29.414   29.455 |      22    98       0.0000       0.0000   coincident
+  27   119      0.000   29.455   29.455 |      22    97       0.0000    2707.5907   FREE/GAP
+  27   120      0.050   29.412   29.455 |      24   105       0.0000       0.0000   coincident
+  30   131     12.196    3.044    3.055 |       5    20       2.0892       0.0012   small gap<5mm
+  30   132      0.000    3.054    3.054 |       5    21       0.0001    3736.7091   FREE/GAP
+  30   133     12.066    3.014    3.056 |      26   115       1.2686       0.0010   small gap<5mm
+  30   134      0.011    3.055    3.055 |      14    64       1.1124       2.0892   small gap<5mm
+
+per-face classes:
+  face  5: FREE/GAP x2, coincident x1, small gap<5mm x1
+  face 26: FREE/GAP x2, coincident x1, small gap<5mm x1
+  face 11: coincident x2, sewable<1mm x1, small gap<5mm x1
+  face 12: coincident x2, sewable<1mm x1, small gap<5mm x1
+  face 14: coincident x1, sewable<1mm x2, small gap<5mm x1
+  face 16: coincident x3, small gap<5mm x1
+  face 18: coincident x3, small gap<5mm x1
+  face 20: coincident x2, small gap<5mm x2
+  face 22: coincident x4
+  face 24: coincident x4
+  face 27: FREE/GAP x1, coincident x3
+  face 30: FREE/GAP x1, small gap<5mm x3

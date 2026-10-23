@@ -1,0 +1,22 @@
+WING-ALONE SURFACE FROM THE uCRM-9 'wbt' GEOMETRY (decision D11, option A)
+Scripts: wing_edge_matching.py, sew_test.py, build_wing_geometry.py. Records: wing_edge_matching.txt, wing_sewing_test.txt, wing_geometry_build.txt.
+
+Faces kept (original tags of uCRM_9_wbt.igs): 5, 26 (inboard wing, y = 0 to 3.05 m), 11, 12 (exposed wing, inboard), 16, 18 (exposed wing,
+outboard), 14, 20 (blunt trailing-edge strips), 22, 24, 27 (tip). Face 30 (junction section at y = 3.05 m) duplicates the junction
+edges of faces 5, 12, 11, 26 and is not part of the skin. Remaining faces (fuselage, fairings, tail) are dropped.
+
+Seams (exact polyline distances between boundary curves): leading edge, kink and tip seams coincide to 0.0001-0.022 mm; the
+trailing-edge strips sit 0.75 mm (inboard) and 1.20-1.22 mm (outboard) from the skin trailing edges. The sewing tolerance must
+therefore exceed 1.22 mm. Sewing at import (Geometry.OCCSewFaces, 1.5 mm): all wing seams are joined; at 0.5 mm the trailing-edge
+strip seams stay open (control); 2.5 mm gives the same wing topology as 1.5 mm. Sewing renumbers the faces; they are mapped back
+to their original tags by bounding box.
+
+The dataset has no closing face for the blunt trailing edge of the inboard wing (13 mm thick at y = 3.05 m, 17 mm at y = 0).
+A ruled strip (0.0466 m2) closes it. Resulting surface: 12 faces, 25 curves, no edge shared by 3 or more faces, 3 free edges that
+form one closed loop on the symmetry plane y = 0 (root lower 14.005 m, root upper 13.823 m, strip end 0.017 m).
+Area 424.514 m2 (CAD kernel), 424.420 m2 (50 mm surface mesh). Bounding box x 23.064-47.866, y 0-29.488, z 2.419-4.924 m.
+The geometry file is kept in the model units of the IGES import (metres x 25.4); scaling to metres is applied at mesh export.
+
+Open item: after sewing, the CAD-kernel area of tip face 27 reads 0 (0.001 m2 before sewing); the surface mesh gives 0.0004 m2 and the
+face is topologically closed (three neighbours, no free edges). Cause not established; the face is about 1e-6 of the surface.
+Third-party geometry and derived BREP files are not committed (geometry/wing_alone* is ignored).

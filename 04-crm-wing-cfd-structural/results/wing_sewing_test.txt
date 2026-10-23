@@ -1,0 +1,66 @@
+[32;1mTotal number of loaded entities 414.
+[0m
+tolerance 0.50 mm (0.01270 model units): faces 30, curves 94, points 63
+mapped 30/30 faces to original tags; 28 faces carry a different tag after sewing
+faces whose sewn area differs from the table by more than 1 %: [(27, 0.0, 0.001), (30, -0.0, 12.871)]
+curves by number of adjacent faces: {1: 43, 2: 51}
+free edges in total 43; on wing faces or face 30: 16
+
+face  neighbours (via shared curves)                 free edges
+   5  [12, 26]                                     2  14.005 m @ x 23.06..36.53 y -0.00..0.00; 3.179 m @ x 36.53..37.05 y -0.00..3.05
+  26  [5, 11]                                      2  13.823 m @ x 23.07..36.53 y -0.00..0.00; 3.178 m @ x 36.53..37.05 y -0.00..3.05
+  11  [12, 16, 26]                                 1  7.988 m @ x 37.05..38.38 y 3.05..10.89
+  12  [5, 11, 18]                                  1  7.988 m @ x 37.05..38.38 y 3.05..10.89
+  14  [1, 20]                                      4  7.988 m @ x 37.05..38.38 y 3.05..10.89; 7.988 m @ x 37.05..38.38 y 3.05..10.89; 0.007 m @ x 37.05..37.05 y 3.05..3.05; 0.000 m @ x 37.05..37.05 y 3.05..3.05
+  16  [11, 18, 22]                                 1  20.801 m @ x 38.38..47.84 y 10.89..29.41
+  18  [12, 16, 24]                                 1  20.800 m @ x 38.38..47.84 y 10.89..29.41
+  20  [14, 27]                                     2  20.801 m @ x 38.38..47.84 y 10.89..29.41; 20.800 m @ x 38.38..47.84 y 10.89..29.41
+  22  [16, 24, 27]                                 0  
+  24  [18, 22, 27]                                 0  
+  27  [20, 22, 24]                                 0  
+  30  [1]                                          2  0.003 m @ x 37.05..37.05 y 3.05..3.05; 0.001 m @ x 37.05..37.05 y 3.05..3.05
+-----
+[32;1mTotal number of loaded entities 414.
+[0m
+tolerance 1.50 mm (0.03810 model units): faces 30, curves 81, points 52
+mapped 30/30 faces to original tags; 27 faces carry a different tag after sewing
+faces whose sewn area differs from the table by more than 1 %: [(27, 0.0, 0.001), (30, 0.0, 12.871)]
+curves by number of adjacent faces: {1: 27, 2: 54}
+free edges in total 27; on wing faces or face 30: 5
+
+face  neighbours (via shared curves)                 free edges
+   5  [12, 26]                                     2  14.005 m @ x 23.06..36.53 y -0.00..0.00; 3.179 m @ x 36.53..37.05 y -0.00..3.05
+  26  [5, 11]                                      2  13.823 m @ x 23.07..36.53 y -0.00..0.00; 3.178 m @ x 36.53..37.05 y -0.00..3.05
+  11  [12, 14, 16, 26]                             0  
+  12  [5, 11, 14, 18]                              0  
+  14  [11, 12, 20]                                 1  0.013 m @ x 37.05..37.05 y 3.05..3.05
+  16  [11, 18, 20, 22]                             0  
+  18  [12, 16, 20, 24]                             0  
+  20  [14, 16, 18, 27]                             0  
+  22  [16, 24, 27]                                 0  
+  24  [18, 22, 27]                                 0  
+  27  [20, 22, 24]                                 0  
+  30  [1]                                          0  
+-----
+[32;1mTotal number of loaded entities 414.
+[0m
+tolerance 2.50 mm (0.06350 model units): faces 30, curves 79, points 51
+mapped 30/30 faces to original tags; 27 faces carry a different tag after sewing
+faces whose sewn area differs from the table by more than 1 %: [(27, 0.0, 0.001), (30, 0.0, 12.871)]
+curves by number of adjacent faces: {1: 23, 2: 56}
+free edges in total 23; on wing faces or face 30: 5
+
+face  neighbours (via shared curves)                 free edges
+   5  [12, 26]                                     2  14.005 m @ x 23.06..36.53 y -0.00..0.00; 3.179 m @ x 36.53..37.05 y -0.00..3.05
+  26  [5, 11]                                      2  13.823 m @ x 23.07..36.53 y -0.00..0.00; 3.178 m @ x 36.53..37.05 y -0.00..3.05
+  11  [12, 14, 16, 26]                             0  
+  12  [5, 11, 14, 18]                              0  
+  14  [11, 12, 20]                                 1  0.013 m @ x 37.05..37.05 y 3.05..3.05
+  16  [11, 18, 20, 22]                             0  
+  18  [12, 16, 20, 24]                             0  
+  20  [14, 16, 18, 27]                             0  
+  22  [16, 24, 27]                                 0  
+  24  [18, 22, 27]                                 0  
+  27  [20, 22, 24]                                 0  
+  30  [1]                                          0  
+-----
