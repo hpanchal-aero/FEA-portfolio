@@ -1,0 +1,85 @@
+=== layers on feas_L9_novolq : nLayers 5 first 0.0008 m expansion 1.3 SEDX='s/maxFaceThicknessRatio +[0-9.]+;/maxFaceThicknessRatio 0.8;/; s/maxThicknessToMedialRatio +[0-9.]+;/maxThicknessToMedialRatio 0.6;/; s/minMedialAxisAngle +[0-9.]+;/minMedialAxisAngle  50;/; s/nSmoothSurfaceNormals +[0-9]+;/nSmoothSurfaceNormals 5;/; s/nSmoothNormals +[0-9]+;/nSmoothNormals 5;/; s/nSmoothThickness +[0-9]+;/nSmoothThickness 30;/; s/nLayerIter +[0-9]+;/nLayerIter 100;/' : start 2026-10-24 16:25:04 ===
+dictionary lines:
+8:castellatedMesh false;
+9:snap            false;
+10:addLayers       true;
+21:castellatedMeshControls
+67:    nSmoothPatch        3;
+79:    relativeSizes       false;
+80:    layers { wing { nSurfaceLayers 5; } }
+81:    expansionRatio      1.3;
+82:    firstLayerThickness  0.0008;
+83:    minThickness        0.0001;
+85:    featureAngle        130;
+87:    nSmoothSurfaceNormals 5;
+88:    nSmoothNormals 5;
+89:    nSmoothThickness 30;
+90:    maxFaceThicknessRatio 0.8;
+91:    maxThicknessToMedialRatio 0.6;
+92:    minMedialAxisAngle  50;
+94:    nLayerIter 100;
+103:    minVol              -1e30;
+111:    nSmoothScale        4;
+snappyHexMesh exit code 0
+checkMesh exit code 0
+--- time/memory ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 39:53.89
+	Maximum resident set size (kbytes): 3613300
+--- layer table (achieved) ---
+6288-
+6289:patch faces    layers   overall thickness
+6290-                       [m]       [%]
+6291------ -----    ------   ---       ---
+6292-wing 197337   1.5      0.00223   30.8    
+--- layer mesh / errors ---
+Extruding 73439 out of 197337 faces (37.215%). Removed extrusion at 44 faces.
+Extruding 73386 out of 197337 faces (37.1882%). Removed extrusion at 45 faces.
+Extruding 73326 out of 197337 faces (37.1578%). Removed extrusion at 51 faces.
+Layer mesh : cells:1399448  faces:4494386  points:1723164
+Finished meshing with 82 illegal faces (concave, zero area or negative cell pyramid volume)
+Finished meshing in = 2392.23 s.
+--- checkMesh ---
+    cells:            1399448
+    Max aspect ratio = 53.7086 OK.
+    Min volume = 6.14042e-08. Max volume = 1000.08.  Total volume = 6.24999e+07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 67.7328 average: 10.2004
+    Max skewness = 3.95728 OK.
+Mesh OK.
+--- layer coverage ---
+boundary file: patch wing nFaces 197337 startFace 4297049; VTK patch faces 197337; cells 1399448; owner entries 4494386
+first-cell thickness h = V/A [mm]: median 14.078  10% 0.793  90% 69.450
+faces with h < 2 mm (layered): 73133 of 197337 (37.1 %)
+   h    0.0..   1.1 mm:   62236 faces
+   h    1.1..   2.0 mm:   10897 faces
+   h    2.0..   5.0 mm:    7619 faces
+   h    5.0..  15.0 mm:   19916 faces
+   h   15.0..9999.0 mm:   96669 faces
+by face area (refinement level proxy):  faces, % layered
+   level 7 (~6e-3 m2)    :   54245    0.0 %
+   level 8 (~1.5e-3)     :   25843    0.9 %
+   level 9 (~4e-4)       :  115706   63.0 %
+   level 10+ (<1.9e-4)   :    1543    1.0 %
+by y-range:
+   y  0.00.. 3.05:   20378 faces   13.1 % layered
+   y  3.05..10.90:   57193 faces   31.9 % layered
+   y 10.90..20.00:   61986 faces   45.0 % layered
+   y 20.00..28.00:   47024 faces   48.8 % layered
+   y 28.00..29.60:   10756 faces   12.5 % layered
+by normal z-component (patch normals point out of the fluid, i.e. into the wing; nz<-0.3 is the upper surface):
+   nz < -0.3 (upper)         :   95902 faces   41.3 % layered
+   nz > +0.3 (lower)         :   97006 faces   34.5 % layered
+   |nz| <= 0.3 (LE/TE/tip)   :    4429 faces    0.0 % layered
+unlayered faces: 124204, centre x 23.08..47.84 (median 36.86), y 0.01..29.49 (median 12.23), z 2.43..4.92
+--- surface fidelity ---
+patch: 197337 faces, 225041 points, bbox (23.065, 47.864, 0.0, 29.488, 2.419, 4.924)
+area: patch 424.390 m2, STL (triangle centres y > 0) 424.491 m2, ratio 0.99976
+vertices: N=225041  distance to STL [mm]: median 0.004  90% 0.015  99% 0.095  99.9% 3.851  max 14.407
+   count > 1 mm: 757   > 5 mm: 159   > 10 mm: 20
+   max at (36.074, 4.434, 3.712)
+   points > 5 mm lie in: x 26.740..46.432  y 0.044..29.246  z 2.623..4.672
+face centres: N=197337  distance to STL [mm]: median 0.027  90% 0.243  99% 1.340  99.9% 4.709  max 9.055
+   count > 1 mm: 3221   > 5 mm: 165   > 10 mm: 0
+   max at (36.290, 6.061, 3.901)
+   points > 5 mm lie in: x 35.970..47.824  y 0.034..29.402  z 2.863..4.602
+=== layers relB : end 2026-10-24 17:06:01 ===
+LAYERS DONE relB

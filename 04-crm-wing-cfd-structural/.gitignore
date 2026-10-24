@@ -29,3 +29,8 @@ simulation/cfd_v1/*/processor*/
 simulation/cfd_v1/*/postProcessing/
 simulation/cfd_v1/*/[1-9]*/
 simulation/cfd_v1/*/log.*
+simulation/cfd_v1/feas_*/
+simulation/cfd_v1/*/VTK/
+simulation/cfd_v1/*/0/C
+simulation/cfd_v1/*/0/Cc*
+simulation/cfd_v1/*/0/Vc

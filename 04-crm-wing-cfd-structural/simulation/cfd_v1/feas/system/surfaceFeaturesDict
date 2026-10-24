@@ -1,0 +1,21 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeaturesDict;
+}
+
+// Sharp edges of the wing surface (blunt trailing-edge corners, tip closures).
+// An edge is a feature when the angle between the two face normals exceeds 30 deg (included angle below 150 deg).
+
+surfaces ("wing.stl");
+
+includedAngle   150;
+
+subsetFeatures
+{
+    nonManifoldEdges    no;
+    openEdges           yes;
+}
+
+writeObj        yes;

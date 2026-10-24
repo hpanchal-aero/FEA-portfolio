@@ -1,0 +1,49 @@
+=== layers on feas_L9_novolq : nLayers 8 first 0.0008 m expansion 1.3 : start 2026-10-24 15:42:16 ===
+dictionary lines:
+8:castellatedMesh false;
+9:snap            false;
+10:addLayers       true;
+21:castellatedMeshControls
+77:addLayersControls
+79:    relativeSizes       false;
+80:    layers { wing { nSurfaceLayers 8; } }
+81:    expansionRatio      1.3;
+82:    firstLayerThickness  0.0008;
+83:    minThickness        0.0001;
+103:    minVol              -1e30;
+snappyHexMesh exit code 0
+checkMesh exit code 0
+--- time/memory ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 23:58.15
+	Maximum resident set size (kbytes): 4299260
+--- layer table ---
+240-
+241:patch faces    layers avg thickness[m]
+242-                     near-wall overall
+243------ -----    ------ --------- -------
+244-wing 197337   8      0.0008    0.0191  
+245-
+246-Selecting externalDisplacementMeshMover displacementMedialAxis
+247-displacementMedialAxis : Calculating distance to Medial Axis ...
+--- layer mesh / errors ---
+Extruding 150098 out of 197337 faces (76.0618%). Removed extrusion at 157 faces.
+Detected 190 illegal faces (concave, zero area or negative cell pyramid volume)
+Extruding 149900 out of 197337 faces (75.9614%). Removed extrusion at 147 faces.
+Detected 189 illegal faces (concave, zero area or negative cell pyramid volume)
+Extruding 149720 out of 197337 faces (75.8702%). Removed extrusion at 147 faces.
+Detected 168 illegal faces (concave, zero area or negative cell pyramid volume)
+Extruding 149559 out of 197337 faces (75.7886%). Removed extrusion at 127 faces.
+Detected 160 illegal faces (concave, zero area or negative cell pyramid volume)
+Extruding 149412 out of 197337 faces (75.7141%). Removed extrusion at 126 faces.
+Layer mesh : cells:1901482  faces:6073249  points:2297457
+Finished meshing with 160 illegal faces (concave, zero area or negative cell pyramid volume)
+Finished meshing in = 1436.43 s.
+--- checkMesh ---
+    cells:            1901482
+    Max aspect ratio = 96.6499 OK.
+    Min volume = 5.89531e-08. Max volume = 1000.66.  Total volume = 6.24999e+07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 65.3459 average: 9.5438
+    Max skewness = 3.95728 OK.
+Mesh OK.
+=== layers n8 : end 2026-10-24 16:06:50 ===
+LAYERS DONE n8
