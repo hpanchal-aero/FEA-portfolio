@@ -21,3 +21,11 @@ simulation/static_v3/
 simulation/modal_v1/
 simulation/layered_v1/
 geometry/wing_alone*
+geometry/wing_full*
+simulation/cfd_v1/*/constant/triSurface/*.stl
+simulation/cfd_v1/*/constant/polyMesh/
+simulation/cfd_v1/*/constant/extendedFeatureEdgeMesh/
+simulation/cfd_v1/*/processor*/
+simulation/cfd_v1/*/postProcessing/
+simulation/cfd_v1/*/[1-9]*/
+simulation/cfd_v1/*/log.*

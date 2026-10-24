@@ -1,0 +1,7 @@
+workbook: uCRM-9_Design_Specifications.xlsx
+input: altitude 37000 ft (11277.6 m), Mach 0.85, CL 0.5, fuel load 20 %, MAC 7.01 m, span 58.76 m, Sref 383.74 m2
+ISA (isothermal layer): T 216.65 K, p 21662.7 Pa, rho 0.34833 kg/m3, speed of sound 295.07 m/s
+freestream: U 250.81 m/s, dynamic pressure q 10955.9 Pa, mu 1.4216e-05 Pa s, nu 4.0812e-05 m2/s
+Reynolds number on the MAC: 4.3080e+07
+half model: Sref/2 191.870 m2, semispan 29.380 m, lift target at CL 0.5: 1051056.6 N
+consistency: full-aircraft lift CL*q*Sref = 2102113.2 N; cruise weight 213102.5 kg x g = 2089821.6 N (OEW + payload + 20 % fuel = 22000.0 kg); lift/weight = 1.0059

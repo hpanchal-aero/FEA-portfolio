@@ -1,0 +1,6 @@
+half wing faces 12; after mirroring 24
+sewn at 1.50 mm: faces 24, curves 47, free edges 0, edges shared by 3+ faces 0, CAD-kernel area 849.027 m2
+size field: 32 edge curves (spanwise leading/trailing edges, tip) of 47 curves
+surface mesh: 258915 nodes, 517826 triangles, mesh area 848.983 m2 (CAD kernel 849.027 m2), signed volume -275.445 m3
+element orientation reversed: signed volume now 275.445 m3
+wrote geometry/wing_full.stl (25.9 MB, metres), geometry/wing_full.brep and geometry/wing_full_unsewn.brep (model units)
