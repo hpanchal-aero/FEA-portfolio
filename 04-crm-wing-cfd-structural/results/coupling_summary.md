@@ -1,0 +1,12 @@
+| case | load source | CFD CL | aero Fz (kN) | Fz/(q*Aref) | gravity Fz (kN) | tip uz (m) | tip uz vs dataset (%) | twist, outer section (deg) | Fz closure (N) |
+|---|---|---|---|---|---|---|---|---|---|
+| dataset loads | dataset reference loads (wing-body-tail configuration) | - | 967.0 | 0.4600 | -334.8 | 2.3368 | - | -4.618 | -2.50 |
+| one-way, L9 | undeflected wing, alpha 0.36 deg, iteration 1500 | 0.4998 | 1051.2 | 0.5001 | -334.8 | 2.8010 | +19.9 | -6.167 | -2.51 |
+| one-way, L10 | undeflected wing, alpha 0.36 deg, L10 mesh, iteration 1148 | 0.5155 | 1084.3 | 0.5158 | -334.8 | 2.9303 | +25.4 | -6.489 | -2.54 |
+| corrected, same alpha | deflected wing, alpha 0.36 deg, iteration 1500 | 0.3409 | 717.2 | 0.3412 | -334.8 | 1.1071 | -52.6 | -3.562 | -2.47 |
+| corrected, alpha 2.07 | deflected wing, alpha 2.07 deg, iteration 1300 | 0.5250 | 1106.8 | 0.5265 | -334.8 | 2.0327 | -13.0 | -4.900 | -2.49 |
+| corrected, CL 0.5 | deflected wing, interpolated linearly in lift between the two deflected runs | 0.5000 | 1053.8 | 0.5013 | -334.8 | 1.9068 | -18.4 | -4.718 | -2.53 |
+
+- Outer section = the section centred at y = 29.24 m (outermost 1 m bin); twist = -b of the plane fit uz = a + b (x - xbar) + c (y - ybar), negative = nose-down washout; not validated against the NASTRAN reference.
+- Fz/(q*Aref) uses q = 10955.9 Pa and Aref = 191.87 m2; for the CFD cases it should equal the CFD CL within the small drag/inclination contribution.
+- Gravity and point masses are the same in all cases. The dataset row uses the dataset's own wing-body-tail reference loads, the other rows wing-alone CFD loads applied to the same coarse CalculiX deck (static tip -7.41% vs the NASTRAN reference, documented): differences to the dataset row mix the load difference with that bias.

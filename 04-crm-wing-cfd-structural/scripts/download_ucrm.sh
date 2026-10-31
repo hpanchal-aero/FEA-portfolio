@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Download, verify and extract the uCRM-9 dataset (Brooks, Kenway & Martins, AIAA J. 56(7), 2018).
 # Source: https://data.mendeley.com/datasets/gpk4zn73xn  (DOI 10.17632/gpk4zn73xn.1)
-# No licence is stated on the dataset page; the files are therefore NOT committed to Git.
+# Licence: CC BY 4.0 (dataset page, checked 2026-10-31). The files are not committed to Git (size); this script downloads them.
 set -euo pipefail
 
 URL="https://data.mendeley.com/public-files/datasets/gpk4zn73xn/files/bc64a6be-82a7-442c-978e-442f76a87c72/file_downloaded"

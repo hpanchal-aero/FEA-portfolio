@@ -1,0 +1,45 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+
+ddtSchemes
+{
+    default         steadyState;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+    limited         cellLimited Gauss linear 1;
+    grad(U)         $limited;
+}
+
+// First-order upwind start-up test: robustness check after the linearUpwind
+// run hit the pressure floor from iteration ~7 (594 of 600 iterations).
+divSchemes
+{
+    default         none;
+    div(phi,U)      bounded Gauss upwind;
+    energy          bounded Gauss upwind;
+    div(phi,h)      $energy;
+    div(phi,K)      $energy;
+    div(((rho*nuEff)*dev2(T(grad(U)))))    Gauss linear;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}

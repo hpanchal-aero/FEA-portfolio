@@ -1,0 +1,32 @@
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      T;
+}
+
+Tinf            216.65;         // K, flight_conditions.py
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform $Tinf;
+
+boundaryField
+{
+    "(inlet|outlet|farfieldY|bottom|top)"
+    {
+        type            inletOutlet;
+        inletValue      uniform $Tinf;
+        value           $inletValue;
+    }
+
+    wing
+    {
+        type            zeroGradient;
+    }
+
+    symmetry
+    {
+        type            symmetryPlane;
+    }
+}

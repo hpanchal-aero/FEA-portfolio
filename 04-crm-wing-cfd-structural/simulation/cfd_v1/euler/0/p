@@ -1,0 +1,31 @@
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      p;
+}
+
+pInf            21662.7;        // Pa, flight_conditions.py
+
+dimensions      [1 -1 -2 0 0 0 0];
+
+internalField   uniform $pInf;
+
+boundaryField
+{
+    "(inlet|outlet|farfieldY|bottom|top)"
+    {
+        type            freestreamPressure;
+        freestreamValue uniform $pInf;
+    }
+
+    wing
+    {
+        type            zeroGradient;
+    }
+
+    symmetry
+    {
+        type            symmetryPlane;
+    }
+}

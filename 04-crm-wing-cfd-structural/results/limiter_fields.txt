@@ -1,0 +1,9 @@
+Limiter bounds: p 2166.27 .. 43325.4 Pa, T 100 .. 400 K; 'at bound' = within 0.5 Pa / 0.01 K (VTK cells)
+u_L10_p0p36/VTK/u_L10_p0p36_1148.vtk           cells  6214382  p    5517.5 ..   34244.3  T  181.65 ..  247.85  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_L8_p0p36/VTK/u_L8_p0p36_1161.vtk             cells  1763593  p   10962.0 ..   34244.1  T  193.59 ..  246.35  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_defl_a2p07/VTK/u_defl_a2p07_1300.vtk         cells  3343194  p    6552.8 ..   34305.4  T  160.95 ..  246.21  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_defl_a2p07/VTK/u_defl_a2p07_1400.vtk         cells  3343194  p    3251.7 ..   34305.3  T  141.88 ..  246.21  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_defl_a2p07/VTK/u_defl_a2p07_1500.vtk         cells  3343194  p    2166.3 ..   34305.2  T  116.48 ..  246.21  at p floor   99  p ceiling    0  T floor    0  T ceiling    0
+u_defl_p0p36/VTK/u_defl_p0p36_1500.vtk         cells  3343194  p   13310.1 ..   34246.4  T  195.68 ..  246.37  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_p0p36/VTK/u_p0p36_1500.vtk                   cells  3259694  p    8690.2 ..   34244.0  T  191.90 ..  246.35  at p floor    0  p ceiling    0  T floor    0  T ceiling    0
+u_p0p5/VTK/u_p0p5_1500.vtk                     cells  3259694  p    8391.0 ..   34240.8  T  191.65 ..  246.34  at p floor    0  p ceiling    0  T floor    0  T ceiling    0

@@ -1,0 +1,40 @@
+FoamFile
+{
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+speed           250.81;         // m/s, from flight_conditions.py (M 0.85)
+angleOfAttack   0.5;            // degrees, edited during the CL search
+angle           #calc "-degToRad($angleOfAttack)";
+
+#calcInclude    "transform.H"
+
+liftDir         #calc "transform(Ry($angle), vector(0, 0, 1))";
+dragDir         #calc "transform(Ry($angle), vector(1, 0, 0))";
+Uinlet          #calc "$speed*$<vector>dragDir";
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform $Uinlet;
+
+boundaryField
+{
+    "(inlet|outlet|farfieldY|bottom|top)"
+    {
+        type            freestreamVelocity;
+        freestreamValue uniform $Uinlet;
+        value           uniform $Uinlet;
+    }
+
+    wing
+    {
+        type            slip;
+    }
+
+    symmetry
+    {
+        type            symmetryPlane;
+    }
+}

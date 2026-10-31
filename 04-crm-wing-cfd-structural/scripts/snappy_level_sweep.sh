@@ -8,7 +8,7 @@
 # SEDX     : extra sed -E expressions applied to system/snappyHexMeshDict after the standard edits.
 # Summary is appended to results/cfd_snappy_level_sweep<TAG>.txt.
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
-SRC=$ROOT/simulation/cfd_v1/feas
+SRC=$ROOT/simulation/cfd_v1/${BASECASE:-feas}
 TAG=${TAG:-}
 OUT=$ROOT/results/cfd_snappy_level_sweep$TAG.txt
 PY=/usr/bin/python3

@@ -86,3 +86,179 @@ by spanwise range (y):
    y 29.00..30.00:   187 pts  median level 9  fraction level >= 10:  12.8 %  median cell size   18.53 mm
 === surface max level 9 tag '_novolq' : end 2026-10-24 15:29:46 ===
 SWEEP DONE _novolq
+=== surface max level 8 tag '_novolq' QTIGHT=1 SEDX='s/minVol +1e-13;/minVol              -1e30;/' : start 2026-10-27 05:27:29 ===
+dictionary lines:
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   8;
+41:            level   (7 8);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+snappyHexMesh exit code 0
+checkMesh exit code 0
+--- time/memory ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 11:26.07
+	Maximum resident set size (kbytes): 1222248
+--- cells per level (snappy log) ---
+--
+Cells per refinement level:
+    0	62354
+    1	902
+    2	1556
+    3	3126
+    4	7033
+    5	19701
+    6	62924
+    7	257338
+    8	221834
+Writing mesh to time constant
+Wrote mesh in = 34.0427 s.
+Mesh snapped in = 473.873 s.
+Checking final mesh ...
+Checking faces in error :
+--- snap / errors ---
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L8_novolq/log.snappyHexMesh:Snapped mesh : cells:636768  faces:2055812  points:795606
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L8_novolq/log.snappyHexMesh:Finished meshing without any errors
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L8_novolq/log.snappyHexMesh:Finished meshing in = 685.361 s.
+--- snappy final check ---
+Checking final mesh ...
+Checking faces in error :
+    non-orthogonality > 65  degrees                        : 0
+    faces with face-decomposition tet quality < 1e-15      : 0
+    faces with concavity > 80  degrees                     : 0
+    faces with skewness > 3.5 (internal) or 4   (boundary) : 0
+    faces with interpolation weights (0..1)  < 0.05        : 0
+    faces with volume ratio of neighbour cells < 0.01      : 0
+    faces with face twist < 0.02                           : 0
+    faces on cells with determinant < 0.001                : 0
+Finished meshing without any errors
+Finished meshing in = 685.361 s.
+End
+--- checkMesh ---
+    cells:            636768
+    Max aspect ratio = 6.29329 OK.
+    Min volume = 7.42273e-06. Max volume = 1000.09.  Total volume = 6.24999e+07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 64.3091 average: 10.244
+    Max skewness = 3.97633 OK.
+Mesh OK.
+--- cell size at feature points ---
+cells: 636768  total volume 6.249986e+07 m3
+estimated level histogram from V^(1/3) (trimmed cells appear one level too fine):
+   level  0  size  10000.00 mm  cells 62354
+   level  1  size   5000.00 mm  cells 902
+   level  2  size   2500.00 mm  cells 1556
+   level  3  size   1250.00 mm  cells 3126
+   level  4  size    625.00 mm  cells 7033
+   level  5  size    312.50 mm  cells 19701
+   level  6  size    156.25 mm  cells 62924
+   level  7  size     78.12 mm  cells 253029
+   level  8  size     39.06 mm  cells 221018
+   level  9  size     19.53 mm  cells 5125
+feature points with y >= 0: 7466
+nearest-centre distance [mm]: median 21.5  90% 28.7  max 71.4
+estimated level of the nearest cell at each feature point:
+   level  7:     28 points (  0.4 %)
+   level  8:   6545 points ( 87.7 %)
+   level  9:    893 points ( 12.0 %)
+by spanwise range (y):
+   y  0.00.. 3.05:   842 pts  median level 8  fraction level >= 10:   0.0 %  median cell size   34.36 mm
+   y  3.05..10.90:  2000 pts  median level 8  fraction level >= 10:   0.0 %  median cell size   35.38 mm
+   y 10.90..25.00:  3444 pts  median level 8  fraction level >= 10:   0.0 %  median cell size   34.13 mm
+   y 25.00..29.00:   978 pts  median level 8  fraction level >= 10:   0.0 %  median cell size   33.91 mm
+   y 29.00..30.00:   187 pts  median level 8  fraction level >= 10:   0.0 %  median cell size   35.43 mm
+=== surface max level 8 tag '_novolq' : end 2026-10-27 05:39:30 ===
+=== surface max level 10 tag '_novolq' QTIGHT=1 SEDX='s/minVol +1e-13;/minVol              -1e30;/' : start 2026-10-27 05:39:30 ===
+dictionary lines:
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   10;
+41:            level   (7 10);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+snappyHexMesh exit code 0
+checkMesh exit code 0
+--- time/memory ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 55:05.80
+	Maximum resident set size (kbytes): 3813828
+--- cells per level (snappy log) ---
+--
+Cells per refinement level:
+    0	62354
+    1	900
+    2	1568
+    3	3132
+    4	7163
+    5	19971
+    6	64201
+    7	261215
+    8	219156
+    9	452225
+    10	926720
+Writing mesh to time constant
+Wrote mesh in = 123.632 s.
+Mesh snapped in = 2153.39 s.
+--- snap / errors ---
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L10_novolq/log.snappyHexMesh:Snapped mesh : cells:2018605  faces:6540774  points:2561980
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L10_novolq/log.snappyHexMesh:Finished meshing without any errors
+/home/harsh/FEA-portfolio/04-crm-wing-cfd-structural/simulation/cfd_v1/feas_L10_novolq/log.snappyHexMesh:Finished meshing in = 3301.92 s.
+--- snappy final check ---
+Checking final mesh ...
+Checking faces in error :
+    non-orthogonality > 65  degrees                        : 0
+    faces with face-decomposition tet quality < 1e-15      : 0
+    faces with concavity > 80  degrees                     : 0
+    faces with skewness > 3.5 (internal) or 4   (boundary) : 0
+    faces with interpolation weights (0..1)  < 0.05        : 0
+    faces with volume ratio of neighbour cells < 0.01      : 0
+    faces with face twist < 0.02                           : 0
+    faces on cells with determinant < 0.001                : 0
+Finished meshing without any errors
+Finished meshing in = 3301.92 s.
+End
+--- checkMesh ---
+    cells:            2018605
+    Max aspect ratio = 5.97026 OK.
+    Min volume = 1.03379e-07. Max volume = 1000.09.  Total volume = 6.24999e+07.  Cell volumes OK.
+    Mesh non-orthogonality Max: 64.6496 average: 10.9769
+ ***Error in face pyramids: 2 faces are incorrectly oriented.
+    Max skewness = 3.97633 OK.
+Failed 1 mesh checks.
+--- cell size at feature points ---
+cells: 2018605  total volume 6.249986e+07 m3
+estimated level histogram from V^(1/3) (trimmed cells appear one level too fine):
+   level  0  size  10000.00 mm  cells 62354
+   level  1  size   5000.00 mm  cells 900
+   level  2  size   2500.00 mm  cells 1568
+   level  3  size   1250.00 mm  cells 3132
+   level  4  size    625.00 mm  cells 7163
+   level  5  size    312.50 mm  cells 19971
+   level  6  size    156.25 mm  cells 64201
+   level  7  size     78.12 mm  cells 256921
+   level  8  size     39.06 mm  cells 221006
+   level  9  size     19.53 mm  cells 449318
+   level 10  size      9.77 mm  cells 909630
+   level 11  size      4.88 mm  cells 22441
+feature points with y >= 0: 7466
+nearest-centre distance [mm]: median 6.3  90% 7.4  max 71.4
+estimated level of the nearest cell at each feature point:
+   level  7:     28 points (  0.4 %)
+   level  8:     23 points (  0.3 %)
+   level  9:      1 points (  0.0 %)
+   level 10:   6593 points ( 88.3 %)
+   level 11:    821 points ( 11.0 %)
+by spanwise range (y):
+   y  0.00.. 3.05:   842 pts  median level 10  fraction level >= 10:  95.4 %  median cell size    8.59 mm
+   y  3.05..10.90:  2000 pts  median level 10  fraction level >= 10: 100.0 %  median cell size    8.96 mm
+   y 10.90..25.00:  3444 pts  median level 10  fraction level >= 10: 100.0 %  median cell size    8.70 mm
+   y 25.00..29.00:   978 pts  median level 10  fraction level >= 10: 100.0 %  median cell size    8.76 mm
+   y 29.00..30.00:   187 pts  median level 10  fraction level >= 10: 100.0 %  median cell size    8.93 mm
+=== surface max level 10 tag '_novolq' : end 2026-10-27 06:36:38 ===
+SWEEP DONE _novolq

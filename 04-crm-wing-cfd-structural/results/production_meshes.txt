@@ -1,0 +1,92 @@
+# Production mesh record, generated 2026-10-31T10:37Z by scripts/record_production_meshes.sh
+# source = feas* case folder whose constant/polyMesh/points has the same md5 as the run
+
+## Run -> mesh
+u_L8_p0p36  nCells:636768  md5 d34e3fd45a7b  source: feas_L8_novolq
+u_p0p36  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+u_L10_p0p36  nCells:2018605  md5 92932fc3e2f1  source: feas_L10_novolq
+u_defl_p0p36  nCells:1116145  md5 192ee775f1b3  source: feas_L9_novolq_defl
+u_defl_a2p07  nCells:1116145  md5 192ee775f1b3  source: feas_L9_novolq_defl
+u_p0p5  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+u_p0p3  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+a_m0p5  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+a_m1p5  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+b_m0p8  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+t_m0p5  nCells:1103898  md5 c7ebd0dcbb54  source: feas_L9_novolq
+
+## snappyHexMeshDict settings of the source cases
+--- feas_L8_novolq
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   8;
+41:            level   (7 8);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+--- feas_L9_novolq
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   9;
+41:            level   (7 9);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+--- feas_L10_novolq
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   10;
+41:            level   (7 10);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+--- feas_L9_novolq_defl
+23:    maxLocalCells       2000000;
+24:    maxGlobalCells      3000000;
+33:            level   9;
+41:            level   (7 9);
+56:            levels  ((0.15 7) (0.4 6) (1.0 5) (3.0 4));
+99:    maxNonOrtho         65;
+100:    maxBoundarySkewness 4;
+101:    maxInternalSkewness 3.5;
+103:    minVol              -1e30;
+115:        maxNonOrtho     70;
+
+## checkMesh (constant mesh of the run)
+--- u_L8_p0p36
+    cells:            636768
+    Max aspect ratio = 6.293293671 OK.
+    Min volume = 7.42272605e-06. Max volume = 1000.093369.  Total volume = 62499862.31.  Cell volumes OK.
+    Mesh non-orthogonality Max: 64.30910991 average: 10.24401075
+    Max skewness = 3.976325618 OK.
+Mesh OK.
+--- u_p0p36
+    cells:            1103898
+    Max aspect ratio = 5.446601947 OK.
+    Min volume = 9.812091605e-07. Max volume = 1000.082342.  Total volume = 62499862.3.  Cell volumes OK.
+    Mesh non-orthogonality Max: 65.13458635 average: 10.6877819
+    Max skewness = 3.976333945 OK.
+Mesh OK.
+--- u_L10_p0p36
+    cells:            2018605
+    Max aspect ratio = 5.970255877 OK.
+    Min volume = 1.033790691e-07. Max volume = 1000.086694.  Total volume = 62499862.3.  Cell volumes OK.
+    Mesh non-orthogonality Max: 64.64957747 average: 10.97689398
+ ***Error in face pyramids: 2 faces are incorrectly oriented.
+    Max skewness = 3.976333945 OK.
+Failed 1 mesh checks.
+--- u_defl_p0p36
+    cells:            1116145
+    Max aspect ratio = 5.276522022 OK.
+    Min volume = 9.606082819e-07. Max volume = 1000.086184.  Total volume = 62499862.43.  Cell volumes OK.
+    Mesh non-orthogonality Max: 65.23971214 average: 10.85071246
+    Max skewness = 3.48964941 OK.
+Mesh OK.

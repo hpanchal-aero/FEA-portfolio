@@ -1,0 +1,39 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      physicalProperties;
+}
+
+thermoType
+{
+    type            hePsiThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState perfectGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+// Standard air matched to flight_conditions.py: R = 287.058 J/kg/K,
+// gamma = 1.4 exactly (Cp = 3.5 R), so a = 295.07 m/s at 216.65 K.
+// mu = physical laminar value: numerical regularisation. mu = 0 gave NaN in the first momentum solve on this mesh.
+mixture
+{
+    specie
+    {
+        molWeight   28.9645;
+    }
+    thermodynamics
+    {
+        Cp          1004.703;
+        Hf          0;
+    }
+    transport
+    {
+        mu          1.4216e-05;
+        Pr          0.71;
+    }
+}

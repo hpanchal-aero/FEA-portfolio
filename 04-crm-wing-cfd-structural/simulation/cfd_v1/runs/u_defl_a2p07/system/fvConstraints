@@ -1,0 +1,9 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+
+#includeConstraint limitPressure(minFactor=0.1, maxFactor=2)
+#includeConstraint limitTemperature(min=100, max=400)

@@ -1,0 +1,17 @@
+// Force and moment coefficients on the half wing (CFD Euler case).
+// Aref = Sref/2 for the half model; lRef = MAC; CofR from the uCRM-9 dataset.
+// rhoInf only enters the dynamic pressure; forces use the actual density field.
+// pRef is subtracted from the absolute pressure so that the open half-wing
+// surface does not carry a spurious 21.7 kPa uniform load.
+#include      "$FOAM_CASE/0/U"
+
+patches       (wing);
+magUInf       $speed;
+lRef          7.01;
+Aref          191.870;
+rhoInf        0.34833;
+pRef          21662.7;
+CofR          (33.67786 0 4.51993);
+pitchAxis     (0 1 0);
+
+#includeEtc "caseDicts/postProcessing/forces/forceCoeffs.cfg"
