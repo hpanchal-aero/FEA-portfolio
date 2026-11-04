@@ -34,9 +34,9 @@ The sequence is intentional: establish reliable structural mechanics fundamental
 | 01 | [**Aerospace Mounting Bracket**](01-aerospace-mounting-bracket/)                      | 🟢 Completed | Parametric ribbed L-bracket, static loading, mass minimization    |
 | 02 | [**1U CubeSat Primary Structure**](02-cubesat-structure/)                             | 🟢 Completed | Structural architecture trade under representative launch loading |
 | 03 | [**UAV Wing Structural Analysis**](03-uav-wing-structure/)                            | 🟢 Completed | Spar/rib/skin configuration under aerodynamic loading             |
-| 04 | [**CRM Wing CFD Structural**](04-crm-wing-cfd-structural/)                     | 🟢 Completed | One-way aerodynamic pressure coupling to structural response      |
-| 05 | [**Thermo-Structural Aerospace Panel**](05-thermo-structural-panel/)                  | 🟡 In Progress    | Thermal gradient → thermal stress                                 |
-| 06 | [**UAV Wing Spar Mass Optimization**](06-uav-wing-spar-optimization/)                 | ⚪ Planned      | Constrained mass minimization and structural trade study          |
+| 04 | [**CRM Wing CFD Structural**](04-crm-wing-cfd-structural/)                            | 🟢 Completed | One-way aerodynamic pressure coupling to structural response      |
+| 05 | [**Thermo-Structural Aerospace Panel**](05-thermo-structural-panel/)                  | 🟢 Completed | Thermal gradient → thermal stress                                 |
+| 06 | [**UAV Wing Spar Mass Optimization**](06-uav-wing-spar-optimization/)                 | 🟡 In Progress  | Constrained mass minimization and structural trade study          |
 | 07 | [**CubeSat Modal Analysis**](07-cubesat-modal-analysis/)                              | ⚪ Planned      | Natural frequencies and mode shapes                               |
 | 08 | [**Thermal Protection / High-Temperature Structure**](08-high-temperature-structure/) | ⚪ Planned      | Aerothermal loading → thermal-structural response                 |
 
