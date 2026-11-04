@@ -1,0 +1,22 @@
+V3 uniform temperature rise, linear (supports as defined in the job deck)
+job v3c_membrane.dat, mesh v_n40_z2.inp
+dT = 2.00 K; closed-form buckling dT_cr = 4.60 K (dT/dT_cr = 0.43); h = 0.002 m, L = W = 0.5 m
+central region: 512 elements, 4096 integration points
+reference sigma_x = sigma_y = -E alpha dT/(1-nu) = -2.921433e+06 Pa
+  component   mean [Pa]      min [Pa]       max [Pa]     max |dev| from reference [%]
+  sigma_x   -2.920939e+06 -2.921361e+06 -2.920432e+06  3.426e-02
+  sigma_y   -2.920939e+06 -2.921361e+06 -2.920432e+06  3.426e-02
+  sigma_z    2.496061e+01 -7.312011e+02  9.055120e+02  3.100e-02  (|max| as % of |reference|)
+  sigma_xy  -4.687422e-10 -1.215760e-02  1.215747e-02  4.162e-07  (|max| as % of |reference|)
+  sigma_xz  -7.324219e-09 -2.862648e+02  2.862648e+02  9.799e-03  (|max| as % of |reference|)
+  sigma_yz  -9.765625e-09 -2.862648e+02  2.862648e+02  9.799e-03  (|max| as % of |reference|)
+thickness expansion on the centre column: max |uz - exact| = 3.864e-13 m = 1.132e-03 % of the exact face value 3.4143e-08 m
+  uz at the faces: bottom -3.4144e-08 m, top 3.4144e-08 m
+supplementary: edge reaction force, exact (interior stress x h x W) 2921.43 N
+  FACE_X0  total reaction (fx, fy, fz) = [ 2.921e+03 -9.624e-14 -1.139e-11] N, normal component 2920.94 N = 99.98 % of exact
+  FACE_X1  total reaction (fx, fy, fz) = [-2.921e+03  7.779e-14  7.038e-12] N, normal component -2920.94 N = 99.98 % of exact
+  FACE_Y0  total reaction (fx, fy, fz) = [ 3.797e-14  2.921e+03 -8.850e-12] N, normal component 2920.94 N = 99.98 % of exact
+  FACE_Y1  total reaction (fx, fy, fz) = [-8.090e-14 -2.921e+03  1.048e-11] N, normal component -2920.94 N = 99.98 % of exact
+  all nodes total reaction (fx, fy, fz) = [-6.383e-13 -2.904e-12 -4.433e-14] N (expected 0)
+tolerance 1.0 % on central-region stresses and thickness expansion
+RESULT: PASS

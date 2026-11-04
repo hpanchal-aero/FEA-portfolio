@@ -1,0 +1,40 @@
+V8a: Gaussian pulse thermal verification, q0 = 30000 W/m2, sigma = 0.08333 m, ramp 5 s, soak to 30 s
+continuous-time total energy per unit power: 27.5 s; scheme adds dt/2 s for the ramp (right-endpoint rule)
+n = 20: node weights self-checks passed (sum, centroid, x^2, z^2 integrals to 1e-10)
+case v8a2_n20_dt0p5: P = 1302.194705 W, rho c V = 1165.0900 J/K, 0 warning(s)
+    t[s]   mean rise FE [K]   discrete reference [K]   deviation [%]   continuous-time value [K]
+    5.00            3.07361                  3.07361         0.00002                     2.79419
+   10.00            8.66200                  8.66200         0.00000                     8.38258
+   15.00           14.25039                 14.25039        -0.00000                    13.97097
+   20.00           19.83877                 19.83877        -0.00001                    19.55935
+   25.00           25.42716                 25.42716        -0.00000                    25.14774
+   30.00           31.01555                 31.01555         0.00001                    30.73613
+    peak T (all nodes) 196.6992 degC at (0.2500, 0.2500, 0.00200) m; centre top 196.6992 degC; rise 176.6992 K
+    symmetry max |dT| 0.000e+00 K; centre top - bottom 4.2034 K (quasi-steady 4.4776 K)
+case v8a2_n20_dt0p25: P = 1302.194705 W, rho c V = 1165.0900 J/K, 0 warning(s)
+    t[s]   mean rise FE [K]   discrete reference [K]   deviation [%]   continuous-time value [K]
+    5.00            2.93390                  2.93390         0.00003                     2.79419
+   10.00            8.52229                  8.52229         0.00000                     8.38258
+   15.00           14.11068                 14.11068        -0.00000                    13.97097
+   20.00           19.69906                 19.69906         0.00001                    19.55935
+   25.00           25.28745                 25.28745        -0.00000                    25.14774
+   30.00           30.87584                 30.87584         0.00000                    30.73613
+    peak T (all nodes) 195.9354 degC at (0.2500, 0.2500, 0.00200) m; centre top 195.9354 degC; rise 175.9354 K
+    symmetry max |dT| 0.000e+00 K; centre top - bottom 4.2034 K (quasi-steady 4.4776 K)
+n = 40: node weights self-checks passed (sum, centroid, x^2, z^2 integrals to 1e-10)
+case v8a2_n40_dt0p5: P = 1302.003263 W, rho c V = 1165.0900 J/K, 0 warning(s)
+    t[s]   mean rise FE [K]   discrete reference [K]   deviation [%]   continuous-time value [K]
+    5.00            3.07316                  3.07316         0.00001                     2.79378
+   10.00            8.66073                  8.66073         0.00000                     8.38135
+   15.00           14.24829                 14.24829        -0.00000                    13.96891
+   20.00           19.83586                 19.83586         0.00000                    19.55648
+   25.00           25.42342                 25.42342         0.00000                    25.14404
+   30.00           31.01099                 31.01099         0.00000                    30.73161
+    peak T (all nodes) 199.1015 degC at (0.2500, 0.2500, 0.00200) m; centre top 199.1015 degC; rise 179.1015 K
+    symmetry max |dT| 0.000e+00 K; centre top - bottom 4.4105 K (quasi-steady 4.4776 K)
+
+criterion 1 (energy, max deviation over all cases and times): 0.00003 % (limit 0.050 %) -> pass
+criterion 2 (peak rise change dt 0.5 -> 0.25 s): 0.4341 % (limit 1.0 %) -> pass
+criterion 3 (symmetry <= 0.01 K; top-bottom within 10 % of 4.4776 K) -> pass
+reported: peak rise 176.699 K (20, dt 0.5), 175.935 K (20, dt 0.25), 179.101 K (40, dt 0.5); mesh 20 -> 40 changes the peak rise by 1.3595 %
+RESULT: PASS

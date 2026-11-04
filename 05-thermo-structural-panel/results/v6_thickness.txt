@@ -1,0 +1,10 @@
+V6d thickness sweep, 0.5 x 0.5 m plate, mesh 20 x 20 x 2 C3D20R, restrained, mechanical-equivalent preload of 0.1 K
+critical rise = buckling factor x 0.1 K
+  h[mm]   h/L[%]  time[s] warn RFdev[%]  factor1   dTcr FE[K]  closed[K]   gap[%]   gap/(h/L)   mode2/mode1  (closed 2.5)
+     1    0.200      5.7    0  -0.0021    5.7424     0.57424    0.57525   -0.1767    -0.8837      2.50185
+     2    0.400      6.0    0  -0.0083   22.9368     2.29368    2.30101   -0.3187    -0.7966      2.50251
+     3    0.600      8.7    0  -0.0187   51.5246     5.15246    5.17727   -0.4792    -0.7987      2.50334
+     5    1.000      6.1    0  -0.0528  142.6429    14.26429   14.38131   -0.8137    -0.8137      2.50455
+
+log-log slope of |gap| against h between 1 and 5 mm: 0.95 -> first order in h/L (edge-zone type effect)
+RESULT: PASS

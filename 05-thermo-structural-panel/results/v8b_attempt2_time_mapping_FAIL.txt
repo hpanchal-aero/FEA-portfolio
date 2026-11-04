@@ -1,0 +1,16 @@
+V8b: temperature hand-over, thermal C3D20 (v8a_n20_z2) -> structural C3D20R (v6c_n20_z2)
+rigid-body supports: node 2 (ux,uy,uz) at (0,0), node 6 (uy,uz) at (L,0), node 4 (uz) at (0,W)
+written /home/harsh/FEA-portfolio/05-thermo-structural-panel/simulation/v8b_thermal/flux.inp: 400 top faces, total power 1302.194705 W
+thermal run done: 0 warning(s), .frd 7.8 MB
+criterion 4a: thermal run versus V8a attempt 2, centre column at [5.0, 10.0, 15.0, 20.0, 25.0, 30.0] s: max |dT| = 0.000e+00 K
+structural run A (dt = 0.5 s): 0 warning(s), 6 temperature blocks on NALL
+structural run B (dt = 0.25 s): 0 warning(s), 120 temperature blocks on COL_CEN
+criterion 1: run A, all 4725 nodes at t = [5.0, 10.0, 15.0, 20.0, 25.0, 30.0] s: max |T_struct - T_thermal| = 1.318e+01 K (limit 0.005 K)
+criterion 2: run B, centre column at 60 multiples of 0.5 s: max |dT| = 1.326e+01 K (limit 0.005 K)
+criterion 3 (characterisation): run B, 59 times that are not multiples of 0.5 s (from 0.75 s), max |dT| per rule:
+    linear    1.3219e+01 K
+    previous  1.4695e+01 K
+    next      1.1820e+01 K
+    best rule: next
+criterion 1 -> FAIL; criterion 2 -> FAIL; criterion 4 (reproduction 0.000e+00 K, warnings {'thermal': 0, 'A': 0, 'B': 0}) -> pass
+RESULT: FAIL

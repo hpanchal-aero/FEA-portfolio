@@ -1,0 +1,16 @@
+V2 uniform temperature rise, free expansion
+job v2_free_expansion.dat, mesh v_n40_z2.inp
+dT = 100.0 K, E = 1.138e+11 Pa, alpha = 8.6e-06 1/K, L = 0.5, W = 0.5, h = 0.002 m
+P_A displacement (fixed point): [0. 0. 0.]
+  quantity      FE [m]          exact [m]      error [%]
+  P_B  ux    4.300000e-04    4.300000e-04   1.261e-14
+  P_C  uy    4.300000e-04    4.300000e-04   1.261e-14
+  P_D  ux    4.300000e-04    4.300000e-04   1.261e-14
+  P_D  uy    4.300000e-04    4.300000e-04   1.261e-14
+  P_CEN ux   2.150000e-04    2.150000e-04   1.261e-14
+  P_CEN uy   2.150000e-04    2.150000e-04   1.261e-14
+  thickness expansion on the centre column: max |uz - exact| = 1.035e-12 m = 1.204e-04 % of alpha dT h/2 (exact face value 8.600e-07 m)
+  max von Mises stress over 25600 integration points: 6.8834e-02 Pa = 7.033e-08 % of E alpha dT = 9.7868e+07 Pa (tolerance 0.1 %)
+  total reaction force (fx, fy, fz): [ 5.782e-22  7.391e-22 -8.334e-23] N (expected 0)
+tolerances: displacements 1.0 %, stress 0.1 % of E alpha dT
+RESULT: PASS

@@ -1,0 +1,38 @@
+*HEADING
+Project 05 V3c: uniform temperature rise 20 -> 22 degC, frame support = distributed membrane restraint (equations) + uz on the mid-plane lines, linear
+** SI units (m, kg, s, N, Pa), temperatures in degC
+*INCLUDE, INPUT=../../mesh/v_n40_z2.inp
+*INCLUDE, INPUT=../../mesh/v_n40_z2_frame.inp
+*NSET, NSET=FRAME_ALL
+FRAME_X0, FRAME_X1, FRAME_Y0, FRAME_Y1
+*MATERIAL, NAME=TI64
+*ELASTIC
+113.8E9, 0.33
+*EXPANSION, ZERO=20.
+8.6E-6
+*SOLID SECTION, ELSET=PANEL, MATERIAL=TI64
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 20.
+** in-plane restraint comes from the equations; out-of-plane support on the four mid-thickness edge lines
+*BOUNDARY
+FRAME_ALL, 3, 3
+*STEP
+*STATIC
+1., 1., 1.E-5, 1.
+*TEMPERATURE
+NALL, 22.
+*NODE PRINT, NSET=COL_CEN
+U
+*EL PRINT, ELSET=PANEL
+S
+*NODE PRINT, NSET=FACE_X0, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=FACE_X1, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=FACE_Y0, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=FACE_Y1, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=NALL, TOTALS=ONLY
+RF
+*END STEP

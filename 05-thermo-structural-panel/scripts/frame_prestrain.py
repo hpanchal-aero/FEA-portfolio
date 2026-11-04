@@ -1,0 +1,128 @@
+#!/usr/bin/python3
+"""Mechanical equivalent of a uniform temperature rise for the membrane-restrained plate (for linear buckling).
+
+Usage: /usr/bin/python3 scripts/frame_prestrain.py MESH_TAG [--dT 1.0]
+Reads  mesh/MESH_TAG.inp and mesh/MESH_TAG_frame.inp (equations: thickness-mean in-plane displacement = 0).
+Writes mesh/MESH_TAG_framepre.inp     dummy nodes + equations "thickness-mean displacement = dummy displacement"
+       mesh/MESH_TAG_framepre_bc.inp  *BOUNDARY lines for the dummy nodes (to be included inside the first step)
+
+Reason: CalculiX linear buckling (*BUCKLE) does not carry a thermal preload. Uniform heating dT of a plate whose in-plane
+mean edge displacement is held at zero produces sigma_x = sigma_y = -E alpha dT / (1 - nu). The same stress state is produced
+without temperature if the mean edge displacement is prescribed to the (negative) free thermal expansion,
+u_mean(x = x_min) = +alpha dT Lx / 2, u_mean(x = x_max) = -alpha dT Lx / 2 (and the same in y). The prescribed values are
+for the reference rise --dT (default 1 K), so a buckling factor times dT is the critical temperature rise in kelvin.
+The reference rise must be small enough that every factor of interest is above about 1 (CalculiX did not return a factor
+below its shift value of 1 in the 1 mm case of the thickness sweep; see results/v6d_attempt1_unit_preload_FAIL.txt).
+Equation form: sum_i w_i u_i - u_dummy = 0 (sum w_i = 1), so thickness-mean u = u_dummy.
+"""
+import argparse
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import ccxio
+from material import MATERIAL
+
+TOL = 1e-9
+
+
+def main():
+    ap = argparse.ArgumentParser(description="mechanical equivalent of a uniform temperature rise (linear buckling preload)")
+    ap.add_argument("tag")
+    ap.add_argument("--dT", type=float, default=1.0)
+    args = ap.parse_args()
+    tag = args.tag
+    dT = args.dT
+    if dT <= 0:
+        raise SystemExit("--dT must be positive")
+    root = os.path.dirname(HERE)
+    mesh_path = os.path.join(root, "mesh", tag + ".inp")
+    frame_path = os.path.join(root, "mesh", tag + "_frame.inp")
+    nodes = ccxio.read_nodes(mesh_path)
+    xs = [nodes[k][0] for k in nodes]
+    ys = [nodes[k][1] for k in nodes]
+    xmin, xmax, ymin, ymax = min(xs), max(xs), min(ys), max(ys)
+    xm, ym = 0.5 * (xmin + xmax), 0.5 * (ymin + ymax)
+    alpha = MATERIAL["alpha"]
+    base = max(nodes)
+    dummy = {("x", 0): base + 1, ("x", 1): base + 2, ("y", 0): base + 3, ("y", 1): base + 4}
+    value = {("x", 0): dT * alpha * (xmax - xmin) / 2.0, ("x", 1): -dT * alpha * (xmax - xmin) / 2.0,
+             ("y", 0): dT * alpha * (ymax - ymin) / 2.0, ("y", 1): -dT * alpha * (ymax - ymin) / 2.0}
+    dof_of = {"x": 1, "y": 2}
+
+    with open(frame_path) as f:
+        lines = f.read().splitlines()
+    eqs = []
+    i = 0
+    while i < len(lines):
+        s = lines[i].strip()
+        if s.upper().startswith("*EQUATION"):
+            n = int(lines[i + 1].replace(",", " ").split()[0])
+            toks = []
+            j = i + 2
+            while len(toks) < 3 * n:
+                toks += lines[j].replace(",", " ").split()
+                j += 1
+            if len(toks) != 3 * n:
+                raise SystemExit("equation with %d terms has %d tokens" % (n, len(toks)))
+            eqs.append([(int(toks[3 * k]), int(toks[3 * k + 1]), float(toks[3 * k + 2])) for k in range(n)])
+            i = j
+        elif s == "" or s.startswith("**"):
+            i += 1
+        else:
+            raise SystemExit("unexpected line in %s: %r" % (frame_path, lines[i]))
+
+    count = {k: 0 for k in dummy}
+    new_eqs = []
+    worst = 0.0
+    for terms in eqs:
+        dofs = {t[1] for t in terms}
+        if len(dofs) != 1 or list(dofs)[0] not in (1, 2):
+            raise SystemExit("equation with mixed or unexpected dofs: %r" % (terms,))
+        dof = dofs.pop()
+        axis = "x" if dof == 1 else "y"
+        c = 0 if axis == "x" else 1
+        mid = xm if axis == "x" else ym
+        lo, hi = (xmin, xmax) if axis == "x" else (ymin, ymax)
+        side = 0 if nodes[terms[0][0]][c] < mid else 1
+        face = lo if side == 0 else hi
+        wsum = sum(t[2] for t in terms)
+        worst = max(worst, abs(wsum - 1.0))
+        if abs(wsum - 1.0) > TOL:
+            raise SystemExit("weights do not sum to 1 (%.12f): %r" % (wsum, terms))
+        for t in terms:
+            if abs(nodes[t[0]][c] - face) > TOL:
+                raise SystemExit("node %d of an equation is not on the %s%d face" % (t[0], axis, side))
+        key = (axis, side)
+        count[key] += 1
+        new_eqs.append(terms + [(dummy[key], dof, -1.0)])
+
+    out_path = os.path.join(root, "mesh", tag + "_framepre.inp")
+    bc_path = os.path.join(root, "mesh", tag + "_framepre_bc.inp")
+    with open(out_path, "w") as f:
+        f.write("** Project 05: mechanical equivalent of a %g K uniform temperature rise (for linear buckling), mesh %s\n" % (dT, tag))
+        f.write("** generated by scripts/frame_prestrain.py from mesh/%s_frame.inp; dummy nodes carry the prescribed mean edge displacement\n" % tag)
+        f.write("*NODE\n")
+        for key, nid in dummy.items():
+            f.write("%d, %.9e, %.9e, 0.0\n" % (nid, xm, ym))
+        for terms in new_eqs:
+            f.write("*EQUATION\n%d\n" % len(terms))
+            for k in range(0, len(terms), 4):
+                f.write(", ".join("%d, %d, %.12e" % t for t in terms[k:k + 4]) + "\n")
+    with open(bc_path, "w") as f:
+        f.write("** prescribed dummy-node displacements = mean edge displacement for dT = %g K (alpha %.6g /K)\n" % (dT, alpha))
+        f.write("*BOUNDARY\n")
+        for key, nid in dummy.items():
+            f.write("%d, %d, %d, %.12e\n" % (nid, dof_of[key[0]], dof_of[key[0]], value[key]))
+
+    print("nodes: x %.6f..%.6f  y %.6f..%.6f  (max node id %d); reference rise dT = %g K" % (xmin, xmax, ymin, ymax, base, dT))
+    print("equations read: %d; worst |sum of weights - 1| = %.2e" % (len(eqs), worst))
+    for key in dummy:
+        print("  face %s%d: dummy node %d, %d equations, prescribed mean displacement %+.6e m" % (key[0], key[1], dummy[key], count[key], value[key]))
+    print("wrote %s" % os.path.relpath(out_path, root))
+    print("wrote %s" % os.path.relpath(bc_path, root))
+
+
+if __name__ == "__main__":
+    main()

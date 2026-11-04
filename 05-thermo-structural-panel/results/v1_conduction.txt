@@ -1,0 +1,13 @@
+V1 steady conduction through the thickness
+job v1_conduction.dat, mesh v_n40_z2.inp
+T_top 120.000 degC, T_bottom 20.000 degC, h = 0.002 m, k = 6.7 W/(m K)
+  z [mm]   T_FE [degC]   T_exact [degC]   |error| [K]
+   0.000      20.00000        20.00000   0.00e+00
+   0.500      45.00000        45.00000   0.00e+00
+   1.000      70.00000        70.00000   0.00e+00
+   1.500      95.00000        95.00000   0.00e+00
+   2.000     120.00000       120.00000   0.00e+00
+max temperature error 0.000e+00 K = 0.000e+00 % of the temperature difference (tolerance 0.5 %)
+heat flux  exact 335000.0 W/m2
+total heat flow through the face: FE 83750.00 W, exact 83750.00 W, error 0.000e+00 % (tolerance 0.5 %)
+RESULT: PASS

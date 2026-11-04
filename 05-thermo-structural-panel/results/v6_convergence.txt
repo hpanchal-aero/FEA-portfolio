@@ -1,0 +1,26 @@
+V6c mesh convergence of the linear buckling factor, restrained 0.5 x 0.5 x 0.002 m Ti-6Al-4V plate, C3D20R
+closed form dT_cr(1,1) = 2.30101 K; expected edge reaction E alpha/(1-nu) h W = 1460.716 N
+   n  nz    nodes  time[s] warn   RF_x[N]  RFdev[%]    mode1[K]    mode2[K]    mode3[K]   err1[%]
+  10   2     1265      2.7    0   1460.654   -0.0043     2.28916     5.74202     5.74202    -0.515
+      mesh: max element edge aspect ratio 50.000
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+  20   2     4725      8.7    0   1460.595   -0.0083     2.29368     5.73994     5.73994    -0.318
+      mesh: max element edge aspect ratio 25.000
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+  40   2    18245     41.1    0   1460.471   -0.0168     2.29383     5.74014     5.74014    -0.312
+      mesh: max element edge aspect ratio 12.500
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+  10   4     2189      4.2    0   1460.701   -0.0011     2.28890     5.74126     5.74127    -0.526
+      mesh: max element edge aspect ratio 100.000
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+  20   4     8169     23.7    0   1460.686   -0.0021     2.29316     5.73895     5.73896    -0.341
+      mesh: max element edge aspect ratio 50.000
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+  40   4    31529    154.8    0   1460.656   -0.0041     2.29322     5.73890     5.73890    -0.339
+      mesh: max element edge aspect ratio 25.000
+      mesh: Gmsh minSJ (scaled Jacobian) min 1.000000
+
+nz = 2: observed order p = 4.96, Richardson value 2.29383 K (-0.312 % from closed form), GCI(40) = 0.000 %
+nz = 4: observed order p = 6.03, Richardson value 2.29322 K (-0.338 % from closed form), GCI(40) = 0.000 %
+through-thickness effect at n = 40: nz = 4 minus nz = 2 = -0.00061 K (-0.026 %)
+RESULT: PASS

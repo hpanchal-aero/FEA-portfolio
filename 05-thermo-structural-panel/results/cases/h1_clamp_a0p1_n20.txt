@@ -1,0 +1,18 @@
+Project 05 case h1_clamp_a0p1_n20: h = 1 mm, edge condition clamp, imperfection 0.1 h (toward +z), in-plane mesh 20 x 20
+thermal: 0 warning(s), power 1302.1947 W, energy deviation 1.41e-07 (limit 5e-04), peak temperature at 30 s 369.18 C (rise 349.2 K) -> G1 pass
+structural: 0 warning(s), 62 output increments, cutbacks at t = [1.75, 9.25] s, missing frames [] -> G2 pass
+hand-over: structural centre-column temperatures vs thermal history, max |dT| = 0.000e+00 K (limit 0.005 K) -> G3 pass (compared with the stored top-centre history)
+restraint check (face balance): max |Rx(x=0) + Rx(x=L)| / max|Rx(x=0)| = 0.000e+00 (limit 1e-03) -> G4 pass
+stress: max von Mises 62.77 MPa, bound 79.56 MPa (9.0 % of yield, stop bound 660 MPa) -> G5 pass
+
+   t[s]  T_top,c[C]  W_c/h   max|w|/h  at (x, y) [m]      Rx(x=0)[N]   max vM[MPa]
+   1.750        nan   0.6413    0.6413  (0.2500, 0.2500)         531.7        5.431
+   5.000      55.22   3.4430    3.4431  (0.2500, 0.2500)         818.4       20.069
+   9.250        nan   5.7284    5.7286  (0.2500, 0.2500)        1110.0       31.732
+  10.000     117.77   6.0429    6.0432  (0.2500, 0.2500)        1154.7       33.365
+  15.000     180.80   7.8254    7.8259  (0.2500, 0.2500)        1426.1       42.719
+  20.000     243.79   9.2744    9.2751  (0.2500, 0.2500)        1666.8       50.368
+  25.000     306.60  10.5275   10.5284  (0.2500, 0.2500)        1888.3       56.948
+  30.000     369.18  11.6475   11.6486  (0.2500, 0.2500)        2096.3       62.772
+end of pulse: W_c/h = 11.6475 (11.647 mm), max|w|/h = 11.6486 at (0.2500, 0.2500), |Rx(x=0)| = 2096.3 N, T_peak = 369.18 C
+RESULT: PASS

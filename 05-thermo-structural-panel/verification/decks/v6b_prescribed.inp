@@ -1,0 +1,33 @@
+*HEADING
+Project 05 V6b: linear buckling of the restrained plate, preload = mechanical equivalent of a 1 K uniform temperature rise (prescribed mean edge displacement)
+** SI units (m, kg, s, N, Pa); no temperature loading anywhere in this deck
+*INCLUDE, INPUT=../../mesh/v_n40_z2.inp
+*INCLUDE, INPUT=../../mesh/v_n40_z2_framepre.inp
+*NSET, NSET=FRAME_ALL
+FRAME_X0, FRAME_X1, FRAME_Y0, FRAME_Y1
+*MATERIAL, NAME=TI64
+*ELASTIC
+113.8E9, 0.33
+*SOLID SECTION, ELSET=PANEL, MATERIAL=TI64
+** out-of-plane support on the four mid-thickness edge lines; in-plane restraint from the equations
+*BOUNDARY
+FRAME_ALL, 3, 3
+** step 1: preload (prescribed mean edge displacement = free thermal expansion for 1 K, linear static)
+*STEP
+*STATIC
+1., 1., 1.E-5, 1.
+*INCLUDE, INPUT=../../mesh/v_n40_z2_framepre_bc.inp
+*EL PRINT, ELSET=PANEL
+S
+*NODE PRINT, NSET=FACE_X0, TOTALS=ONLY
+RF
+*NODE PRINT, NSET=FACE_Y0, TOTALS=ONLY
+RF
+*END STEP
+** step 2: buckling factors = multiples of the preload (= critical temperature rise in K)
+*STEP
+*BUCKLE
+6
+*NODE PRINT, NSET=TOP
+U
+*END STEP

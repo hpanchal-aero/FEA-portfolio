@@ -1,0 +1,23 @@
+Project 05 baseline: Gaussian pulse (q0 = 30000 W/m2, sigma = L/6, ramp 5 s, soak to 30 s), 2 mm Ti-6Al-4V, imperfection 0.1 h toward +z
+written /home/harsh/FEA-portfolio/05-thermo-structural-panel/simulation/p05_base_thermal/flux.inp: 400 top faces, total power 1302.194705 W
+thermal run: 0 warning(s), 60 frames
+structural run: 0 warning(s), 60 output increments, extra increments from cutbacks at t = [] s, missing frames []
+
+   t[s]  T_top,centre[C]  W_centre/h  max|w|/h    at (x, y) [m]       Rx(face x=0) [N]  N/Ncr(1)
+   2.500         25.939      0.2622    0.2623   (0.2500, 0.2500)             1044.8     0.311
+   5.000         39.674      0.9568    0.9569   (0.2500, 0.2500)             1794.8     0.534
+   7.500         55.299      1.5373    1.5374   (0.2500, 0.2500)             1842.0     0.548
+  10.000         70.996      1.9820    1.9822   (0.2500, 0.2500)             1813.1     0.539
+  12.500         86.745      2.3564    2.3567   (0.2500, 0.2500)             1785.9     0.531
+  15.000        102.509      2.6851    2.6854   (0.2500, 0.2500)             1772.1     0.527
+  17.500        118.267      2.9808    2.9812   (0.2500, 0.2500)             1772.1     0.527
+  20.000        134.007      3.2512    3.2516   (0.2500, 0.2500)             1784.3     0.531
+  22.500        149.723      3.5015    3.5019   (0.2500, 0.2500)             1806.5     0.537
+  25.000        165.411      3.7352    3.7357   (0.2500, 0.2500)             1837.2     0.547
+  27.500        181.070      3.9551    3.9557   (0.2500, 0.2500)             1874.6     0.558
+  30.000        196.699      4.1633    4.1639   (0.2500, 0.2500)             1917.7     0.571
+(N/Ncr(1) = |Rx|/L divided by E h alpha dT_cr/(1 - nu) with dT_cr = 2.30101 K, the uniform-heating critical value; for scale only)
+B1 (completes, all frames present, zero warnings): pass
+B2 (structural centre-column temperatures vs thermal history): max |dT| = 0.000e+00 K (limit 0.005 K) -> pass
+B3 (global equilibrium): max |total reaction| / max |Rx(face x=0)| = 7.933e-15 (limit 1e-03) -> pass; largest |Rx(face x=0)| = 1917.7 N
+RESULT: PASS

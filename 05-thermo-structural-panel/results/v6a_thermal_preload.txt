@@ -1,0 +1,8 @@
+V6a (record of a failed attempt, kept like V3a): linear buckling with a THERMAL preload in CalculiX 2.23
+deck simulation/v6_buckling/v6_buckling.inp: *TEMPERATURE 20 -> 21 degC in the *STATIC step, then *BUCKLE 6, same mesh and supports as V6b
+preload step alone (simulation/v6_diag_prestress): mean sxx -1.46047e+06  syy -1.46047e+06  szz -1.348e-05 Pa (expected -E alpha / (1 - nu) = -1.46072e+06 Pa per K); edge reaction 1460.471 N
+buckling factors printed: 4.201589e+07  1.215133e+08  1.882926e+08  2.431735e+08  3.756144e+08  4.696360e+08
+closed form for comparison: 2.30101 K
+outcome: factors of order 1e7 to 1e8 (a buckling temperature rise of tens of millions of kelvin), no degenerate pair, the mode-1 shape was inspected at only five nodes, where the in-plane components exceeded the vertical one, and was not analysed further.
+interpretation: the thermal preload did not enter the buckling analysis, although the preload step itself is correct. This agrees with reports that CalculiX linear buckling does not support thermal prestress (PrePoMax forum threads 'TEMPERATURE doesn't work with BUCKLE' and 'Thermal loading'); the exact internal cause was not investigated.
+consequence: V6 is run with the mechanical equivalent of the thermal preload (V6b, scripts/frame_prestrain.py), which reproduces the thermal stress state (mean sxx identical to the printed digits) and verifies the buckling extraction, restraint and mesh. The thermal load path is exercised in the geometrically nonlinear static step (P05-D5).

@@ -1,0 +1,11 @@
+V4 linear through-thickness gradient, free plate
+job v4_gradient.dat, mesh v_n40_z2.inp
+T_bottom 20.000, T_top 22.000, T_ref 20.000 degC; L = W = 0.5 m, h = 0.002 m
+curvature kappa = alpha dT_g / h = 8.600000e-03 1/m; centre rise exact 5.375000e-04 m (0.269 h)
+  corner heights (w): P_A 0.000e+00, P_B 0.000e+00, P_C 0.000e+00 (pinned at 0), P_D -3.110e-09 m
+  centre rise: FE 5.374987e-04 m, exact 5.375000e-04 m, error 2.419e-04 % (tolerance 2.0 %)
+  edge x = 0 profile (81 nodes): max |w - exact| = 3.313e-10 m = 6.163e-05 % of the centre rise (tolerance 2.0 %)
+  max von Mises stress over 25600 integration points: 3.4712e+00 Pa = 1.773e-04 % of E alpha dT_g = 1.9574e+06 Pa (tolerance 0.1 %)
+  supplementary: mid-plane expansion u_x(P_B) FE 4.300000e-06 m, exact 4.300000e-06 m, error 0.000e+00 %
+  total reaction force (fx, fy, fz): [2.858e-20 6.988e-20 2.501e-20] N (expected 0)
+RESULT: PASS

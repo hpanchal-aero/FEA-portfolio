@@ -1,0 +1,16 @@
+Project 05 case h3_rest_a0p1_n20: h = 3 mm, edge condition rest, imperfection 0.1 h (toward +z), in-plane mesh 20 x 20
+thermal: 0 warning(s), power 1302.1947 W, energy deviation 7.07e-08 (limit 5e-04), peak temperature at 30 s 140.15 C (rise 120.2 K) -> G1 pass
+structural: 0 warning(s), 60 output increments, cutbacks at t = [] s, missing frames [] -> G2 pass
+hand-over: structural centre-column temperatures vs thermal history, max |dT| = 0.000e+00 K (limit 0.005 K) -> G3 pass (compared with the stored top-centre history)
+restraint check (face balance): max |Rx(x=0) + Rx(x=L)| / max|Rx(x=0)| = 0.000e+00 (limit 1e-03) -> G4 pass
+stress: max von Mises 91.04 MPa, bound 115.39 MPa (13.1 % of yield, stop bound 660 MPa) -> G5 pass
+
+   t[s]  T_top,c[C]  W_c/h   max|w|/h  at (x, y) [m]      Rx(x=0)[N]   max vM[MPa]
+   5.000      35.33   0.2995    0.2995  (0.2500, 0.2500)        3673.4       10.032
+  10.000      56.35   0.8058    0.8059  (0.2500, 0.2500)        6133.3       31.933
+  15.000      77.36   1.2084    1.2086  (0.2500, 0.2500)        6402.9       49.531
+  20.000      98.36   1.5293    1.5296  (0.2500, 0.2500)        6392.2       64.742
+  25.000     119.29   1.8041    1.8045  (0.2500, 0.2500)        6329.6       78.467
+  30.000     140.15   2.0483    2.0487  (0.2500, 0.2500)        6267.3       91.042
+end of pulse: W_c/h = 2.0483 (6.145 mm), max|w|/h = 2.0487 at (0.2500, 0.2500), |Rx(x=0)| = 6267.3 N, T_peak = 140.15 C
+RESULT: PASS

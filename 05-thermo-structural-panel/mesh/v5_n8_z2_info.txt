@@ -1,0 +1,27 @@
+tag v5_n8_z2
+Gmsh Python API 4.15.2
+geometry L=0.5 W=0.5 h=0.002 m
+divisions nx=8 ny=8 nz=2
+element type written C3D20R (Gmsh type 17, 20 nodes)
+nodes 837, elements 128
+min corner triple product 3.906250e-06 m3, max 3.906250e-06 m3
+max mid-edge node midpoint error 3.469e-18 m
+element volume sum 5.000000000e-04 m3, exact 5.000000000e-04 m3, relative error 4.34e-16
+max element edge aspect ratio 62.500
+Gmsh minSJ (scaled Jacobian) min 1.000000
+set TOP          225 nodes
+set BOTTOM       225 nodes
+set FRAME_X0      17 nodes
+set FRAME_X1      17 nodes
+set FRAME_Y0      17 nodes
+set FRAME_Y1      17 nodes
+set FACE_X0       69 nodes
+set FACE_X1       69 nodes
+set FACE_Y0       69 nodes
+set FACE_Y1       69 nodes
+set P_A            1 nodes
+set P_B            1 nodes
+set P_C            1 nodes
+set P_D            1 nodes
+set P_CEN          1 nodes
+set COL_CEN        5 nodes

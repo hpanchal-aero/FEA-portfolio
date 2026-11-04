@@ -1,0 +1,17 @@
+V6b linear buckling, restrained square plate, preload = mechanical equivalent of 1 K (prescribed mean edge displacement)
+plate 0.500 x 0.500 m, h = 0.0020 m, mesh v_n40_z2, case v6b_prescribed
+closed form dT_cr(1,1) = 2 pi^2 h^2 / (12 (1 + nu) alpha b^2) = 2.30101 K
+preload stress (first stress block of the .dat; 8 stress block(s) in the file; 25600 integration points): mean sxx -1.46047e+06  syy -1.46047e+06  szz -1.348e-05 Pa
+expected -E alpha / (1 - nu) = -1.46072e+06 Pa per K; deviation of sxx +0.017 % of its magnitude
+displacement tables on TOP: 7 in the file, 1 skipped (preload state printed before the first mode), 6 eigenvectors used
+
+mode   FE factor [K]   closed form [K]   error [%]   shape fit R^2 (uz on top face)
+  1        2.29383         2.30101        -0.312        1.00000
+  2        5.74014         5.75252        -0.215        1.00000
+  3        5.74014         5.75252        -0.215        1.00000
+  4        9.17210         9.20404        -0.347        1.00000
+  5       11.48726        11.50505        -0.155        1.00000
+  6       11.48732        11.50505        -0.154        0.99999
+
+tolerance (mode 1) 5.0 %; FE factor is below the closed form
+RESULT: PASS

@@ -1,0 +1,10 @@
+V6d thickness sweep, 0.5 x 0.5 m plate, mesh 20 x 20 x 2 C3D20R, restrained, mechanical-equivalent 1 K preload
+  h[mm]   h/L[%]  time[s] warn RFdev[%]   mode1 FE[K]  closed[K]   gap[%]   gap/(h/L)   mode2/mode1  (closed 2.5)
+     1    0.200      6.0    0  -0.0021      1.43665    0.57525  +149.7427  +748.7137      1.00000
+     2    0.400      6.2    0  -0.0083      2.29368    2.30101   -0.3185    -0.7962      2.50250
+     3    0.600      9.3    0  -0.0187      5.15245    5.17727   -0.4794    -0.7990      2.50335
+     5    1.000      5.9    0  -0.0528     14.26429   14.38131   -0.8137    -0.8137      2.50455
+
+gap changes sign between 1 and 5 mm: slope undefined -> unclassified
+FAIL reason: 1 mm outside 5.0 %
+RESULT: FAIL

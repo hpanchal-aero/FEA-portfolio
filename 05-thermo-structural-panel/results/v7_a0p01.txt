@@ -1,0 +1,12 @@
+V7 nonlinear thermal post-buckling, imperfection A = 0.01 h = 0.0200 mm (blind), mesh v7_n20_z2_a0p01, dT_cr(closed form) = 2.30101 K
+run: exit 0, finished True, warnings 0, 50 printed increments, last time 1.000000 (target 1), 40 s
+  tau    dT[K]   W_FE/h  W_ref3/h  err3[%]  W_ref2/h  err2[%]  N_FE/Ncr  N_ref3/Ncr   note
+  (ref3 = corrected reference, Amendment 3, primary; ref2 = Amendment 2 reference, for the record only)
+  0.50   1.1505   0.0200    0.0200   +0.295    0.0200   +0.275    0.4997     0.4997   
+  0.80   1.8408   0.0498    0.0492   +1.169    0.0494   +0.791    0.7976     0.7977   
+  1.00   2.3010   0.1996    0.1960   +1.843    0.2158   -7.494    0.9602     0.9618   
+  1.20   2.7612   0.4122    0.4106   +0.383    0.4710  -12.502    1.0295     1.0319   
+  1.50   3.4515   0.6211    0.6226   -0.248    0.7179  -13.485    1.1101     1.1134   
+  2.00   4.6020   0.8642    0.8716   -0.849    1.0063  -14.120    1.2364     1.2423   
+  2.50   5.7525   1.0504    1.0647   -1.338    1.2296  -14.573    1.3595     1.3694   
+RESULT (blind): PASS

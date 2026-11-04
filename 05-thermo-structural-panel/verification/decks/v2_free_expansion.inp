@@ -1,0 +1,43 @@
+*HEADING
+Project 05 V2: uniform temperature rise 20 -> 120 degC, minimally constrained (free expansion)
+** SI units (m, kg, s, N, Pa), temperatures in degC
+*INCLUDE, INPUT=../../mesh/v_n40_z2.inp
+*MATERIAL, NAME=TI64
+*ELASTIC
+113.8E9, 0.33
+*EXPANSION, ZERO=20.
+8.6E-6
+*SOLID SECTION, ELSET=PANEL, MATERIAL=TI64
+*INITIAL CONDITIONS, TYPE=TEMPERATURE
+NALL, 20.
+** rigid-body constraints only, on the mid-thickness plane
+*BOUNDARY
+P_A, 1, 3
+P_B, 2, 3
+P_C, 3, 3
+*STEP
+*STATIC
+1., 1., 1.E-5, 1.
+*TEMPERATURE
+NALL, 120.
+*NODE PRINT, NSET=P_A
+U
+*NODE PRINT, NSET=P_B
+U
+*NODE PRINT, NSET=P_C
+U
+*NODE PRINT, NSET=P_D
+U
+*NODE PRINT, NSET=P_CEN
+U
+*NODE PRINT, NSET=COL_CEN
+U
+*EL PRINT, ELSET=PANEL
+S
+*NODE PRINT, NSET=NALL, TOTALS=ONLY
+RF
+*NODE FILE
+U
+*EL FILE
+S
+*END STEP

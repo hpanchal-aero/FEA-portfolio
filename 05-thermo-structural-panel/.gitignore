@@ -1,0 +1,19 @@
+# CalculiX scratch and large result files (revisit when result sizes are known)
+*.12d
+*.cvg
+*.sta
+*.rout
+*.frd
+# Python
+__pycache__/
+*.pyc
+# superseded figures
+figures/_previous/
+
+# Project 05: regenerable intermediates (solver decks, temperature frames, meshes).
+# scripts/run_case.py and the other run_*.py scripts rebuild them; see the README reproducibility section.
+simulation/
+mesh/*.inp
+
+# QA stills written by scripts/make_thickness_video.py
+figures/video_still_*.png
